@@ -2,6 +2,7 @@ require 'swagger/blocks'
 require 'sinatra/json'
 require 'sinatra'
 require 'sinatra/base'
+# DO NOT change the order of loading below.  The files contain executable code that builds the overall configuration before this module starts
 require_relative './configuration.rb'
 require_relative './models.rb'
 require_relative './routes.rb'
