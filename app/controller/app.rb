@@ -10,6 +10,26 @@ require_relative './routes.rb'
 class Swag < Sinatra::Application
   include Swagger::Blocks
 
+
+  set :bind, '0.0.0.0'
+  before do
+    response.headers['Access-Control-Allow-Origin'] = '*'
+  end
+
+  configure do
+    set :public_folder, 'public'
+    set :views, 'app/views'
+    enable :cross_origin
+  end
+
+  # routes...  
+  options "*" do
+    response.headers["Allow"] = "GET, PUT, POST, DELETE, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Authorization, Content-Type, Accept, X-User-Email, X-Auth-Token"
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    200
+  end
+
   swagger_root do
     key :swagger, '2.0'
     info do
@@ -25,34 +45,21 @@ class Swag < Sinatra::Application
       end
     end
 
-# guid = "https://w3id.org/FAIR-Tests/gen3_unique_identifier"
-# title = "gen3_unique_identifier"
-# description = "mark gest"
-# applies_to_principle = "F1"
-# tests_metric = 'X0'
-# version = "999"
-# organization = "Marks place"
-# org_url = "http://fairdata.services"
-# responsible_developer = "Mark Wilkinson"
-# email = "markw@illuminae.com"
-# developer_orcid = "0000-0000-0000-000X"
     tag do
-      key :name, $th.keys.first
-      key :description, 'All Tests'
+      key :name, "Get interface document"
+      key :description, 'The main interface for the FAIR Champion'
       externalDocs do
-        key :description, 'Find more info here'
+        key :description, 'Information about how to use this service'
         key :url, 'https://fairdata.services/Champion/about'
       end
     end
     key :schemes, ["https"]
     key :host, 'fairdata.services:8181'
-    key :basePath, '/tests'
-    key :consumes, ['application/json']
-    key :produces, ['application/json']
+    key :basePath, '/'
   end
 
   # A list of all classes that have swagger_* declarations.
-  SWAGGERED_CLASSES = [ ErrorModel, InputScheme, EvalResponse, AllTests, self].freeze
+  SWAGGERED_CLASSES = [ ErrorModel, TheChampion, self].freeze
 
   set_routes(classes: SWAGGERED_CLASSES)
 
