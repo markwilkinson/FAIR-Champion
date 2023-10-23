@@ -1,5 +1,6 @@
 require_relative 'spec_helper'
 require "rest-client"
+require 'json'
 
 LOCATION = "http://localhost:4567/tests/" # GEN3-RDA-F2-3?guid=10.7910/DVN/Z2JD58"
 RDAF1 = LOCATION + "GEN3-RDA-F1-2-3-4?guid="
