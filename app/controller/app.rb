@@ -2,10 +2,12 @@ require 'swagger/blocks'
 require 'sinatra/json'
 require 'sinatra'
 require 'sinatra/base'
+require 'require_all'
 # DO NOT change the order of loading below.  The files contain executable code that builds the overall configuration before this module starts
 require_relative './configuration.rb'
 require_relative './models.rb'
 require_relative './routes.rb'
+require_rel '../lib'
 
 class Swag < Sinatra::Application
   include Swagger::Blocks
