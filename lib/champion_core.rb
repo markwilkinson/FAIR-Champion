@@ -8,8 +8,8 @@ module Champion
 
     attr_accessor :sets
     def initialize
-#      host = "https://fairdata.systems/tests"
-      host = "http://localhost:8080/tests"
+#      host = "http://fairdata.services:8282/tests"
+      host = "http://tests:4567/tests"
       @sets = {"FCSET1" => [
         "#{host}/fc_data_authorization",
         "#{host}/fc_data_identifier_in_metadata",
@@ -24,18 +24,20 @@ module Champion
     end
 
     def run_evaluation(subject:, setid:)
+      warn "evaluating #{subject} on #{setid}"
       results = []
-      sets[setid].each do |test|
-        results << run_test(guid: subject, test: test)
+      sets[setid].each do |testy|
+        results << run_test(guid: subject, testy: testy)
       end
 #warn "RESULTS #{results}"
       output = Champion::Output.new(setid: setid, subject: subject)
       output.build_output(results: results)
     end
 
-    def run_test(test:, guid:)
+    def run_test(testy:, guid:)
+      warn "web call to #{testy}"
       result = RestClient::Request.execute(
-        url: test,
+        url: testy,
         method: :post,
         payload: {"subject" => guid}.to_json,
         content_type: :json

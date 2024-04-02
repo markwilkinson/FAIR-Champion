@@ -1,0 +1,15 @@
+version: "2.0"
+services:
+
+  champion: 
+    image: markw/fair-champion:0.0.1
+    container_name: fair_champion
+    ports:
+      - "8383:4567"
+    networks:
+      - network1
+
+networks:
+  network1:
+    name: tests_default
+    external: true
