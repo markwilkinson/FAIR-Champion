@@ -1,86 +1,86 @@
 module Champion
   class Output
-
     require 'cgi'
     require 'securerandom'
-    require "rdf/vocab"
+    require 'rdf/vocab'
 
     include RDF
 
-    attr_accessor :guid, :setid, :description, :version, :summary, :license, :score, :name
-    @@comments = []
+    attr_accessor :subject, :setid, :description, :version, :license, :score, :title, :uniqueid
 
-    def initialize(guid:, setid:, description: "", name: "FAIR Champion output", version: "0.0.1", summary: "Summary", license: "https://creativecommons.org/licenses/by/4.0/", score: "")
+    def initialize(subject:, setid:, description: 'Results of the execution of test set', title: 'FAIR Champion output', version: '0.0.1', summary: 'Results of the execution of test set',
+                   license: 'https://creativecommons.org/licenses/by/4.0/', score: '')
       @score = score
-      @guid = guid
-      @guid = setid
-      @uniqueid = "urn:fairchampionoutput:" + SecureRandom.uuid
-      @name = name
+      @subject = subject
+      @setid = setid
+      @uniqueid = 'urn:fairchampionoutput:' + SecureRandom.uuid
+      @title = title
       @description = description
       @license = license
       @dt = Time.now.iso8601
       @version = version
-      @summary = summary
-
+      @summary = "#{summary} #{setid}"
     end
-    
 
     def build_output(results:)
       g = RDF::Graph.new
       schema = RDF::Vocab::SCHEMA
       ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
-      add_newline_to_comments
 
-      if summary =~ /^Summary$/
-        summary = "Summary of test results: #{@@comments[-1]}"
-        summary = "Summary of test results: #{@@comments[-2]}" unless summary
-      end
-
-
-      triplify(uniqueid, RDF.type, ftr.TestResult, g)
+      triplify(uniqueid, RDF.type, ftr.TestResultSet, g)
+      triplify(uniqueid, RDF.type, RDF::Vocab::PROV.Collection, g)
+      triplify(uniqueid, RDF.type, RDF::Vocab::PROV.Entity, g)
       triplify(uniqueid, schema.identifier, uniqueid, g)
-      triplify(uniqueid, schema.name, name, g)
-      triplify(uniqueid, schema.version, version, g)
+      triplify(uniqueid, schema.name, title, g)
       triplify(uniqueid, schema.description, description, g)
+      triplify(uniqueid, schema.version, version, g)
       triplify(uniqueid, schema.license, license, g)
-      triplify(uniqueid, ftr.status, score, g)
-      triplify(uniqueid, ftr.summary, summary, g)
-      triplify(uniqueid, RDF::Vocab::PROV.generatedAtTime, dt, g)
-      triplify(uniqueid, ftr.log, @@comments.join, g)
-      triplify(uniqueid, ftr.completion, completeness, g)
-      triplify(uniqueid, ftr.definedBy, metric, g)
-      triplify(metric, RDF.type, ftr.TestSpecification, g)
-      
 
-      tid = "urn:fairtestentity:" + SecureRandom.uuid
+      authorid = 'urn:fairchampionauthor:' + SecureRandom.uuid
+      triplify(uniqueid, RDF::Vocab::PROV.wasAttributedTo, authorid, g)
+      triplify(uniqueid, schema.author, authorid, g)
+      triplify(authorid, RDF.type, RDF::Vocab::PROV.Agent, g)
+      contactid = 'urn:fairchampioncontact:' + SecureRandom.uuid
+      triplify(authorid, schema.contactPoint, contactid, g)
+      triplify(contactid, schema.url, 'https://wilkinsonlab.info', g)
+      triplify(contactid, RDF.type, schema.ContactPoint, g)
+
+      softwareid = 'urn:fairchampionsoftware:' + SecureRandom.uuid
+      triplify(uniqueid, RDF::Vocab::PROV.wasAttributedTo, softwareid, g)
+      triplify(softwareid, RDF.type, RDF::Vocab::PROV.SoftwareAgent, g)
+      triplify(softwareid, RDF.type, schema.SoftwareApplication, g)
+      triplify(softwareid, schema.softwareVersion, version, g)
+      triplify(softwareid, schema.url, 'https://github.com/markwilkinson/FAIR-Champion', g)
+
+      add_members(uniqueid: uniqueid, testoutputs: results, graph: g)
+
+      tid = "urn:fairtestsetsubject:" + SecureRandom.uuid
       triplify(uniqueid, RDF::Vocab::PROV.wasDerivedFrom, tid, g)
       triplify(tid, RDF.type, RDF::Vocab::PROV.Entity, g)
-      triplify(tid, schema.identifier, testedGUID, g)
-      triplify(tid, schema.url, testedGUID, g) if testedGUID =~ /^https?\:\/\//
-      
+      triplify(tid, schema.identifier, subject, g)
+      triplify(tid, schema.url, subject, g) if subject =~ /^https?\:\/\//
+
 
       g.dump(:jsonld)
     end
 
-    # can be called as FAIRChampion::Output.comments << "newcomment"
-    def self.comments
-      @@comments
-    end
-    def comments
-      @@comments
-    end
-    def self.clear_comments
-      @@comments = []
-    end
-    def add_newline_to_comments
-      cleancomments = []
-      @@comments.each do |c|
-        c += "\n" unless c =~ /\n$/
-        cleancomments << c
+    def add_members(uniqueid:, testoutputs:, graph:)
+      testoutputs.each do |test|
+        g = RDF::Graph.new
+        data = StringIO.new(test.to_json)
+        RDF::Reader.for(:jsonld).new(data) do |reader|
+          reader.each_statement do |statement|
+            warn statement.inspect
+            g << statement  # this is only to query for the root id
+            graph << statement  # this is the entire output graph
+          end
+        end
+        q = SPARQL.parse('select distinct ?s where {?s a <https://w3id.org/ftr#TestResult>}')
+        res = q.execute(g)
+        testid = res.first[:s].to_s
+        triplify(uniqueid, RDF::Vocab::PROV.hadMember, testid, graph)
       end
-      @@comments = cleancomments
     end
-
 
     def triplify(s, p, o, repo, datatype = nil)
       s = s.strip if s.instance_of?(String)
@@ -106,21 +106,19 @@ module Champion
       end
 
       unless o.respond_to?('uri')
-        if datatype
-          o = RDF::Literal.new(o.to_s, datatype: datatype)
-        else
-          if o.to_s =~ %r{\A\w+:/?/?\w[^\s]+}
-            o = RDF::URI.new(o.to_s)
-          elsif o.to_s =~ /^\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d/
-            o = RDF::Literal.new(o.to_s, datatype: RDF::XSD.date)
-          elsif o.to_s =~ /^[+-]?\d+\.\d+/ && o.to_s !~ /[^\+\-\d\.]/  # has to only be digits
-            o = RDF::Literal.new(o.to_s, datatype: RDF::XSD.float)
-          elsif o.to_s =~ /^[+-]?[0-9]+$/ && o.to_s !~ /[^\+\-\d\.]/  # has to only be digits
-            o = RDF::Literal.new(o.to_s, datatype: RDF::XSD.int)
-          else
-            o = RDF::Literal.new(o.to_s, language: :en)
-          end
-        end
+        o = if datatype
+              RDF::Literal.new(o.to_s, datatype: datatype)
+            elsif o.to_s =~ %r{\A\w+:/?/?\w[^\s]+}
+              RDF::URI.new(o.to_s)
+            elsif o.to_s =~ /^\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d/
+              RDF::Literal.new(o.to_s, datatype: RDF::XSD.date)
+            elsif o.to_s =~ /^[+-]?\d+\.\d+/ && o.to_s !~ /[^\+\-\d\.]/  # has to only be digits
+              RDF::Literal.new(o.to_s, datatype: RDF::XSD.float)
+            elsif o.to_s =~ /^[+-]?[0-9]+$/ && o.to_s !~ /[^\+\-\d\.]/  # has to only be digits
+              RDF::Literal.new(o.to_s, datatype: RDF::XSD.int)
+            else
+              RDF::Literal.new(o.to_s, language: :en)
+            end
       end
 
       triple = RDF::Statement(s, p, o)
@@ -132,7 +130,5 @@ module Champion
     def self.triplify(s, p, o, repo)
       triplify(s, p, o, repo)
     end
-
-
   end
 end

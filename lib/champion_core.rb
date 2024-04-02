@@ -1,12 +1,16 @@
-requrie "rest_client"
+require "rest_client"
+require 'json'
+require 'sparql'
+require 'linkeddata'
 
 module Champion
   class Core
 
     attr_accessor :sets
     def initialize
-      host = "https://fairdata.systems/tests"
-      @sets = {FCSET1: [
+#      host = "https://fairdata.systems/tests"
+      host = "http://localhost:8080/tests"
+      @sets = {"FCSET1" => [
         "#{host}/fc_data_authorization",
         "#{host}/fc_data_identifier_in_metadata",
         "#{host}/fc_data_kr_language_strong",
@@ -19,28 +23,24 @@ module Champion
 
     end
 
-    def self.run_evaluation(guid:, setid:)
+    def run_evaluation(subject:, setid:)
       results = []
       sets[setid].each do |test|
-        results << self.run_test(guid: guid, test: test)
+        results << run_test(guid: subject, test: test)
       end
-
-      output = Champion::Output.new(set: setid, guid: guid)
-      final = output.build_output(results: results)
-      return final
+#warn "RESULTS #{results}"
+      output = Champion::Output.new(setid: setid, subject: subject)
+      output.build_output(results: results)
     end
 
-    def self.run_test(test:, guid:)
+    def run_test(test:, guid:)
       result = RestClient::Request.execute(
         url: test,
         method: :post,
         payload: {"subject" => guid}.to_json,
         content_type: :json
       )
-      return result.body
-
+      JSON.parse(result.body)
     end
-
   end
-
 end

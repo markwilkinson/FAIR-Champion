@@ -4,14 +4,13 @@ require 'sinatra'
 require 'sinatra/base'
 require 'require_all'
 # DO NOT change the order of loading below.  The files contain executable code that builds the overall configuration before this module starts
-require_relative './configuration.rb'
-require_relative './models.rb'
-require_relative './routes.rb'
-require_rel '../lib'
+require_relative 'configuration'
+require_relative 'models'
+require_relative 'routes'
+require_rel '../../lib'
 
 class Swag < Sinatra::Application
   include Swagger::Blocks
-
 
   set :bind, '0.0.0.0'
   before do
@@ -24,11 +23,11 @@ class Swag < Sinatra::Application
     enable :cross_origin
   end
 
-  # routes...  
-  options "*" do
-    response.headers["Allow"] = "GET, PUT, POST, DELETE, OPTIONS"
-    response.headers["Access-Control-Allow-Headers"] = "Authorization, Content-Type, Accept, X-User-Email, X-Auth-Token"
-    response.headers["Access-Control-Allow-Origin"] = "*"
+  # routes...
+  options '*' do
+    response.headers['Allow'] = 'GET, PUT, POST, DELETE, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Authorization, Content-Type, Accept, X-User-Email, X-Auth-Token'
+    response.headers['Access-Control-Allow-Origin'] = '*'
     200
   end
 
@@ -48,23 +47,22 @@ class Swag < Sinatra::Application
     end
 
     tag do
-      key :name, "Get interface document"
+      key :name, 'Get interface document'
       key :description, 'The main interface for the FAIR Champion'
       externalDocs do
         key :description, 'Information about how to use this service'
         key :url, 'https://fairdata.services/Champion/about'
       end
     end
-    key :schemes, ["https"]
+    key :schemes, ['https']
     key :host, 'fairdata.services:8181'
     key :basePath, '/'
   end
 
   # A list of all classes that have swagger_* declarations.
-  SWAGGERED_CLASSES = [ ErrorModel, TheChampion, self].freeze
+  SWAGGERED_CLASSES = [ErrorModel, TheChampion, self].freeze
 
   set_routes(classes: SWAGGERED_CLASSES)
 
   run! # if app_file == $PROGRAM_NAME
-
 end
