@@ -33,7 +33,6 @@ module Champion
       triplify(uniqueid, schema.identifier, uniqueid, g)
       triplify(uniqueid, schema.name, title, g)
       triplify(uniqueid, schema.description, description, g)
-      triplify(uniqueid, schema.version, version, g)
       triplify(uniqueid, schema.license, license, g)
 
       authorid = 'urn:fairchampionauthor:' + SecureRandom.uuid
