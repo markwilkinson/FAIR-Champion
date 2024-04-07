@@ -1,5 +1,5 @@
 require 'swagger/blocks'
-require 'sinatra/json'
+# require 'sinatra/json'
 require 'sinatra'
 require 'sinatra/base'
 require 'require_all'

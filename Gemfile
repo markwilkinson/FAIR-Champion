@@ -25,7 +25,6 @@ gem 'rubocop', '~> 1.21'
 gem 'ruby-debug-ide'
 gem 'securerandom'
 gem 'sinatra', '~> 3.0.6'
-gem 'sinatra-contrib'
 gem 'sinatra-cross_origin'
 gem 'swagger-blocks', '~> 3.0.0'
 gem 'tempfile'
@@ -33,3 +32,5 @@ gem 'thin'
 gem 'tux'
 gem 'uri', '~>0.12.2'
 gem 'xml-simple', '~>1.1.8'
+gem "sinatra-contrib", "~> 3.0"
+gem "erb", "~> 4.0"
