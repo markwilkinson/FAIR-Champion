@@ -3,13 +3,30 @@ services:
 
   champion: 
     image: markw/fair-champion:0.0.1
-    container_name: fair_champion
+    environment:
+      - TESTHOST=http://test:4567/tests/
+      - CHAMPHOST=http://fairdata.services:8383/
     ports:
       - "8383:4567"
+    networks:
+      - network1
+
+  graphdb:
+    image: ontotext/graphdb:10.1.2
+    restart: always
+    hostname: graphdb
+    ports:
+      - 8484:7200
+    volumes:
+      - champion-graphdb:/opt/graphdb/home
     networks:
       - network1
 
 networks:
   network1:
     name: tests_default
+    external: true
+
+volumes:
+  champion-graphdb:
     external: true

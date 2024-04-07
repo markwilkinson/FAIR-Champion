@@ -7,6 +7,7 @@ gemspec
 ruby '~>3.0.0'
 gem 'cgi', '~> 0.4.1'
 gem 'csv'
+gem 'erb', '~> 4.0'
 gem 'fileutils', '~>1.5.0'
 gem 'json', '~> 2.7.1'
 gem 'json-canonicalization', '~> 1.0.0'
@@ -32,5 +33,3 @@ gem 'thin'
 gem 'tux'
 gem 'uri', '~>0.12.2'
 gem 'xml-simple', '~>1.1.8'
-gem "sinatra-contrib", "~> 3.0"
-gem "erb", "~> 4.0"

@@ -74,7 +74,7 @@ GEM
     http-accept (1.7.0)
     http-cookie (1.0.5)
       domain_name (~> 0.5)
-    json (2.7.1)
+    json (2.7.2)
     json-canonicalization (1.0.0)
     json-ld (3.3.1)
       htmlentities (~> 4.3)
@@ -174,7 +174,7 @@ GEM
       racc
     psych (5.1.2)
       stringio
-    public_suffix (5.0.4)
+    public_suffix (5.0.5)
     racc (1.7.3)
     rack (2.2.9)
     rack-protection (3.0.6)
@@ -182,7 +182,7 @@ GEM
     rack-test (0.6.3)
       rack (>= 1.0)
     rainbow (3.1.1)
-    rake (13.2.0)
+    rake (13.2.1)
     rdf (3.3.1)
       bcp47_spec (~> 0.2)
       link_header (~> 0.0, >= 0.0.8)
@@ -317,12 +317,6 @@ GEM
       rack (~> 2.2, >= 2.2.4)
       rack-protection (= 3.0.6)
       tilt (~> 2.0)
-    sinatra-contrib (3.0.6)
-      multi_json
-      mustermann (~> 3.0)
-      rack-protection (= 3.0.6)
-      sinatra (= 3.0.6)
-      tilt (~> 2.0)
     sinatra-cross_origin (0.4.0)
     sparql (3.3.0)
       builder (~> 3.2, >= 3.2.4)
@@ -396,7 +390,6 @@ DEPENDENCIES
   ruby-debug-ide
   securerandom
   sinatra (~> 3.0.6)
-  sinatra-contrib (~> 3.0)
   sinatra-cross_origin
   swagger-blocks (~> 3.0.0)
   tempfile
