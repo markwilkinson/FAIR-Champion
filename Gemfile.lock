@@ -167,6 +167,7 @@ GEM
       racc (~> 1.4)
     openapi3_parser (0.9.2)
       commonmarker (~> 0.17)
+    openapi_parser (2.1.0)
     parallel (1.24.0)
     parseconfig (1.1.2)
     parser (3.3.0.5)
@@ -296,6 +297,7 @@ GEM
       rake (>= 0.8.1)
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
+    safe_yaml (1.0.5)
     scanf (1.0.0)
     securerandom (0.3.1)
     shacl (0.4.1)
@@ -379,6 +381,7 @@ DEPENDENCIES
   linkheaders-processor (~> 0.1.20)
   metainspector (~> 5.pre.11.pre.2)
   openapi3_parser (~> 0.9.2)
+  openapi_parser (~> 2.1)
   parseconfig (~> 1.1.2)
   rake (~> 13.0)
   rdf-raptor (~> 3.1.0)
@@ -388,6 +391,7 @@ DEPENDENCIES
   rspec (~> 3.11.0)
   rubocop (~> 1.21)
   ruby-debug-ide
+  safe_yaml (~> 1.0)
   securerandom
   sinatra (~> 3.0.6)
   sinatra-cross_origin

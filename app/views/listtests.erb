@@ -1,2 +1,20 @@
-<h1> SETS </h1>
-<%= @tests.inspect %>
+<h1> TESTS </h1>
+
+<form action="/sets/" method="post">
+<% @tests.each do |hash| %>
+  <% guid = hash.keys.first; value = hash[guid] %>
+  <br/><input type="checkbox" name="testid" value="<%= guid %>"/> <b> <%= guid %> </b>: <span title="<%= value["description"] %>"> <%= value["title"] %> </span>
+<% end %>
+<br/><br/>
+<b>To create a new Test Set</b>
+<b>Select the tests to add to a new set, and fill-in the following metadata fields:</b>
+<br/><br/>
+Title: <input type="text" name="title">
+<br/>
+Description: <input type="text" name="description">
+<br/>
+Set Author (email): <input type="text" name="email">
+<br/>
+<input type="submit" value="Create New Test Set"/>
+</form>
+

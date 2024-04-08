@@ -5,6 +5,9 @@ module Champion
     require 'rdf/vocab'
 
     include RDF
+    extend Forwardable
+    
+    def_delegators :Output, :triplify
 
     attr_accessor :subject, :setid, :description, :version, :license, :score, :title, :uniqueid
 
@@ -25,6 +28,7 @@ module Champion
     def build_output(results:)
       g = RDF::Graph.new
       schema = RDF::Vocab::SCHEMA
+      dc = RDF::Vocab::DC
       ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
 
       triplify(uniqueid, RDF.type, ftr.TestResultSet, g)
@@ -81,7 +85,8 @@ module Champion
       end
     end
 
-    def triplify(s, p, o, repo, datatype = nil)
+    def self.triplify(s, p, o, repo, datatype: nil, context: nil)
+      warn "context #{context}"
       s = s.strip if s.instance_of?(String)
       p = p.strip if p.instance_of?(String)
       o = o.strip if o.instance_of?(String)
@@ -119,15 +124,23 @@ module Champion
               RDF::Literal.new(o.to_s, language: :en)
             end
       end
-
-      triple = RDF::Statement(s, p, o)
+      if context
+        unless context.respond_to?('uri')
+          if context.to_s =~ %r{^\w+:/?/?[^\s]+}
+            context = RDF::URI.new(context.to_s)
+          else
+            abort "Context #{context} must be a URI-compatible thingy"
+          end
+        end  
+        warn "adding quad with context #{context}"
+        triple = RDF::Statement(s, p, o, graph_name: context)
+        # warn triple.to_quad, "\n"
+      else        
+        warn "adding TRIPLE"
+        triple = RDF::Statement(s, p, o)  
+      end
       repo.insert(triple)
-
       true
-    end
-
-    def self.triplify(s, p, o, repo)
-      triplify(s, p, o, repo)
     end
   end
 end

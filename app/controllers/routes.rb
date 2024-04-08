@@ -57,15 +57,23 @@ def set_routes(classes: allclasses)
 
   post '/sets/' do
     content_type :json
-    # create a new set from a POST of set ids
-    # metadata
-    # title
-    # description
-    # author
-    # setid (maybe from SLUG?)
-    # tests []
-    #
-    # return setid
+    warn "PARAMS", params.keys
+    if params[:title]
+      title = params[:title]
+      desc = params.fetch(:description, "No Description")
+      email = params.fetch(:email, "nobody@anonymous.org")
+      tests = params.fetch(:testid)
+      halt
+    else
+      payload = JSON.parse(request.body.read)
+      title = payload['title']
+      desc = payload['description']
+      email = payload['email']
+      tests = payload['tests']
+    end
+    champ = Champion::Core.new
+    result = champ.add_set(title: title, desc: desc, email: email, tests: tests)
+    result
   end
 
   get '/sets/:setid/evaluations' do
