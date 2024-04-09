@@ -72,7 +72,7 @@ def set_routes(classes: allclasses)
     end
     champ = Champion::Core.new
     result = champ.add_set(title: title, desc: desc, email: email, tests: tests)
-    result
+    redirect "/sets/#{result}"
   end
 
   get '/sets/:setid/evaluations' do
