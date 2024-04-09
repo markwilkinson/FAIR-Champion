@@ -47,21 +47,66 @@ module Champion
 
     def get_sets(setid: nil)
       setid = setid.to_sym if setid
+      url = "http://#{hostname}:7200/repositories/#{reponame}"
 
-      # Dir.entries("../cache/*.json")
-      # g = RDF::Graph.new
+      client = SPARQL::Client.new(url)
 
-      warn "set requested #{setid}"
-      sets = { OSTrails1: [
-        "#{testhost}/fc_data_authorization",
-        "#{testhost}/fc_data_identifier_in_metadata",
-        "#{testhost}/fc_data_kr_language_strong",
-        "#{testhost}/fc_data_kr_language_weak",
-        "#{testhost}/fc_data_protocol",
-        "#{testhost}/fc_metadata_persistence",
-        "#{testhost}/fc_metadata_protocol",
-        "#{testhost}/fc_unique_identifier"
-      ] }
+      schema = RDF::Vocab::SCHEMA
+      dc = RDF::Vocab::DC
+      ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
+
+      if setid  # we want one graph
+        setgraphquery = "select distinct ?g where { 
+          GRAPH ?g {
+          <#{setid}> a <https://w3id.org/ftr#TestSetDefinition> .
+          ?s ?p ?o}
+          }"
+      else  # we want all graphs
+        setgraphquery = "select distinct ?g where { 
+          GRAPH ?g {
+          ?s a <https://w3id.org/ftr#TestSetDefinition> .
+          ?s ?p ?o}
+          }"
+      end
+
+      r = client.query(setgraphquery)
+      graphs = r.map {|g| r[:g]}  # get the id of each graph (representing each set) as a list
+
+      # we now have the desired graph URIs as a list... one or all
+
+      graphs.each do |graph|
+        individualsetquery = "select distinct ?name ?description ?creator ?part where { 
+          GRAPH <#{graph} {
+            ?s a <https://w3id.org/ftr#TestSetDefinition> .
+            ?s <#{schema.name}> ?name .
+            ?s <#{schema.description}> ?description .
+            ?s <#{dc.creator}> ?creator .
+            ?s <#{schema.hasPart}> ?part .
+            }
+          }"
+          r = client.query(setgraphquery)
+          # r contains duplicates of name desc creator, but multiple parts... get each part as a list
+          individualtests = []
+          r.each do |set|
+            title = set[:name]
+            description = set[:description]
+            creator = set[:creator]
+            individualtests << set[:part]
+          end
+
+
+
+
+        # sets = { OSTrails1: [
+      #   "#{testhost}/fc_data_authorization",
+      #   "#{testhost}/fc_data_identifier_in_metadata",
+      #   "#{testhost}/fc_data_kr_language_strong",
+      #   "#{testhost}/fc_data_kr_language_weak",
+      #   "#{testhost}/fc_data_protocol",
+      #   "#{testhost}/fc_metadata_persistence",
+      #   "#{testhost}/fc_metadata_protocol",
+      #   "#{testhost}/fc_unique_identifier"
+      # ] }
       return sets[setid] if setid
 
       sets
@@ -69,28 +114,33 @@ module Champion
 
     def add_set(title:, desc:, email:, tests:)
       g = RDF::Repository.new
-      _build_set_record(title: title, desc: desc, email: email, tests: tests)
+      _build_set_record(g: g, title: title, desc: desc, email: email, tests: tests)
      newentry = g.dump(:nquads)
      _write_set_to_graphdb(payload: newentry)
     end
 
-    def _build_set_record(title: , desc: , email: , tests:  )
+    def _build_set_record(g:, title: , desc: , email: , tests:  )
       schema = RDF::Vocab::SCHEMA
       dc = RDF::Vocab::DC
       ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
 
-      contact = y['info']['contact']['email']
-      org = y['info']['contact']['url']
-      context = ......................
-
+      # contact = y['info']['contact']['email']
+      # org = y['info']['contact']['url']
       uniqueid = "#{champhost}/sets/#{Time.now.nsec}"
+      context = "#{champhost}/sets/#{Time.now.nsec}/context"
+
       Champion::Output.triplify(uniqueid, RDF.type, ftr.TestSetDefinition, g, context: context)
-      Champion::Output.triplify(uniqueid, schema.identifier, context, g, context: context, datatype: 'xsd:string')
+      Champion::Output.triplify(uniqueid, schema.identifier, uniqueid, g, context: context, datatype: 'xsd:string')
       Champion::Output.triplify(uniqueid, schema.name, title, g, context: context)
-      Champion::Output.triplify(uniqueid, schema.description, description, g, context: context)
-      Champion::Output.triplify(uniqueid, schema.version, version, g, context: context)
-      Champion::Output.triplify(uniqueid, dc.creator, contact, g, context: context, datatype: 'xsd:string')
-      Champion::Output.triplify(uniqueid, dc.creator, org, g, context: context, datatype: 'xsd:string')
+      Champion::Output.triplify(uniqueid, schema.description, desc, g, context: context)
+      Champion::Output.triplify(uniqueid, dc.creator, email, g, context: context, datatype: 'xsd:string')
+
+      tests.each do |test|
+        Champion::Output.triplify(uniqueid, schema.hasPart, test.to_s, g, context: context,)
+      end
+
+      # abort g.dump(:nquads)
+
     end
 
     def _write_set_to_graphdb(payload:)

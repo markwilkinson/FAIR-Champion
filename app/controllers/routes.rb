@@ -63,7 +63,6 @@ def set_routes(classes: allclasses)
       desc = params.fetch(:description, "No Description")
       email = params.fetch(:email, "nobody@anonymous.org")
       tests = params.fetch(:testid)
-      halt
     else
       payload = JSON.parse(request.body.read)
       title = payload['title']
