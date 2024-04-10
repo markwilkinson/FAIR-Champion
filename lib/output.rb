@@ -7,7 +7,7 @@ module Champion
     include RDF
     extend Forwardable
     
-    def_delegators :Output, :triplify
+    def_delegators Champion::Output, :triplify
 
     attr_accessor :subject, :setid, :description, :version, :license, :score, :title, :uniqueid
 

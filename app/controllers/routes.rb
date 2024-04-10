@@ -18,6 +18,11 @@ def set_routes(classes: allclasses)
     Swagger::Blocks.build_root_json(classes).to_s
   end
 
+
+  # ###########################################  SETS
+  # ###########################################  SETS
+  # ###########################################  SETS
+
   get '/sets' do
     redirect '/sets/'
   end
@@ -75,6 +80,11 @@ def set_routes(classes: allclasses)
     redirect "/sets/#{result}"
   end
 
+    # ###########################################  ASSESSMENTS
+    # ###########################################  ASSESSMENTS
+    # ###########################################  ASSESSMENTS
+
+
   get '/sets/:setid/assessments' do
     id = params[:setid]
     redirect "/sets/#{id}/assessments/"
@@ -83,11 +93,11 @@ def set_routes(classes: allclasses)
   get '/sets/:setid/assessments/' do
     # List of assessments from that set id
   end
+
   get '/sets/:setid/assessments/new' do
     @setid = params[:setid]
     halt erb :new_evaluation
   end
-
 
   post '/sets/:setid/assessments' do
     id = params[:setid]
@@ -119,7 +129,9 @@ def set_routes(classes: allclasses)
   # end
 
 
-  # ###########################################
+  # ###########################################  TESTS
+  # ###########################################  TESTS
+  # ###########################################  TESTS
 
   get '/tests' do
     redirect '/tests/'
@@ -146,7 +158,7 @@ def set_routes(classes: allclasses)
     request.accept.each do |type|
       case type.to_s
       when 'text/html'
-        halt erb :listsets
+        halt erb :listtests
       when 'text/json', 'application/json', 'application/ld+json'
         halt @tests.to_json
       end
