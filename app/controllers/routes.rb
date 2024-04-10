@@ -75,26 +75,26 @@ def set_routes(classes: allclasses)
     redirect "/sets/#{result}"
   end
 
-  get '/sets/:setid/evaluations' do
+  get '/sets/:setid/assessments' do
     id = params[:setid]
-    redirect "/sets/#{id}/evaluations/"
+    redirect "/sets/#{id}/assessments/"
   end
 
-  get '/sets/:setid/evaluations/' do
-    # List of evaluations from that set id
+  get '/sets/:setid/assessments/' do
+    # List of assessments from that set id
   end
-  get '/sets/:setid/evaluations/new' do
+  get '/sets/:setid/assessments/new' do
     @setid = params[:setid]
     halt erb :new_evaluation
   end
 
 
-  post '/sets/:setid/evaluations' do
+  post '/sets/:setid/assessments' do
     id = params[:setid]
-    redirect "/sets/#{id}/evaluations/"
+    redirect "/sets/#{id}/assessments/"
   end
 
-  post '/sets/:setid/evaluations/' do
+  post '/sets/:setid/assessments/' do
     content_type :json
     setid = params[:setid]
     warn "received call to evaluate #{setid}"
@@ -105,18 +105,18 @@ def set_routes(classes: allclasses)
       subject = payload['subject']
     end
     champ = Champion::Core.new
-    result = champ.run_evaluation(subject: subject, setid: setid)
+    result = champ.run_assessment(subject: subject, setid: setid)
     result
   end
 
-  get '/sets/:setid/evaluations/:evalid' do
-    content_type :json
-    setid = params[:setid]
-    evalid = params[:evalid]
-    # result = champ.run_evaluation(subject: subject, setid: setid)
-    # #  TODO  SET Location Header!!!!!!!!!!!!!!!!
-    # result
-  end
+  # get '/sets/:setid/assessments/:assid' do
+  #   content_type :json
+  #   # setid = params[:setid]
+  #   # evalid = params[:evalid]
+  #   # result = champ.run_evaluation(subject: subject, setid: setid)
+  #   # #  TODO  SET Location Header!!!!!!!!!!!!!!!!
+  #   # result
+  # end
 
 
   # ###########################################

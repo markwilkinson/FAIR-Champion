@@ -24,16 +24,24 @@ module Champion
 #      @sets = get_sets  # TODO  is this still necessary??
     end
 
-    # CHECK WHATR IS SENT - IS IT THE FULL URI OF THE SET, OR JUST THE LOCSAL IDENTIFIER
+
+    # ################################# ASSESSMENTS 
+    # ########################################################################
+
+    # CHECK WHAT IS SENT - IS IT THE FULL URI OF THE SET, OR JUST THE LOCAL IDENTIFIER
     # THEN RUN THE TEST.... Double check the API call in Routes!!!
     #  TODO TODO
-    def run_evaluation(subject:, setid:)
+    def run_assessment(subject:, setid:)
       warn "evaluating #{subject} on #{setid}"
       set = get_sets(setid: setid)
-
-      setid = setid.to_sym
+      # results[graph.to_s] = {
+      #   identifier: identifier.to_s, 
+      #   title: title.to_s, 
+      #   description: description.to_s, 
+      #   creator: creator.to_s, 
+      #   tests: individualtests}
       results = []
-      sets[setid].each do |testurl|
+      set[:tests].each do |testurl|
         results << run_test(guid: subject, testurl: testurl)
       end
       # warn "RESULTS #{results}"
@@ -55,7 +63,6 @@ module Champion
     # ################################# SETS 
     # ########################################################################
 
-    
     def get_sets(setid: nil)
       setid = setid.to_sym if setid
       url = "http://#{graphdbhost}:7200/repositories/#{reponame}"
@@ -71,14 +78,14 @@ module Champion
       if setid  # we want one graph
         setgraphquery = "select distinct ?g where { 
           GRAPH ?g {
-          <#{champhost}/#{setid}> a <https://w3id.org/ftr#TestSetDefinition> .
-          ?s ?p ?o}
+          <#{champhost}/sets/#{setid}> a <https://w3id.org/ftr#TestSetDefinition> .
+          }
           }"
       else  # we want all graphs
         setgraphquery = "select distinct ?g where { 
           GRAPH ?g {
           ?s a <https://w3id.org/ftr#TestSetDefinition> .
-          ?s ?p ?o}
+          }
           }"
       end
 
