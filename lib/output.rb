@@ -73,7 +73,7 @@ module Champion
         data = StringIO.new(test.to_json)
         RDF::Reader.for(:jsonld).new(data) do |reader|
           reader.each_statement do |statement|
-            warn statement.inspect
+            # warn statement.inspect
             g << statement  # this is only to query for the root id
             graph << statement  # this is the entire output graph
           end
@@ -86,7 +86,7 @@ module Champion
     end
 
     def self.triplify(s, p, o, repo, datatype: nil, context: nil)
-      warn "context #{context}"
+      # warn "context #{context}"
       s = s.strip if s.instance_of?(String)
       p = p.strip if p.instance_of?(String)
       o = o.strip if o.instance_of?(String)
@@ -132,11 +132,11 @@ module Champion
             abort "Context #{context} must be a URI-compatible thingy"
           end
         end  
-        warn "adding quad with context #{context}"
+        # warn "adding quad with context #{context}"
         triple = RDF::Statement(s, p, o, graph_name: context)
         # warn triple.to_quad, "\n"
       else        
-        warn "adding TRIPLE"
+        # warn "adding TRIPLE"
         triple = RDF::Statement(s, p, o)  
       end
       repo.insert(triple)

@@ -12,7 +12,7 @@ module Champion
 
     def initialize
       # @testhost = "http://tests:4567/tests/"
-      @testhost = ENV.fetch('TESTHOST', nil)
+      @testhost = ENV.fetch('TESTHOST','http://fairdata.services:8282/tests/')
       # @testhost = 'http://fairdata.services:8282/tests/'
       @champhost = ENV.fetch('CHAMPHOST', nil)
       @graphdbhost = ENV.fetch('GRAPHDBNAME', 'graphdb')
@@ -70,7 +70,7 @@ module Champion
     # ################################# SETS
     # ########################################################################
 
-    def get_sets(setid: nil)
+    def get_sets(setid: "")
       setid = setid.to_sym if setid
       url = "http://#{graphdbhost}:7200/repositories/#{reponame}"
 
@@ -82,7 +82,7 @@ module Champion
       dc = RDF::Vocab::DC
       _ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
 
-      setgraphquery = if setid # we want one graph
+      setgraphquery = if !setid.empty? # we want one graph
                         "select distinct ?g where {
           GRAPH ?g {
           <#{champhost}/sets/#{setid}> a <https://w3id.org/ftr#TestSetDefinition> .
@@ -112,7 +112,7 @@ module Champion
             ?s <#{schema.hasPart}> ?part .
             }
           }"
-        warn 'sert query', individualsetquery
+        warn 'set query', individualsetquery
         r = client.query(individualsetquery)
         # r contains duplicates of name desc creator, but multiple parts... get each part as a list
         individualtests = []
@@ -183,9 +183,9 @@ module Champion
     #     TESTS
     # ##############################################################
 
-    def get_tests(testid: nil)
+    def get_tests(testid: "")
       warn 'IN GET TESTS'
-      testid = testid.gsub(/.*\//, "")  # if we are sent the entire URI, then just take the identifier part at the end
+      testid = testid.to_s.gsub(/.*\//, "")  # if we are sent the entire URI, then just take the identifier part at the end
 
       schema = RDF::Vocab::SCHEMA
       _dc = RDF::Vocab::DC
@@ -195,11 +195,11 @@ module Champion
       _pass = ENV.fetch('GraphDB_Pass', 'champion')
       hostname = ENV.fetch('networkname', 'graphdb')
       reponame = ENV.fetch('GRAPHDB_REPONAME', 'champion')
-      url = "http://#{hostname}:7200/repositories/#{reponame}"
+      sparqlurl = "http://#{hostname}:7200/repositories/#{reponame}"
 
-      client = SPARQL::Client.new(url)
+      client = SPARQL::Client.new(sparqlurl)
       # every service is a named graph
-      sparql = if testid
+      sparql = if !testid.empty?
                  "select distinct ?g ?s ?title ?description where {
           GRAPH ?g {
             VALUES ?s {<#{champhost}/tests/#{testid}>}
@@ -232,12 +232,13 @@ module Champion
         url: api
       )
       y = YAML.safe_load(result)
-      _build_test_record(y: y, g: g, context: api)
+      testid = _build_test_record(yaml: y, graph: g, context: api)
       newentry = g.dump(:nquads)
       _write_test_to_graphdb(payload: newentry)
+      testid
     end
 
-    def _build_test_record(y:, g:, context:)
+    def _build_test_record(yaml:, graph:, context:)
       schema = RDF::Vocab::SCHEMA
       dc = RDF::Vocab::DC
       ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
@@ -247,8 +248,9 @@ module Champion
       version = y['info']['version']
       contact = y['info']['contact']['email']
       org = y['info']['contact']['url']
+      testid = Time.now.nsec
 
-      uniqueid = "#{champhost}/tests/#{Time.now.nsec}"
+      uniqueid = "#{champhost}/tests/#{testid}"
       Champion::Output.triplify(uniqueid, RDF.type, ftr.TestDefinition, g, context: context)
       Champion::Output.triplify(uniqueid, schema.identifier, context, g, context: context, datatype: 'xsd:string')
       Champion::Output.triplify(uniqueid, schema.name, title, g, context: context)
@@ -256,6 +258,7 @@ module Champion
       Champion::Output.triplify(uniqueid, schema.version, version, g, context: context)
       Champion::Output.triplify(uniqueid, dc.creator, contact, g, context: context, datatype: 'xsd:string')
       Champion::Output.triplify(uniqueid, dc.creator, org, g, context: context, datatype: 'xsd:string')
+      testid
     end
 
     def _write_test_to_graphdb(payload:)

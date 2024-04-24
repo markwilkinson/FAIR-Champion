@@ -1,2 +1,18 @@
-<h1> SETS </h1>
-<%= @sets.inspect %>
+<h1> SET </h1>
+<!-- <%= @sets.inspect %> -->
+
+<% @sets.each_key do |setid| %>
+  <% set = @sets[setid] %>
+
+  <h1><%= set[:identifier] %></h1>
+  <a href="<%= set[:identifier]+ '/assessments/new' %>"><input type="submit" value="Execute an Assessment"></a><br/>
+  <b>Title:</b> <%= set[:title] %><br/>
+  <b>Description:</b> <%= set[:description] %><br/>
+  <b>Creator:</b> <%= set[:creator] %><br/>
+  <b>Tests:</b><br/>
+  <% set[:tests].each do |test| %>
+    - <%= test %><br/>
+  <% end %>
+  <br/><br/><br/>
+<% end %>
+
