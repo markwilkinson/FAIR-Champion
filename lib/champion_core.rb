@@ -243,28 +243,28 @@ module Champion
       dc = RDF::Vocab::DC
       ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
 
-      title = y['info']['title']
-      description = y['info']['description']
-      version = y['info']['version']
-      contact = y['info']['contact']['email']
-      org = y['info']['contact']['url']
+      title = yaml['info']['title']
+      description = yaml['info']['description']
+      version = yaml['info']['version']
+      contact = yaml['info']['contact']['email']
+      org = yaml['info']['contact']['url']
       testid = Time.now.nsec
 
       uniqueid = "#{champhost}/tests/#{testid}"
-      Champion::Output.triplify(uniqueid, RDF.type, ftr.TestDefinition, g, context: context)
-      Champion::Output.triplify(uniqueid, schema.identifier, context, g, context: context, datatype: 'xsd:string')
-      Champion::Output.triplify(uniqueid, schema.name, title, g, context: context)
-      Champion::Output.triplify(uniqueid, schema.description, description, g, context: context)
-      Champion::Output.triplify(uniqueid, schema.version, version, g, context: context)
-      Champion::Output.triplify(uniqueid, dc.creator, contact, g, context: context, datatype: 'xsd:string')
-      Champion::Output.triplify(uniqueid, dc.creator, org, g, context: context, datatype: 'xsd:string')
+      Champion::Output.triplify(uniqueid, RDF.type, ftr.TestDefinition, graph, context: context)
+      Champion::Output.triplify(uniqueid, schema.identifier, context, graph, context: context, datatype: 'xsd:string')
+      Champion::Output.triplify(uniqueid, schema.name, title, graph, context: context)
+      Champion::Output.triplify(uniqueid, schema.description, description, graph, context: context)
+      Champion::Output.triplify(uniqueid, schema.version, version, graph, context: context)
+      Champion::Output.triplify(uniqueid, dc.creator, contact, graph, context: context, datatype: 'xsd:string')
+      Champion::Output.triplify(uniqueid, dc.creator, org, graph, context: context, datatype: 'xsd:string')
       testid
     end
 
     def _write_test_to_graphdb(payload:)
-      user = ENV.fetch('GraphDB_User', 'champion')
-      pass = ENV.fetch('GraphDB_Pass', 'champion')
-      hostname = ENV.fetch('networkname', 'graphdb')
+      user = ENV.fetch('GRAPHDB_User', 'champion')
+      pass = ENV.fetch('GRAPHDB_Pass', 'champion')
+      hostname = ENV.fetch('GRAPHDB_HOSTNAME', 'graphdb')
       reponame = ENV.fetch('GRAPHDB_REPONAME', 'champion')
       url = "http://#{hostname}:7200/repositories/#{reponame}/statements"
       headers = { content_type: 'application/n-quads', accept: '*/*' }

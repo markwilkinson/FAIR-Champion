@@ -1,6 +1,6 @@
 <h1> TESTS </h1>
 
-<form action="/sets/" method="post">
+<form action="/champion/sets/" method="post">
 <% @tests.each do |hash| %>
   <% guid = hash.keys.first; value = hash[guid] %>
   <br/><input type="checkbox" name="testid[]" value="<%= guid %>"/> <b> <%= guid %> </b> (<a href="<%= value["api"] %>">API</a>): <span title="<%= value["description"] %>"> <%= value["title"] %> </span>

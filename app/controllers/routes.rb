@@ -3,7 +3,6 @@ require 'erb'
 def set_routes(classes: allclasses)
   set :server_settings, timeout: 180
   set :public_folder, 'public'
-  set :port, 8282
 
   set :template_engines, {
     # :css=>[],
@@ -14,9 +13,9 @@ def set_routes(classes: allclasses)
     json: []
   }
 
-  get '/' do
+  get '/champion' do
     content_type :json
-    Swagger::Blocks.build_root_json(classes).to_s
+    Swagger::Blocks.build_root_json(classes).to_json
   end
 
 
@@ -24,11 +23,11 @@ def set_routes(classes: allclasses)
   # ###########################################  SETS
   # ###########################################  SETS
 
-  get '/sets' do
-    redirect '/sets/', 307
+  get '/champion/sets' do
+    redirect '/champion/sets/', 307
   end
 
-  get '/sets/', provides: %i[html json jsonld] do
+  get '/champion/sets/', provides: %i[html json jsonld] do
     c = Champion::Core.new
     @sets = c.get_sets
     request.accept.each do |type|  # Sinatra::Request::AcceptEntry
@@ -42,7 +41,7 @@ def set_routes(classes: allclasses)
     error 406
   end
 
-  get '/sets/:setid' do
+  get '/champion/sets/:setid' do
     c = Champion::Core.new
     setid = params[:setid]
     @sets = c.get_sets(setid: setid)  # sets is a hash
@@ -57,11 +56,11 @@ def set_routes(classes: allclasses)
     error 406
   end
 
-  post '/sets' do
-    redirect '/sets/', 307
+  post '/champion/sets' do
+    redirect '/champion/sets/', 307
   end
 
-  post '/sets/' do
+  post '/champion/sets/' do
     content_type :json
     warn "PARAMS", params.keys
     if params[:title]
@@ -78,7 +77,7 @@ def set_routes(classes: allclasses)
     end
     champ = Champion::Core.new
     result = champ.add_set(title: title, desc: desc, email: email, tests: tests)
-    _status, _headers, body = call env.merge("PATH_INFO" => "/sets/#{result}", 'REQUEST_METHOD' => "GET", 'HTTP_ACCEPT' => request.accept.first.to_s)
+    _status, _headers, body = call env.merge("PATH_INFO" => "/champion/sets/#{result}", 'REQUEST_METHOD' => "GET", 'HTTP_ACCEPT' => request.accept.first.to_s)
     request.accept.each do |type|
       case type.to_s
       when 'text/html'
@@ -97,26 +96,26 @@ def set_routes(classes: allclasses)
     # ###########################################  ASSESSMENTS
 
 
-  get '/sets/:setid/assessments' do
+  get '/champion/sets/:setid/assessments' do
     id = params[:setid]
-    redirect "/sets/#{id}/assessments/", 307
+    redirect "/champion/sets/#{id}/assessments/", 307
   end
 
-  get '/sets/:setid/assessments/' do
+  get '/champion/sets/:setid/assessments/' do
     # List of assessments from that set id
   end
 
-  get '/sets/:setid/assessments/new' do
+  get '/champion/sets/:setid/assessments/new' do
     @setid = params[:setid]
     halt erb :new_evaluation
   end
 
-  post '/sets/:setid/assessments' do
+  post '/champion/sets/:setid/assessments' do
     id = params[:setid]
-    redirect "/sets/#{id}/assessments/", 307
+    redirect "/champion/sets/#{id}/assessments/", 307
   end
 
-  post '/sets/:setid/assessments/' do
+  post '/champion/sets/:setid/assessments/' do
     content_type :json
     setid = params[:setid]
     warn "received call to evaluate #{setid}"
@@ -145,18 +144,18 @@ def set_routes(classes: allclasses)
   # ###########################################  TESTS
   # ###########################################  TESTS
 
-  get '/tests' do
-    redirect '/tests/', 307
+  get '/champion/tests' do
+    redirect '/champion/tests/', 307
   end
-  get '/tests/new' do
-    redirect '/tests/new/', 307
+  get '/champion/tests/new' do
+    redirect '/champion/tests/new/', 307
   end
 
-  get '/tests/new/', provides: %i[html] do
+  get '/champion/tests/new/', provides: %i[html] do
     halt erb :new_test
   end
 
-  get '/tests/', provides: %i[html json jsonld] do
+  get '/champion/tests/', provides: %i[html json jsonld] do
     c = Champion::Core.new
     @tests = c.get_tests
     request.accept.each do |type|
@@ -170,7 +169,7 @@ def set_routes(classes: allclasses)
     error 406
   end
 
-  get '/tests/:testid' do
+  get '/champion/tests/:testid' do
     testid = params[:testid]
 
     warn "getting testid", testid
@@ -191,11 +190,11 @@ def set_routes(classes: allclasses)
     error 406
   end
 
-  post '/tests' do
-    redirect '/tests/', 307
+  post '/champion/tests' do
+    redirect '/champion/tests/', 307
   end
 
-  post '/tests/' do
+  post '/champion/tests/' do
     if params[:openapi]  # for calls from the Web form
       api = params[:openapi] 
     else
@@ -206,7 +205,7 @@ def set_routes(classes: allclasses)
     testid = c.add_test(api: api)
     warn "testid", testid
     # this line retrieves the single new test from the database into the expected structure
-    _status, _headers, body = call env.merge("PATH_INFO" => "/tests/#{testid}", 'REQUEST_METHOD' => "GET", 'HTTP_ACCEPT' => request.accept.first.to_s)
+    _status, _headers, body = call env.merge("PATH_INFO" => "/champion/tests/#{testid}", 'REQUEST_METHOD' => "GET", 'HTTP_ACCEPT' => request.accept.first.to_s)
     warn "testid", env.inspect
 
     request.accept.each do |type|

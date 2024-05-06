@@ -1,0 +1,161 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "FAIR Champion Testing Service",
+    "description": "Tests the metadata of your stuff",
+    "termsOfService": "https://fairdata.services/champion/terms/",
+    "contact": {
+      "name": "Mark D Wilkinson"
+    },
+    "license": {
+      "name": "MIT"
+    }
+  },
+  "tags": [
+    {
+      "name": "Get interface document",
+      "description": "The main interface for the FAIR Champion",
+      "externalDocs": {
+        "description": "Information about how to use this service",
+        "url": "https://fairdata.services/champion/about"
+      }
+    }
+  ],
+  "schemes": [
+    "https"
+  ],
+  "host": "fairdata.services",
+  "basePath": "/champion",
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Retrieve the interface for FAIR Champion",
+        "description": "returns the swagger docs this host",
+        "operationId": "Champion_retrieve",
+        "tags": "interface",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "service description in swagger"
+          }
+        }
+      }
+    },
+    "/sets": {
+      "get": {
+        "summary": "Retrieve the known Test Sets in this instance of the FAIR Champion",
+        "description": "Retrieve the known Test Sets in this instance of the FAIR Champion",
+        "operationId": "Champion_sets",
+        "tags": "sets",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "list of sets in json"
+          }
+        }
+      },
+      "post": {
+        "description": "Create a new Test Set",
+        "operationId": "Champion_create_set",
+        "tags": "createset",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "setdefinition",
+            "in": "body",
+            "description": "The definition of the Test Set",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/NewSet"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Create Set Response"
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/ErrorModel"
+            }
+          }
+        }
+      }
+    },
+    "/sets/{setid}": {
+      "get": {
+        "summary": "Retrieve the test set numbered in the URL",
+        "description": "Retrieve the test set numbered in the URL",
+        "operationId": "Champion_set",
+        "tags": "set",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "a specific sets in json"
+          }
+        },
+        "parameters": [
+          {
+            "name": "guid",
+            "in": "path",
+            "description": "The GUID to evaluate",
+            "required": true,
+            "type": "integer"
+          }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "ErrorModel": {
+      "required": [
+        "code",
+        "message"
+      ],
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "NewSet": {
+      "required": [
+        "title",
+        "description",
+        "email",
+        "tests"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "tests": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

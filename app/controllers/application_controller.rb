@@ -37,7 +37,7 @@ class Swag < Sinatra::Application
       key :version, '1.0.0'
       key :title, 'FAIR Champion Testing Service'
       key :description, 'Tests the metadata of your stuff'
-      key :termsOfService, 'https://fairdata.services/Champion/terms/'
+      key :termsOfService, 'https://fairdata.services/champion/terms/'
       contact do
         key :name, 'Mark D Wilkinson'
       end
@@ -51,16 +51,16 @@ class Swag < Sinatra::Application
       key :description, 'The main interface for the FAIR Champion'
       externalDocs do
         key :description, 'Information about how to use this service'
-        key :url, 'https://fairdata.services/Champion/about'
+        key :url, 'https://fairdata.services/champion/about'
       end
     end
     key :schemes, ['https']
-    key :host, 'fairdata.services:8181'
-    key :basePath, '/'
+    key :host, 'fairdata.services'
+    key :basePath, '/champion'
   end
 
   # A list of all classes that have swagger_* declarations.
-  SWAGGERED_CLASSES = [ErrorModel, TheChampion, self].freeze
+  SWAGGERED_CLASSES = [ErrorModel, NewSet, TheChampion, self].freeze
 
   set_routes(classes: SWAGGERED_CLASSES)
 

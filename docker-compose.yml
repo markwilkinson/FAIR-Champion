@@ -6,6 +6,9 @@ services:
     environment:
       - TESTHOST=http://fairdata.services:8282/tests/
       - CHAMPHOST=http://localhost:8383/
+      - GraphDB_User=${GraphDB_User}
+      - GraphDB_Pass=${GraphDB_Pass}
+      - GRAPHDB_REPONAME=${GRAPHDB_REPONAME}
     ports:
       - "8383:4567"
     networks:
