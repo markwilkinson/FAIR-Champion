@@ -13,15 +13,11 @@ class ErrorModel
   end
 end
 
-# title = payload['title']
-# desc = payload['description']
-# email = payload['email']
-# tests = payload['tests']
 
-class NewSet 
+class NewSetInput 
   include Swagger::Blocks
 
-  swagger_schema :NewSet do
+  swagger_schema :NewSetInput do
     key :required, [:title, :description, :email, :tests]
     property :title do
       key :type, :string
@@ -37,7 +33,37 @@ class NewSet
       items do
         key :type, :string
       end
-# somehow indicate that they are strings
+    end
+  end
+end
+
+class SetDesc 
+  swagger_schema :SetList do
+    property :title do
+      key :type, :string
+    end
+    property :description do
+      key :type, :string
+    end
+    property :email do
+      key :type, :string
+    end
+    property :tests do
+      key :type, :array
+      items do
+        key :type, :string
+      end
+    end
+  end
+end
+
+
+class SetList 
+  include Swagger::Blocks
+  property :sets do
+    key :type, :array
+    items do
+      key :'$ref', :SetDesc
     end
   end
 end
@@ -112,7 +138,16 @@ class TheChampion
       key :produces, ['application/json']
       response 200 do
         key :description, 'list of sets in json'
+        schema do
+          key :'$ref', :SetList
+        end
       end
+      response :default do
+        key :description, 'unexpected error'
+        schema do
+          key :'$ref', :ErrorModel
+        end
+
     end
 
     operation :post do
@@ -128,7 +163,7 @@ class TheChampion
         key :description, 'The definition of the Test Set'
         key :required, true
         schema do
-          key :'$ref', :NewSet
+          key :'$ref', :NewSetInput
         end
       end
       response 201 do  # created

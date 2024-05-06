@@ -31,7 +31,7 @@
     "/": {
       "get": {
         "summary": "Retrieve the interface for FAIR Champion",
-        "description": "returns the swagger docs this host",
+        "description": "returns the swagger docs for this host",
         "operationId": "Champion_retrieve",
         "tags": "interface",
         "produces": [
