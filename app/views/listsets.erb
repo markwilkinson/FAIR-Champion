@@ -5,7 +5,7 @@
   <% set = @sets[setid] %>
 
   <h1><%= set[:identifier] %></h1>
-  <a href="<%= set[:identifier]+ '/assessments/new' %>"><input type="submit" value="Execute an Assessment"></a><br/>
+  <a href="/champion/<%= set[:identifier] %>/assessments/new"><input type="submit" value="Execute an Assessment"></a><br/>
   <b>Title:</b> <%= set[:title] %><br/>
   <b>Description:</b> <%= set[:description] %><br/>
   <b>Creator:</b> <%= set[:creator] %><br/>

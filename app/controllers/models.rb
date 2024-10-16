@@ -14,7 +14,7 @@ class ErrorModel
 end
 
 
-class NewSetInput 
+class NewSetInput
   include Swagger::Blocks
 
   swagger_schema :NewSetInput do
@@ -37,36 +37,28 @@ class NewSetInput
   end
 end
 
-class SetDesc 
-  swagger_schema :SetList do
-    property :title do
-      key :type, :string
-    end
-    property :description do
-      key :type, :string
-    end
-    property :email do
-      key :type, :string
-    end
-    property :tests do
-      key :type, :array
-      items do
-        key :type, :string
-      end
-    end
-  end
-end
+# class NewSetInput
+#   include Swagger::Blocks
 
-
-class SetList 
-  include Swagger::Blocks
-  property :sets do
-    key :type, :array
-    items do
-      key :'$ref', :SetDesc
-    end
-  end
-end
+#   swagger_schema :NewSetInput do
+#     key :required, [:title, :description, :email, :tests]
+#     property :title do
+#       key :type, :string
+#     end
+#     property :description do
+#       key :type, :string
+#     end
+#     property :email do
+#       key :type, :string
+#     end
+#     property :tests do
+#       key :type, :array
+#       items do
+#         key :type, :string
+#       end
+#     end
+#   end
+# end
 
 # class Pet
 #   include Swagger::Blocks
@@ -138,16 +130,7 @@ class TheChampion
       key :produces, ['application/json']
       response 200 do
         key :description, 'list of sets in json'
-        schema do
-          key :'$ref', :SetList
-        end
       end
-      response :default do
-        key :description, 'unexpected error'
-        schema do
-          key :'$ref', :ErrorModel
-        end
-
     end
 
     operation :post do
@@ -197,7 +180,6 @@ class TheChampion
       end
     end
   end
-  
 end
 
     # operation :post do
