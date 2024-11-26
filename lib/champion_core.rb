@@ -10,21 +10,18 @@ module Champion
   class Core
     attr_accessor :testhost, :champhost, :reponame, :graphdbhost
 
+    TEST_HOST=ENV.fetch('TEST_HOST','https://tests.ostrails.eu/tests/').gsub(%r{/+$}, '')
+    CHAMP_HOST=ENV.fetch('CHAMP_HOST', "https://tools.ostrails.eu/champion").gsub(%r{/+$}, '')
+    GRAPHDB_USER= ENV.fetch('GRAPHDB_USER', 'champion')
+    GRAPHDB_PASS=ENV.fetch('GRAPHDB_PASS', 'champion')
+    GRAPHDB_HOST=ENV.fetch('GRAPHD_HOST', 'graphdb')  # relative on docker network
+    GRAPHDB_REPONAME=ENV.fetch('GRAPHDB_REPONAME', 'champion')
+    
     def initialize
-      # @testhost = "http://tests:4567/tests/"
-      @testhost = ENV.fetch('TESTHOST','http://fairdata.services:8282/tests/')
-      # @testhost = 'http://fairdata.services:8282/tests/'
-      @champhost = ENV.fetch('CHAMPHOST', nil)
-      @graphdbhost = ENV.fetch('GRAPHDBNAME', 'graphdb')
-      # @champhost = 'http://fairdata.systems:8383'
-      # @champhost = 'http://localhost:4567/'
-      @testhost = @testhost.gsub(%r{/+$}, '')
-      @champhost = @champhost.gsub(%r{/+$}, '')
-      @reponame = ENV.fetch('CHAMPDB', 'champion')
-      #      @sets = get_sets  # TODO  is this still necessary??
+
     end
 
-    # ################################# ASSESSMENTS
+    # ################################# ASSE SSMENTS
     # ########################################################################
 
     # CHECK WHAT IS SENT - IS IT THE FULL URI OF THE SET, OR JUST THE LOCAL IDENTIFIER
@@ -52,7 +49,7 @@ module Champion
         results << run_test(guid: subject, testurl: testdef['api'])
       end
       # warn "RESULTS #{results}"
-      output = Champion::Output.new(setid: "#{champhost}/sets/#{setid}", subject: subject)
+      output = Champion::Output.new(setid: "#{CHAMP_HOST}/sets/#{setid}", subject: subject)
       output.build_output(results: results)
     end
 
@@ -72,7 +69,7 @@ module Champion
 
     def get_sets(setid: "")
       setid = setid.to_sym if setid
-      url = "http://#{graphdbhost}:7200/repositories/#{reponame}"
+      url = "http://#{GRAPHDB_HOST}:7200/repositories/#{GRAPHDB_REPONAME}"
 
       warn "SPARQL endpoint is #{url}"
 
@@ -85,7 +82,7 @@ module Champion
       setgraphquery = if !setid.empty? # we want one graph
                         "select distinct ?g where {
           GRAPH ?g {
-          <#{champhost}/sets/#{setid}> a <https://w3id.org/ftr#TestSetDefinition> .
+          <#{CHAMP_HOST}/sets/#{setid}> a <https://w3id.org/ftr#TestSetDefinition> .
           }
           }"
                       else # we want all graphs
@@ -151,8 +148,8 @@ module Champion
       # contact = y['info']['contact']['email']
       # org = y['info']['contact']['url']
       id = Time.now.nsec
-      uniqueid = "#{champhost}/sets/#{id}"
-      context = "#{champhost}/sets/#{id}/context"
+      uniqueid = "#{CHAMP_HOST}/sets/#{id}"
+      context = "#{CHAMP_HOST}/sets/#{id}/context"
 
       Champion::Output.triplify(uniqueid, RDF.type, ftr.TestSetDefinition, g, context: context)
       Champion::Output.triplify(uniqueid, schema.identifier, uniqueid, g, context: context, datatype: 'xsd:string')
@@ -167,14 +164,10 @@ module Champion
     end
 
     def _write_set_to_graphdb(payload:)
-      user = ENV.fetch('GraphDB_User', 'champion')
-      pass = ENV.fetch('GraphDB_Pass', 'champion')
-      graphdbhostname = ENV.fetch('graphdbnetworkname', 'graphdb')
-      reponame = ENV.fetch('GRAPHDB_REPONAME', 'champion')
-      url = "http://#{graphdbhostname}:7200/repositories/#{reponame}/statements"
+      url = "http://#{GRAPHDB_HOST}:7200/repositories/#{GRAPHDB_REPONAME}/statements"
       headers = { content_type: 'application/n-quads', accept: '*/*' }
 
-      resp =  HTTPUtils.post(url: url, headers: headers, payload: payload, user: user, pass: pass)
+      resp =  HTTPUtils.post(url: url, headers: headers, payload: payload, user: GRAPHDB_USER, pass: GRAPHDB_PASS)
       warn "graphdb response #{resp}"
       resp
     end
@@ -191,18 +184,14 @@ module Champion
       _dc = RDF::Vocab::DC
       ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
 
-      _user = ENV.fetch('GraphDB_User', 'champion')
-      _pass = ENV.fetch('GraphDB_Pass', 'champion')
-      hostname = ENV.fetch('networkname', 'graphdb')
-      reponame = ENV.fetch('GRAPHDB_REPONAME', 'champion')
-      sparqlurl = "http://#{hostname}:7200/repositories/#{reponame}"
+      sparqlurl = "http://#{GRAPHDB_HOST}:7200/repositories/#{GRAPHDB_REPONAME}"
 
       client = SPARQL::Client.new(sparqlurl)
       # every service is a named graph
       sparql = if !testid.empty?
                  "select distinct ?g ?s ?title ?description where {
           GRAPH ?g {
-            VALUES ?s {<#{champhost}/tests/#{testid}>}
+            VALUES ?s {<#{CHAMP_HOST}/tests/#{testid}>}
             ?s a <#{ftr.TestDefinition}> .
             ?s <#{schema.name}> ?title .
             ?s <#{schema.description}> ?description .
@@ -250,7 +239,7 @@ module Champion
       org = yaml['info']['contact']['url']
       testid = Time.now.nsec
 
-      uniqueid = "#{champhost}/tests/#{testid}"
+      uniqueid = "#{CHAMP_HOST}/tests/#{testid}"
       Champion::Output.triplify(uniqueid, RDF.type, ftr.TestDefinition, graph, context: context)
       Champion::Output.triplify(uniqueid, schema.identifier, context, graph, context: context, datatype: 'xsd:string')
       Champion::Output.triplify(uniqueid, schema.name, title, graph, context: context)
@@ -262,14 +251,9 @@ module Champion
     end
 
     def _write_test_to_graphdb(payload:)
-      user = ENV.fetch('GRAPHDB_User', 'champion')
-      pass = ENV.fetch('GRAPHDB_Pass', 'champion')
-      hostname = ENV.fetch('GRAPHDB_HOSTNAME', 'graphdb')
-      reponame = ENV.fetch('GRAPHDB_REPONAME', 'champion')
-      url = "http://#{hostname}:7200/repositories/#{reponame}/statements"
+      url = "http://#{GRAPHDB_HOST}:7200/repositories/#{GRAPHDB_REPONAME}/statements"
       headers = { content_type: 'application/n-quads', accept: '*/*' }
-
-      resp =  HTTPUtils.post(url: url, headers: headers, payload: payload, user: user, pass: pass)
+      resp =  HTTPUtils.post(url: url, headers: headers, payload: payload, user: GRAPHDB_USER, pass: GRAPHDB_PASS)
       warn "graphdb response #{resp}"
       resp
     end
