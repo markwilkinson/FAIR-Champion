@@ -60,7 +60,7 @@ class Swag < Sinatra::Application
   end
 
   # A list of all classes that have swagger_* declarations.
-  SWAGGERED_CLASSES = [ErrorModel, NewSet, TheChampion, self].freeze
+  SWAGGERED_CLASSES = [ErrorModel, NewSetInput, TheChampion, self].freeze
 
   set_routes(classes: SWAGGERED_CLASSES)
 

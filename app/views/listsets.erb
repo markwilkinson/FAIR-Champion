@@ -2,6 +2,8 @@
 <!-- <%= @sets.inspect %> -->
 
 <% @sets.each_key do |setid| %>
+  <% found=true %>
+
   <% set = @sets[setid] %>
 
   <h1><%= set[:identifier] %></h1>
@@ -15,5 +17,8 @@
     - <%= test %><br/>
   <% end %>
   <br/><br/><br/>
+  <% unless found %>
+    <b>NO SETS REGISTERED</b>
+  <% end %>
 <% end %>
 

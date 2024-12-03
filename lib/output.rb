@@ -90,6 +90,7 @@ module Champion
       s = s.strip if s.instance_of?(String)
       p = p.strip if p.instance_of?(String)
       o = o.strip if o.instance_of?(String)
+      return false if (s.to_s.empty? || p.to_s.empty? || o.to_s.empty? || repo.to_s.empty?)
 
       unless s.respond_to?('uri')
 
