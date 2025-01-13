@@ -28,32 +28,31 @@ module Champion
     def build_output(results:)
       g = RDF::Graph.new
       schema = RDF::Vocab::SCHEMA
+      dcat = RDF::Vocab::DCAT
       dc = RDF::Vocab::DC
-      ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
+      ftr = RDF::Vocabulary.new('https://www.w3id.org/ftr#')
 
       triplify(uniqueid, RDF.type, ftr.TestResultSet, g)
       triplify(uniqueid, RDF.type, RDF::Vocab::PROV.Collection, g)
-      triplify(uniqueid, RDF.type, RDF::Vocab::PROV.Entity, g)
-      triplify(uniqueid, schema.identifier, uniqueid, g)
-      triplify(uniqueid, schema.name, title, g)
-      triplify(uniqueid, schema.description, description, g)
-      triplify(uniqueid, schema.license, license, g)
+      triplify(uniqueid, dc.identifier, uniqueid, g)
+      triplify(uniqueid, dc.title, title, g)
+      triplify(uniqueid, dc.description, description, g)
+      triplify(uniqueid, dc.license, license, g)
 
-      authorid = 'urn:fairchampionauthor:' + SecureRandom.uuid
-      triplify(uniqueid, RDF::Vocab::PROV.wasAttributedTo, authorid, g)
-      triplify(uniqueid, schema.author, authorid, g)
-      triplify(authorid, RDF.type, RDF::Vocab::PROV.Agent, g)
-      contactid = 'urn:fairchampioncontact:' + SecureRandom.uuid
-      triplify(authorid, schema.contactPoint, contactid, g)
-      triplify(contactid, schema.url, 'https://wilkinsonlab.info', g)
-      triplify(contactid, RDF.type, schema.ContactPoint, g)
+      # authorid = 'urn:fairchampionauthor:' + SecureRandom.uuid
+      # triplify(uniqueid, RDF::Vocab::PROV.wasAttributedTo, authorid, g)
+      # triplify(uniqueid, schema.author, authorid, g)
+      # triplify(authorid, RDF.type, RDF::Vocab::PROV.Agent, g)
+      # contactid = 'urn:fairchampioncontact:' + SecureRandom.uuid
+      # triplify(authorid, schema.contactPoint, contactid, g)
+      # triplify(contactid, schema.url, 'https://wilkinsonlab.info', g)
+      # triplify(contactid, RDF.type, schema.ContactPoint, g)
 
-      softwareid = 'urn:fairchampionsoftware:' + SecureRandom.uuid
-      triplify(uniqueid, RDF::Vocab::PROV.wasAttributedTo, softwareid, g)
-      triplify(softwareid, RDF.type, RDF::Vocab::PROV.SoftwareAgent, g)
-      triplify(softwareid, RDF.type, schema.SoftwareApplication, g)
-      triplify(softwareid, schema.softwareVersion, version, g)
-      triplify(softwareid, schema.url, 'https://github.com/markwilkinson/FAIR-Champion', g)
+      championexecution = 'urn:fairchampionexecution:' + SecureRandom.uuid
+      triplify(uniqueid, RDF::Vocab::PROV.wasGeneratedBy, championexecution, g)
+      triplify(championexecution, RDF.type, ftr.TestExecutionActivity, g)
+      # triplify(championexecution, schema.softwareVersion, version, g)
+      # triplify(championexecution, schema.url, 'https://github.com/markwilkinson/FAIR-Champion', g)
 
       add_members(uniqueid: uniqueid, testoutputs: results, graph: g)
 
@@ -78,7 +77,7 @@ module Champion
             graph << statement  # this is the entire output graph
           end
         end
-        q = SPARQL.parse('select distinct ?s where {?s a <https://w3id.org/ftr#TestResult>}')
+        q = SPARQL.parse('select distinct ?s where {?s a <https://www.w3id.org/ftr#TestResult>}')
         res = q.execute(g)
         testid = res.first[:s].to_s
         triplify(uniqueid, RDF::Vocab::PROV.hadMember, testid, graph)
