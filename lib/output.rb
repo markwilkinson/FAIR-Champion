@@ -63,7 +63,18 @@ module Champion
       triplify(tid, schema.url, subject, g) if subject =~ /^https?\:\/\//
 
 
-      g.dump(:jsonld)
+      # g.dump(:jsonld)
+      w = RDF::Writer.for(:jsonld)
+      w.dump(g, nil, prefixes: {
+        xsd: RDF::Vocab::XSD, 
+        prov: RDF::Vocab::PROV,
+        dct: RDF::Vocab::DC,
+        dcat: RDF::Vocab::DCAT,
+        ftr: ftr,
+        sio: sio,
+        schema: schema
+      })
+
     end
 
     def add_members(uniqueid:, testoutputs:, graph:)
