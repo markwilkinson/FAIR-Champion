@@ -28,16 +28,21 @@ module Champion
     def build_output(results:)
       g = RDF::Graph.new
       schema = RDF::Vocab::SCHEMA
+      xsd = RDF::Vocab::XSD
+      dct = RDF::Vocab::DC 
+      prov = RDF::Vocab::PROV
       dcat = RDF::Vocab::DCAT
-      dc = RDF::Vocab::DC
+      dqv = RDF::Vocabulary.new('https://www.w3.org/TR/vocab-dqv/')
       ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
+      sio = RDF::Vocabulary.new('http://semanticscience.org/resource/')
+
 
       triplify(uniqueid, RDF.type, ftr.TestResultSet, g)
       triplify(uniqueid, RDF.type, RDF::Vocab::PROV.Collection, g)
-      triplify(uniqueid, dc.identifier, uniqueid, g)
-      triplify(uniqueid, dc.title, title, g)
-      triplify(uniqueid, dc.description, description, g)
-      triplify(uniqueid, dc.license, license, g)
+      triplify(uniqueid, dct.identifier, uniqueid, g)
+      triplify(uniqueid, dct.title, title, g)
+      triplify(uniqueid, dct.description, description, g)
+      triplify(uniqueid, dct.license, license, g)
 
       # authorid = 'urn:fairchampionauthor:' + SecureRandom.uuid
       # triplify(uniqueid, RDF::Vocab::PROV.wasAttributedTo, authorid, g)
@@ -121,7 +126,7 @@ module Champion
         end
       end
 
-      unless o.respond_to?('uri')
+      unless o.respond_to?('uri?')
         o = if datatype
               RDF::Literal.new(o.to_s, datatype: datatype)
             elsif o.to_s =~ %r{\A\w+:/?/?\w[^\s]+}
