@@ -88,8 +88,9 @@ module Champion
             graph << statement  # this is the entire output graph
           end
         end
-        q = SPARQL.parse('select distinct ?s where {?s a <https://www.w3id.org/ftr#TestResult>}')
+        q = SPARQL.parse('select distinct ?s where {?s a <https://w3id.org/ftr#TestResult>}')
         res = q.execute(g)
+        return unless res && res.first
         testid = res.first[:s].to_s
         triplify(uniqueid, RDF::Vocab::PROV.hadMember, testid, graph)
       end
