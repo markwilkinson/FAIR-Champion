@@ -30,7 +30,7 @@ module Champion
       schema = RDF::Vocab::SCHEMA
       dcat = RDF::Vocab::DCAT
       dc = RDF::Vocab::DC
-      ftr = RDF::Vocabulary.new('https://www.w3id.org/ftr#')
+      ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
 
       triplify(uniqueid, RDF.type, ftr.TestResultSet, g)
       triplify(uniqueid, RDF.type, RDF::Vocab::PROV.Collection, g)
