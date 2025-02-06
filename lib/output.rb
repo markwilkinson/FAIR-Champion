@@ -8,6 +8,7 @@ module Champion
     extend Forwardable
     
     def_delegators Champion::Output, :triplify
+    OUTPUT_VERSION="1.1.0"
 
     attr_accessor :subject, :setid, :description, :version, :license, :score, :title, :uniqueid
 
@@ -56,16 +57,21 @@ module Champion
       championexecution = 'urn:fairchampionexecution:' + SecureRandom.uuid
       triplify(uniqueid, RDF::Vocab::PROV.wasGeneratedBy, championexecution, g)
       triplify(championexecution, RDF.type, ftr.TestExecutionActivity, g)
-      # triplify(championexecution, schema.softwareVersion, version, g)
+      triplify(championexecution, prov.used, subject, g)
+      triplify(subject, RDF.type, prov.Entity, g)
+      triplify(championexecution, schema.softwareVersion, OUTPUT_VERSION, g)
       # triplify(championexecution, schema.url, 'https://github.com/markwilkinson/FAIR-Champion', g)
 
       add_members(uniqueid: uniqueid, testoutputs: results, graph: g)
 
-      tid = "urn:fairtestsetsubject:" + SecureRandom.uuid
-      triplify(uniqueid, RDF::Vocab::PROV.wasDerivedFrom, tid, g)
-      triplify(tid, RDF.type, RDF::Vocab::PROV.Entity, g)
-      triplify(tid, schema.identifier, subject, g)
-      triplify(tid, schema.url, subject, g) if subject =~ /^https?\:\/\//
+
+      # deprecated after release 1.0.0
+      # tid = "urn:fairtestsetsubject:" + SecureRandom.uuid
+      # triplify(uniqueid, RDF::Vocab::PROV.wasDerivedFrom, tid, g)
+      # triplify(tid, RDF.type, RDF::Vocab::PROV.Entity, g)
+      # triplify(tid, schema.identifier, subject, g)
+      # triplify(tid, schema.url, subject, g) if subject =~ /^https?\:\/\//
+      triplify(uniqueid, RDF::Vocab::PROV.wasDerivedFrom, subject, g)
 
 
       # g.dump(:jsonld)
@@ -95,7 +101,8 @@ module Champion
         end
         q = SPARQL.parse('select distinct ?s where {?s a <https://w3id.org/ftr#TestResult>}')
         res = q.execute(g)
-        return unless res && res.first
+        return nil unless res&.first
+
         testid = res.first[:s].to_s
         triplify(uniqueid, RDF::Vocab::PROV.hadMember, testid, graph)
       end
