@@ -10,40 +10,33 @@ module Champion
   class Core
     attr_accessor :testhost, :champhost, :reponame, :graphdbhost
 
-    TEST_HOST=ENV.fetch('TEST_HOST','https://tests.ostrails.eu/tests/').gsub(%r{/+$}, '')
-    CHAMP_HOST=ENV.fetch('CHAMP_HOST', "https://tools.ostrails.eu/champion").gsub(%r{/+$}, '')
-    GRAPHDB_USER= ENV.fetch('GRAPHDB_USER', 'champion')
-    GRAPHDB_PASS=ENV.fetch('GRAPHDB_PASS', 'champion')
-    GRAPHDB_HOST=ENV.fetch('GRAPHD_HOST', 'graphdb')  # relative on docker network
-    GRAPHDB_REPONAME=ENV.fetch('GRAPHDB_REPONAME', 'champion')
-    
-    def initialize
+    TEST_HOST = ENV.fetch('TEST_HOST', 'https://tests.ostrails.eu/tests/').gsub(%r{/+$}, '')
+    CHAMP_HOST = ENV.fetch('CHAMP_HOST', 'https://tools.ostrails.eu/champion').gsub(%r{/+$}, '')
+    GRAPHDB_USER = ENV.fetch('GRAPHDB_USER', 'champion')
+    GRAPHDB_PASS = ENV.fetch('GRAPHDB_PASS', 'champion')
+    GRAPHDB_HOST = ENV.fetch('GRAPHD_HOST', 'graphdb') # relative on docker network
+    GRAPHDB_REPONAME = ENV.fetch('GRAPHDB_REPONAME', 'champion')
 
-    end
+    def initialize; end
 
-    # ################################# ASSE SSMENTS
+    # ################################# ASSESSMENTS
     # ########################################################################
 
     # CHECK WHAT IS SENT - IS IT THE FULL URI OF THE SET, OR JUST THE LOCAL IDENTIFIER
     # THEN RUN THE TEST.... Double check the API call in Routes!!!
     #  TODO TODO
     def run_assessment(subject:, setid:)
+      results = []
       warn "evaluating #{subject} on #{setid}"
       set = get_sets(setid: setid)
-      # results[graph.to_s] = {
-      #   identifier: identifier.to_s,
-      #   title: title.to_s,
-      #   description: description.to_s,
-      #   creator: creator.to_s,
-      #   tests: individualtests}
-      results = []
       warn 'point 1', set.inspect
+      return results if set.empty?
 
       _graphid, setdef = set.first
       setdef[:tests].each do |testid|
-        test, *_nada = get_tests(testid: testid)   # returns an array of 1 element, so just get that into test
+        test, *_nada = get_tests(testid: testid) # returns an array of 1 element, so just get that into test
         warn 'point 2', test.inspect
-        _id, testdef = test.first  # there is only one, and it is guid => {features...}
+        _id, testdef = test.first # there is only one, and it is guid => {features...}
         warn 'point 3', testdef.inspect
 
         results << run_test(guid: subject, testurl: testdef['api'])
@@ -67,7 +60,7 @@ module Champion
     # ################################# SETS
     # ########################################################################
 
-    def get_sets(setid: "")
+    def get_sets(setid: '')
       setid = setid.to_sym if setid
       url = "http://#{GRAPHDB_HOST}:7200/repositories/#{GRAPHDB_REPONAME}"
 
@@ -79,16 +72,16 @@ module Champion
       dc = RDF::Vocab::DC
       _ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
 
-      setgraphquery = if !setid.empty? # we want one graph
-                        "select distinct ?g where {
-          GRAPH ?g {
-          <#{CHAMP_HOST}/sets/#{setid}> a <https://w3id.org/ftr#TestSetDefinition> .
-          }
-          }"
-                      else # we want all graphs
+      setgraphquery = if setid.empty? # we want all graphs
                         "select distinct ?g where {
           GRAPH ?g {
           ?s a <https://w3id.org/ftr#TestSetDefinition> .
+          }
+          }"
+                      else # we want one graph
+                        "select distinct ?g where {
+          GRAPH ?g {
+          <#{CHAMP_HOST}/sets/#{setid}> a <https://w3id.org/ftr#TestSetDefinition> .
           }
           }"
                       end
@@ -126,7 +119,7 @@ module Champion
           title: title.to_s,
           description: description.to_s,
           creator: creator.to_s,
-          tests: individualtests  # individualtests is the LOCAL identifier, not the test API!
+          tests: individualtests # individualtests is the LOCAL identifier, not the test API!
         }
       end
       results
@@ -176,9 +169,9 @@ module Champion
     #     TESTS
     # ##############################################################
 
-    def get_tests(testid: "")
+    def get_tests(testid: '')
       warn 'IN GET TESTS'
-      testid = testid.to_s.gsub(/.*\//, "")  # if we are sent the entire URI, then just take the identifier part at the end
+      testid = testid.to_s.gsub(%r{.*/}, '') # if we are sent the entire URI, then just take the identifier part at the end
 
       schema = RDF::Vocab::SCHEMA
       _dc = RDF::Vocab::DC
@@ -188,7 +181,15 @@ module Champion
 
       client = SPARQL::Client.new(sparqlurl)
       # every service is a named graph
-      sparql = if !testid.empty?
+      sparql = if testid.empty?
+                 "select distinct ?g ?s ?title ?description where {
+          GRAPH ?g {
+            ?s a <#{ftr.TestDefinition}> .
+            ?s <#{schema.name}> ?title .
+            ?s <#{schema.description}> ?description .
+        }
+        }"
+               else
                  "select distinct ?g ?s ?title ?description where {
           GRAPH ?g {
             VALUES ?s {<#{CHAMP_HOST}/tests/#{testid}>}
@@ -197,18 +198,10 @@ module Champion
             ?s <#{schema.description}> ?description .
           }
           }"
-               else
-                 "select distinct ?g ?s ?title ?description where {
-          GRAPH ?g {
-            ?s a <#{ftr.TestDefinition}> .
-            ?s <#{schema.name}> ?title .
-            ?s <#{schema.description}> ?description .
-        }
-        }"
                end
       warn 'SPARQL', sparql, "\n"
       result = client.query(sparql)
-      warn "RESULT", result.inspect
+      warn 'RESULT', result.inspect
       result.map do |r|
         { r[:s].to_s => { 'api' => r[:g].to_s, 'title' => r[:title].to_s, 'description' => r[:description].to_s } }
       end
@@ -258,5 +251,16 @@ module Champion
       warn "graphdb response #{resp}"
       resp
     end
+
+
+    # ##############################################################
+    #     BENCHMARK
+    # ##############################################################
+
+    def get_benchmark(bmid: '')
+      warn 'IN GET BENCHMARKS'
+      
+    end
+
   end
 end

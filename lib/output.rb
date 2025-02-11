@@ -6,9 +6,9 @@ module Champion
 
     include RDF
     extend Forwardable
-    
+
     def_delegators Champion::Output, :triplify
-    OUTPUT_VERSION="1.1.0"
+    OUTPUT_VERSION = '1.1.0'.freeze
 
     attr_accessor :subject, :setid, :description, :version, :license, :score, :title, :uniqueid
 
@@ -17,7 +17,7 @@ module Champion
       @score = score
       @subject = subject
       @setid = setid
-      @uniqueid = 'urn:fairchampionoutput:' + SecureRandom.uuid
+      @uniqueid = "urn:fairchampionoutput:#{SecureRandom.uuid}"
       @title = title
       @description = description
       @license = license
@@ -30,13 +30,12 @@ module Champion
       g = RDF::Graph.new
       schema = RDF::Vocab::SCHEMA
       xsd = RDF::Vocab::XSD
-      dct = RDF::Vocab::DC 
+      dct = RDF::Vocab::DC
       prov = RDF::Vocab::PROV
       dcat = RDF::Vocab::DCAT
       dqv = RDF::Vocabulary.new('https://www.w3.org/TR/vocab-dqv/')
       ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
       sio = RDF::Vocabulary.new('http://semanticscience.org/resource/')
-
 
       triplify(uniqueid, RDF.type, ftr.TestResultSet, g)
       triplify(uniqueid, RDF.type, RDF::Vocab::PROV.Collection, g)
@@ -54,7 +53,7 @@ module Champion
       # triplify(contactid, schema.url, 'https://wilkinsonlab.info', g)
       # triplify(contactid, RDF.type, schema.ContactPoint, g)
 
-      championexecution = 'urn:fairchampionexecution:' + SecureRandom.uuid
+      championexecution = "urn:fairchampionexecution:#{SecureRandom.uuid}"
       triplify(uniqueid, RDF::Vocab::PROV.wasGeneratedBy, championexecution, g)
       triplify(championexecution, RDF.type, ftr.TestExecutionActivity, g)
       triplify(championexecution, prov.used, subject, g)
@@ -64,7 +63,6 @@ module Champion
 
       add_members(uniqueid: uniqueid, testoutputs: results, graph: g)
 
-
       # deprecated after release 1.0.0
       # tid = "urn:fairtestsetsubject:" + SecureRandom.uuid
       # triplify(uniqueid, RDF::Vocab::PROV.wasDerivedFrom, tid, g)
@@ -73,19 +71,17 @@ module Champion
       # triplify(tid, schema.url, subject, g) if subject =~ /^https?\:\/\//
       triplify(uniqueid, RDF::Vocab::PROV.wasDerivedFrom, subject, g)
 
-
       # g.dump(:jsonld)
       w = RDF::Writer.for(:jsonld)
       w.dump(g, nil, prefixes: {
-        xsd: RDF::Vocab::XSD, 
-        prov: RDF::Vocab::PROV,
-        dct: RDF::Vocab::DC,
-        dcat: RDF::Vocab::DCAT,
-        ftr: ftr,
-        sio: sio,
-        schema: schema
-      })
-
+               xsd: RDF::Vocab::XSD,
+               prov: RDF::Vocab::PROV,
+               dct: RDF::Vocab::DC,
+               dcat: RDF::Vocab::DCAT,
+               ftr: ftr,
+               sio: sio,
+               schema: schema
+             })
     end
 
     def add_members(uniqueid:, testoutputs:, graph:)
@@ -95,8 +91,8 @@ module Champion
         RDF::Reader.for(:jsonld).new(data) do |reader|
           reader.each_statement do |statement|
             # warn statement.inspect
-            g << statement  # this is only to query for the root id
-            graph << statement  # this is the entire output graph
+            g << statement # this is only to query for the root id
+            graph << statement # this is the entire output graph
           end
         end
         q = SPARQL.parse('select distinct ?s where {?s a <https://w3id.org/ftr#TestResult>}')
@@ -113,7 +109,7 @@ module Champion
       s = s.strip if s.instance_of?(String)
       p = p.strip if p.instance_of?(String)
       o = o.strip if o.instance_of?(String)
-      return false if (s.to_s.empty? || p.to_s.empty? || o.to_s.empty? || repo.to_s.empty?)
+      return false if s.to_s.empty? || p.to_s.empty? || o.to_s.empty? || repo.to_s.empty?
 
       unless s.respond_to?('uri')
 
@@ -140,9 +136,9 @@ module Champion
               RDF::URI.new(o.to_s)
             elsif o.to_s =~ /^\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d/
               RDF::Literal.new(o.to_s, datatype: RDF::XSD.date)
-            elsif o.to_s =~ /^[+-]?\d+\.\d+/ && o.to_s !~ /[^\+\-\d\.]/  # has to only be digits
+            elsif o.to_s =~ /^[+-]?\d+\.\d+/ && o.to_s !~ /[^\+\-\d\.]/ # has to only be digits
               RDF::Literal.new(o.to_s, datatype: RDF::XSD.float)
-            elsif o.to_s =~ /^[+-]?[0-9]+$/ && o.to_s !~ /[^\+\-\d\.]/  # has to only be digits
+            elsif o.to_s =~ /^[+-]?[0-9]+$/ && o.to_s !~ /[^\+\-\d\.]/ # has to only be digits
               RDF::Literal.new(o.to_s, datatype: RDF::XSD.int)
             else
               RDF::Literal.new(o.to_s, language: :en)
@@ -155,13 +151,13 @@ module Champion
           else
             abort "Context #{context} must be a URI-compatible thingy"
           end
-        end  
+        end
         # warn "adding quad with context #{context}"
         triple = RDF::Statement(s, p, o, graph_name: context)
         # warn triple.to_quad, "\n"
-      else        
+      else
         # warn "adding TRIPLE"
-        triple = RDF::Statement(s, p, o)  
+        triple = RDF::Statement(s, p, o)
       end
       repo.insert(triple)
       true
