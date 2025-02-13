@@ -33,7 +33,8 @@ module Champion
       dct = RDF::Vocab::DC
       prov = RDF::Vocab::PROV
       dcat = RDF::Vocab::DCAT
-      dqv = RDF::Vocabulary.new('https://www.w3.org/TR/vocab-dqv/')
+      dqv = RDF::Vocabulary.new('http://www.w3.org/ns/dqv#')
+
       ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
       sio = RDF::Vocabulary.new('http://semanticscience.org/resource/')
 
