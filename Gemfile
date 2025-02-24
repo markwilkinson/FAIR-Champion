@@ -33,10 +33,11 @@ gem 'thin'
 gem 'tux'
 gem 'uri', '~>0.12.2'
 gem 'xml-simple', '~>1.1.8'
+gem "openapi_parser", "~> 2.1"
+
 
 group :development, :test do
 
-  gem "openapi_parser", "~> 2.1"
 
   gem "safe_yaml", "~> 1.0"
 

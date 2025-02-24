@@ -9,6 +9,8 @@ require_relative '../app/controllers/application_controller' # Adjust the path t
 
 OPENAPI = 1
 RSpec::OpenAPI.path = 'doc/schema.yaml'
+RSpec::OpenAPI.servers = [{ url: 'https://tools.ostails.eu' }]
+
 
 RSpec.describe ChampionApp, type: :request do
   include Rack::Test::Methods
