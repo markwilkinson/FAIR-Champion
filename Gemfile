@@ -48,4 +48,3 @@ group :development, :test do
 
 end
 
-gem 'rspec-openapi', group: :test

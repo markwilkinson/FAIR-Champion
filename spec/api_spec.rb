@@ -7,13 +7,11 @@ require 'rspec/openapi'
 require 'pry'
 require_relative '../app/controllers/application_controller' # Adjust the path to your Sinatra app file
 
-OPENAPI=1 
-RSpec::OpenAPI.path = '/tmp/schema.yaml'
+OPENAPI = 1
+RSpec::OpenAPI.path = 'doc/schema.yaml'
 
-RSpec.describe ChampionApp, type: :request do 
+RSpec.describe ChampionApp, type: :request do
   include Rack::Test::Methods
-
-  RSpec::OpenAPI.path = '/docs/schema.yaml'
 
   # This tells Rack::Test which app to test
   def app
@@ -22,7 +20,6 @@ RSpec.describe ChampionApp, type: :request do
 
   describe 'GET /champion/sets/' do
     it 'returns a list of known sets' do
-
       header 'accept', 'application/json'
       get '/champion/sets/'
 
