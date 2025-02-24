@@ -1,7 +1,8 @@
 require 'erb'
 
-def set_routes(classes: allclasses)
-  set :server_settings, timeout: 180
+# def set_routes(classes: allclasses)
+def set_routes()
+    set :server_settings, timeout: 180
   set :public_folder, 'public'
 
   set :template_engines, {
@@ -13,10 +14,10 @@ def set_routes(classes: allclasses)
     json: []
   }
 
-  get '/champion' do
-    content_type :json
-    Swagger::Blocks.build_root_json(classes).to_json
-  end
+  # get '/champion' do
+  #   content_type :json
+  #   Swagger::Blocks.build_root_json(classes).to_json
+  # end
 
 
   # ###########################################  SETS
@@ -79,6 +80,7 @@ def set_routes(classes: allclasses)
     result = champ.add_set(title: title, desc: desc, email: email, tests: tests)
     _status, _headers, body = call env.merge("PATH_INFO" => "/champion/sets/#{result}", 'REQUEST_METHOD' => "GET", 'HTTP_ACCEPT' => request.accept.first.to_s)
     request.accept.each do |type|
+      warn "ACCEPT REQ #{type}"
       case type.to_s
       when 'text/html'
         content_type :html
@@ -225,6 +227,6 @@ def set_routes(classes: allclasses)
   # ####################################################################################
 
   before do
-    warn 'woohoo'
+    # warn 'woohoo'
   end
 end

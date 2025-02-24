@@ -10,12 +10,6 @@ module Champion
   class Core
     attr_accessor :testhost, :champhost, :reponame, :graphdbhost
 
-    TEST_HOST = ENV.fetch('TEST_HOST', 'https://tests.ostrails.eu/tests/').gsub(%r{/+$}, '')
-    CHAMP_HOST = ENV.fetch('CHAMP_HOST', 'https://tools.ostrails.eu/champion').gsub(%r{/+$}, '')
-    GRAPHDB_USER = ENV.fetch('GRAPHDB_USER', 'champion')
-    GRAPHDB_PASS = ENV.fetch('GRAPHDB_PASS', 'champion')
-    GRAPHDB_HOST = ENV.fetch('GRAPHD_HOST', 'graphdb') # relative on docker network
-    GRAPHDB_REPONAME = ENV.fetch('GRAPHDB_REPONAME', 'champion')
 
     def initialize; end
 
@@ -62,7 +56,7 @@ module Champion
 
     def get_sets(setid: '')
       setid = setid.to_sym if setid
-      url = "http://#{GRAPHDB_HOST}:7200/repositories/#{GRAPHDB_REPONAME}"
+      url = CHAMPION_REPO
 
       warn "SPARQL endpoint is #{url}"
 
@@ -102,7 +96,7 @@ module Champion
             ?s <#{schema.hasPart}> ?part .
             }
           }"
-        warn 'set query', individualsetquery
+        # warn 'set query', individualsetquery
         r = client.query(individualsetquery)
         # r contains duplicates of name desc creator, but multiple parts... get each part as a list
         individualtests = []
@@ -157,7 +151,7 @@ module Champion
     end
 
     def _write_set_to_graphdb(payload:)
-      url = "http://#{GRAPHDB_HOST}:7200/repositories/#{GRAPHDB_REPONAME}/statements"
+      url = "#{CHAMPION_REPO}/statements"
       headers = { content_type: 'application/n-quads', accept: '*/*' }
 
       resp =  HTTPUtils.post(url: url, headers: headers, payload: payload, user: GRAPHDB_USER, pass: GRAPHDB_PASS)
@@ -177,7 +171,7 @@ module Champion
       _dc = RDF::Vocab::DC
       ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
 
-      sparqlurl = "http://#{GRAPHDB_HOST}:7200/repositories/#{GRAPHDB_REPONAME}"
+      sparqlurl = CHAMPION_REPO
 
       client = SPARQL::Client.new(sparqlurl)
       # every service is a named graph
@@ -199,9 +193,9 @@ module Champion
           }
           }"
                end
-      warn 'SPARQL', sparql, "\n"
+      # warn 'SPARQL', sparql, "\n"
       result = client.query(sparql)
-      warn 'RESULT', result.inspect
+      # warn 'RESULT', result.inspect
       result.map do |r|
         { r[:s].to_s => { 'api' => r[:g].to_s, 'title' => r[:title].to_s, 'description' => r[:description].to_s } }
       end
@@ -245,7 +239,7 @@ module Champion
     end
 
     def _write_test_to_graphdb(payload:)
-      url = "http://#{GRAPHDB_HOST}:7200/repositories/#{GRAPHDB_REPONAME}/statements"
+      url = "#{CHAMPION_REPO}/statements"
       headers = { content_type: 'application/n-quads', accept: '*/*' }
       resp =  HTTPUtils.post(url: url, headers: headers, payload: payload, user: GRAPHDB_USER, pass: GRAPHDB_PASS)
       warn "graphdb response #{resp}"

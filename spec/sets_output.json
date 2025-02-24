@@ -1,0 +1,42 @@
+{
+  "https://tools.ostrails.eu/champion/sets/298571696/context": {
+    "identifier": "https://tools.ostrails.eu/champion/sets/298571696",
+    "title": "All core Champion Tests",
+    "description": "Tests covering all Principles, mirroring the tests that were available from the FAIR Evaluator",
+    "creator": "mark.wilkinson@upm.es",
+    "tests": [
+      "https://tools.ostrails.eu/champion/tests/739628614",
+      "https://tools.ostrails.eu/champion/tests/971576319",
+      "https://tools.ostrails.eu/champion/tests/341572916",
+      "https://tools.ostrails.eu/champion/tests/598851493",
+      "https://tools.ostrails.eu/champion/tests/380931621",
+      "https://tools.ostrails.eu/champion/tests/217918942",
+      "https://tools.ostrails.eu/champion/tests/959372471",
+      "https://tools.ostrails.eu/champion/tests/204330708",
+      "https://tools.ostrails.eu/champion/tests/895447080",
+      "https://tools.ostrails.eu/champion/tests/952705020",
+      "https://tools.ostrails.eu/champion/tests/28867743",
+      "https://tools.ostrails.eu/champion/tests/156577301",
+      "https://tools.ostrails.eu/champion/tests/396338755",
+      "https://tools.ostrails.eu/champion/tests/981900614",
+      "https://tools.ostrails.eu/champion/tests/120972262",
+      "https://tools.ostrails.eu/champion/tests/422512334",
+      "https://tools.ostrails.eu/champion/tests/700239598",
+      "https://tools.ostrails.eu/champion/tests/159548241",
+      "https://tools.ostrails.eu/champion/tests/333054139",
+      "https://tools.ostrails.eu/champion/tests/759169499"
+    ]
+  },
+  "https://tools.ostrails.eu/champion/sets/496390323/context": {
+    "identifier": "https://tools.ostrails.eu/champion/sets/496390323",
+    "title": "Use of KR language",
+    "description": "Tests if the data and metadata use a knowledge representation language.  There are two tests - one tests for \"vanilla\" structured data, the other tests for linked data",
+    "creator": "mark.wilkinson@upm.es",
+    "tests": [
+      "https://tools.ostrails.eu/champion/tests/341572916",
+      "https://tools.ostrails.eu/champion/tests/598851493",
+      "https://tools.ostrails.eu/champion/tests/28867743",
+      "https://tools.ostrails.eu/champion/tests/156577301"
+    ]
+  }
+}

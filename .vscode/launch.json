@@ -6,17 +6,17 @@
   "configurations": [
     
     {
+      "name": "RSpec - all",
       "type": "rdbg",
-      "name": "Debug current file with rdbg",
       "request": "launch",
+      "cwd": "${workspaceRoot}",
       "script": "${file}",
-      "args": [],
-      "askParameters": true
-    },
-    {
-      "type": "rdbg",
-      "name": "Attach with rdbg",
-      "request": "attach"
+      // "program": "/home/osboxes/.rvm/gems/ruby-3.0.0/bin/rspec",
+      "args": [
+        "-I",
+        "${workspaceRoot}"
+      ],
+      // "askParameters": true
     }
   ]
 }

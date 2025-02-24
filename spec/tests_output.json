@@ -1,0 +1,142 @@
+[
+  {
+    "https://tools.ostrails.eu/champion/tests/739628614": {
+      "api": "https://tests.ostrails.eu/tests/fc_data_authorization",
+      "title": "FAIR Champion: Data Authorization",
+      "description": "\"Test a discovered data GUID for the ability to implement authentication and authorization in its resolution protocol.  Currently passes InChI Keys, DOIs, Handles, and URLs.  It also searches the metadata for the Dublin Core 'accessRights' property, which may point to a document describing the data access process. Recognition of other identifiers will be added upon request by the community.\""
+    }
+  },
+  {
+    "https://tools.ostrails.eu/champion/tests/971576319": {
+      "api": "https://tests.ostrails.eu/tests/fc_data_identifier_in_metadata",
+      "title": "FAIR Champion: Data Identifier in Metadata",
+      "description": "\"Test a discovered data GUID for the ability to implement authentication and authorization in its resolution protocol.  Currently passes InChI Keys, DOIs, Handles, and URLs.  It also searches the metadata for the Dublin Core 'accessRights' property, which may point to a document describing the data access process. Recognition of other identifiers will be added upon request by the community.\""
+    }
+  },
+  {
+    "https://tools.ostrails.eu/champion/tests/341572916": {
+      "api": "https://tests.ostrails.eu/tests/fc_data_kr_language_strong",
+      "title": "FAIR Champion: Data Knowlege Representation Language (Strict Test)",
+      "description": "\"Test if the data uses a formal language broadly applicable for knowledge representation.  This particular test takes a broad view of what defines a 'knowledge representation language'; in this evaluation, a knowledge representation language is interpreted as one in which terms are semantically-grounded in ontologies.  Any form of ontologically-grounded linked data will pass this test. \""
+    }
+  },
+  {
+    "https://tools.ostrails.eu/champion/tests/598851493": {
+      "api": "https://tests.ostrails.eu/tests/fc_data_kr_language_weak",
+      "title": "FAIR Champion: Data Knowlege Representation Language (Weak Test)",
+      "description": "\"Test if the data uses a formal language broadly applicable for knowledge representation.  This particular test takes a broad view of what defines a 'knowledge representation language'; in this evaluation, a knowledge representation language is interpreted as one in which terms are semantically-grounded in ontologies.  Any form of structured data will pass this test\""
+    }
+  },
+  {
+    "https://tools.ostrails.eu/champion/tests/380931621": {
+      "api": "https://tests.ostrails.eu/tests/fc_data_protocol",
+      "title": "FAIR Champion: Data Protocol",
+      "description": "\"Data may be retrieved by an open and free protocol.  Tests data GUID for its resolution protocol.  Currently passes InChI Keys, DOIs, Handles, and URLs.  Recognition of other identifiers will be added upon request by the community.\""
+    }
+  },
+  {
+    "https://tools.ostrails.eu/champion/tests/217918942": {
+      "api": "https://tests.ostrails.eu/tests/fc_grounded_metadata",
+      "title": "FAIR Champion: Grounded Metadata",
+      "description": "\"Tests whether a machine is able to find 'grounded' metadata.  i.e. metadata terms that are in a resolvable namespace, where resolution leads to a definition of the meaning of the term. Examples include JSON-LD, embedded schema, or any form of RDF. This test currently excludes XML, even when terms are namespaced.  Future versions of this test may be more flexible.\""
+    }
+  },
+  {
+    "https://tools.ostrails.eu/champion/tests/959372471": {
+      "api": "https://tests.ostrails.eu/tests/fc_metadata_identifier_in_metadata",
+      "title": "FAIR Champion: Metadata Identifier Explicitly In Metadata",
+      "description": "\"Metric to test if the metadata contains the unique identifier to the metadata itself.  This is done using a variety of 'scraping' tools, including DOI metadata resolution, the use of the 'extruct' Python tool, and others.  The test is executed by searching for the predicates 'http[s]://purl.org/dc/terms/identifier','http[s]://schema.org/identifier.\""
+    }
+  },
+  {
+    "https://tools.ostrails.eu/champion/tests/204330708": {
+      "api": "https://tests.ostrails.eu/tests/fc_metadata_identifier_persistence",
+      "title": "FAIR Champion: Identifier Persistence",
+      "description": "\"Metric to test if the unique identifier of the metadata resource is likely to be persistent. Known schema are registered in FAIRSharing (https://fairsharing.org/standards/?q=&selected_facets=type_exact:identifier%20schema). For URLs that don't follow a schema in FAIRSharing we test known URL persistence schemas (purl, oclc, fdlp, purlz, w3id, ark).\""
+    }
+  },
+  {
+    "https://tools.ostrails.eu/champion/tests/895447080": {
+      "api": "https://tests.ostrails.eu/tests/fc_metadata_includes_license",
+      "title": "FAIR Champion: Metadata Includes License (strong)",
+      "description": "\"Maturity Indicator to test if the linked data metadata contains an explicit pointer to the license.  Tests: xhtml, dvia, dcterms, cc, data.gov.au, and Schema license predicates in linked data, and validates the value of those properties.\""
+    }
+  },
+  {
+    "https://tools.ostrails.eu/champion/tests/952705020": {
+      "api": "https://tests.ostrails.eu/tests/fc_metadata_includes_license_weak",
+      "title": "FAIR Champion: Metadata Includes License (weak)",
+      "description": "\"Maturity Indicator to test if the metadata contains an explicit pointer to the license.  This 'weak' test will use a case-insensitive regular expression, and scan both key/value style metadata, as well as linked data metadata.  Tests: xhtml, dvia, dcterms, cc, data.gov.au, and Schema license predicates in linked data, and validates the value of those properties.\""
+    }
+  },
+  {
+    "https://tools.ostrails.eu/champion/tests/28867743": {
+      "api": "https://tests.ostrails.eu/tests/fc_metadata_kr_language_strong",
+      "title": "FAIR Champion: Metadata Knowledge Representation Language (strong)",
+      "description": "\"Maturity Indicator to test if the metadata uses a formal language broadly applicable for knowledge representation.  This particular test takes a broad view of what defines a 'knowledge representation language'; in this evaluation, a knowledge representation language is interpreted as one in which terms are semantically-grounded in ontologies.  Any form of RDF will pass this test (including RDF that is automatically extracted by third-party parsers such as Apache Tika).\""
+    }
+  },
+  {
+    "https://tools.ostrails.eu/champion/tests/156577301": {
+      "api": "https://tests.ostrails.eu/tests/fc_metadata_kr_language_weak",
+      "title": "FAIR Champion: Metadata Knowledge Representation Language (weak)",
+      "description": "\"Maturity Indicator to test if the metadata uses a formal language broadly applicable for knowledge representation.  This particular test takes a broad view of what defines a 'knowledge representation language'; in this evaluation, anything that can be represented as structured data will be accepted.\""
+    }
+  },
+  {
+    "https://tools.ostrails.eu/champion/tests/396338755": {
+      "api": "https://tests.ostrails.eu/tests/fc_metadata_outward_links",
+      "title": "FAIR Champion: Metadata Contains Outward Links",
+      "description": "\"Maturity Indicator to test if the metadata links outward to third-party resources.  It only tests metadata that can be represented as Linked Data.\""
+    }
+  },
+  {
+    "https://tools.ostrails.eu/champion/tests/981900614": {
+      "api": "https://tests.ostrails.eu/tests/fc_metadata_persistence",
+      "title": "FAIR Champion: Metadata Persistence",
+      "description": "\"Metric to test if the metadata contains a persistence policy, explicitly identified by a persistencePolicy key (in hashed data) or a http://www.w3.org/2000/10/swap/pim/doc#persistencePolicy predicate in Linked Data.\""
+    }
+  },
+  {
+    "https://tools.ostrails.eu/champion/tests/120972262": {
+      "api": "https://tests.ostrails.eu/tests/fc_metadata_protocol",
+      "title": "FAIR Champion: Uses open free protocol for metadata retrieval",
+      "description": "\"Metadata may be retrieved by an open and free protocol.  Tests metadata GUID for its resolution protocol.  Currently passes InChI Keys, DOIs, Handles, and URLs.  Recognition of other identifiers will be added upon request by the community.\""
+    }
+  },
+  {
+    "https://tools.ostrails.eu/champion/tests/422512334": {
+      "api": "https://tests.ostrails.eu/tests/fc_metadata_uses_fair_vocabularies",
+      "title": "FAIR Champion: Metadata uses FAIR vocabularies (strong)",
+      "description": "\"Maturity Indicator to test if the linked data metadata uses terms that resolve to linked (FAIR) data.\""
+    }
+  },
+  {
+    "https://tools.ostrails.eu/champion/tests/700239598": {
+      "api": "https://tests.ostrails.eu/tests/fc_searchable",
+      "title": "FAIR Champion: Searchable in major search engine",
+      "description": "\"Tests whether a machine is able to discover the resource by search, using Microsoft Bing.\""
+    }
+  },
+  {
+    "https://tools.ostrails.eu/champion/tests/159548241": {
+      "api": "https://tests.ostrails.eu/tests/fc_structured_metadata",
+      "title": "FAIR Champion: Structured Metadata",
+      "description": "\"Tests whether a machine is able to find structured metadata.  This could be (for example) RDFa, embedded json, json-ld, or content-negotiated structured metadata such as RDF Turtle.\""
+    }
+  },
+  {
+    "https://tools.ostrails.eu/champion/tests/333054139": {
+      "api": "https://tests.ostrails.eu/tests/fc_unique_identifier",
+      "title": "FAIR Champion: Unique Identifier",
+      "description": "\"Metric to test if the metadata resource has a unique identifier.  This is done by comparing the GUID to the patterns (by regexp) of known GUID schemas such as URLs and DOIs.  Known schema are registered in FAIRSharing (https://fairsharing.org/standards/?q=&selected_facets=type_exact:identifier%20schema)\""
+    }
+  },
+  {
+    "https://tools.ostrails.eu/champion/tests/759169499": {
+      "api": "https://tests.ostrails.eu/tests/fc_metadata_authorization",
+      "title": "FAIR Champion: Metadata Authorization",
+      "description": "\"Tests metadata GUID for the ability to implement authentication and authorization in its resolution protocol.  Currently passes InChI Keys, DOIs, Handles, and URLs.  Recognition of other identifiers will be added upon request by the community.\""
+    }
+  }
+]
