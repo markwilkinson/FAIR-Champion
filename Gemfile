@@ -34,12 +34,18 @@ gem 'tux'
 gem 'uri', '~>0.12.2'
 gem 'xml-simple', '~>1.1.8'
 
-gem "openapi_parser", "~> 2.1"
+group :development, :test do
 
-gem "safe_yaml", "~> 1.0"
+  gem "openapi_parser", "~> 2.1"
 
-gem "rack-test", "~> 0.6.3"
+  gem "safe_yaml", "~> 1.0"
 
-gem "rspec-openapi", "~> 0.18.4"
+  gem "rack-test", "~> 0.6.3"
 
-gem "pry", "~> 0.15.2"
+  gem "rspec-openapi", "~> 0.18.4"
+
+  gem "pry", "~> 0.15.2"
+
+end
+
+gem 'rspec-openapi', group: :test
