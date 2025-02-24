@@ -37,28 +37,6 @@ class NewSetInput
   end
 end
 
-# class NewSetInput
-#   include Swagger::Blocks
-
-#   swagger_schema :NewSetInput do
-#     key :required, [:title, :description, :email, :tests]
-#     property :title do
-#       key :type, :string
-#     end
-#     property :description do
-#       key :type, :string
-#     end
-#     property :email do
-#       key :type, :string
-#     end
-#     property :tests do
-#       key :type, :array
-#       items do
-#         key :type, :string
-#       end
-#     end
-#   end
-# end
 
 # class Pet
 #   include Swagger::Blocks

@@ -8,8 +8,7 @@ require_relative 'configuration'
 require_relative 'models'
 require_relative 'routes'
 require_rel '../../lib'
-
-class Swag < Sinatra::Application
+class Champion < Sinatra::Application
   include Swagger::Blocks
 
   set :bind, '0.0.0.0'

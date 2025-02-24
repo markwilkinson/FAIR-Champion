@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 
 # Specify your gem's dependencies in apples-tests.gemspec
 gemspec
-ruby '~>3.3.0'
+ruby '3.3.0'
 gem 'cgi', '~> 0.4.1'
 gem 'csv'
 gem 'erb', '~> 4.0'
@@ -37,3 +37,7 @@ gem 'xml-simple', '~>1.1.8'
 gem "openapi_parser", "~> 2.1"
 
 gem "safe_yaml", "~> 1.0"
+
+gem "rack-test", "~> 0.6.3"
+
+gem "rspec-openapi", "~> 0.18.4"
