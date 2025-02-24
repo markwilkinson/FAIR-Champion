@@ -31,12 +31,13 @@ gem 'swagger-blocks', '~> 3.0.0'
 gem 'tempfile'
 gem 'thin'
 gem 'tux'
-gem 'uri', '~>0.12.2'
+gem 'rbs', '~>3.8.1'
+# gem 'uri'
 gem 'xml-simple', '~>1.1.8'
 gem "openapi_parser", "~> 2.1"
 
 
-group :development, :test do
+# group :development, :test do
 
 
   gem "safe_yaml", "~> 1.0"
@@ -47,5 +48,5 @@ group :development, :test do
 
   gem "pry", "~> 0.15.2"
 
-end
+# end
 

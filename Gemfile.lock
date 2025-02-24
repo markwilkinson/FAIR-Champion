@@ -241,6 +241,8 @@ GEM
       nokogiri (~> 1.14)
     rainbow (3.1.1)
     rake (13.2.1)
+    rbs (3.8.1)
+      logger
     rdf (3.3.1)
       bcp47_spec (~> 0.2)
       link_header (~> 0.0, >= 0.0.8)
@@ -417,7 +419,6 @@ GEM
       unicode-emoji (~> 4.0, >= 4.0.4)
     unicode-emoji (4.0.4)
     unicode-types (1.9.0)
-    uri (0.12.2)
     xml-simple (1.1.9)
       rexml
     yaml-ld (0.0.3)
@@ -451,6 +452,7 @@ DEPENDENCIES
   pry (~> 0.15.2)
   rack-test (~> 0.6.3)
   rake (~> 13.0)
+  rbs (~> 3.8.1)
   rdf-raptor (~> 3.1.0)
   rdf-vocab
   require_all (~> 3.0.0)
@@ -467,7 +469,6 @@ DEPENDENCIES
   tempfile
   thin
   tux
-  uri (~> 0.12.2)
   xml-simple (~> 1.1.8)
 
 RUBY VERSION
