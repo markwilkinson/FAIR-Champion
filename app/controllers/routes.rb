@@ -4,6 +4,8 @@ require 'erb'
 def set_routes()
   set :server_settings, timeout: 180
   set :public_folder, 'public'
+  # set :bind, '0.0.0.0'  # Allow all hosts
+
   set :template_engines, {
     # :css=>[],
     # :xml=>[],
@@ -62,6 +64,8 @@ def set_routes()
 
   post '/champion/sets/' do
     content_type :json
+    puts "Request ENV: #{request.env.inspect}"
+
     warn "PARAMS", params.keys
     if params[:title]
       title = params[:title]
