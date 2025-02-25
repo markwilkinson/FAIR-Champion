@@ -2,9 +2,8 @@ require 'erb'
 
 # def set_routes(classes: allclasses)
 def set_routes()
-    set :server_settings, timeout: 180
+  set :server_settings, timeout: 180
   set :public_folder, 'public'
-
   set :template_engines, {
     # :css=>[],
     # :xml=>[],

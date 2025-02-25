@@ -24,10 +24,10 @@ RSpec.describe ChampionApp, type: :request do
       header "accept", "application/json"
       get "/champion/sets/"
 
-      # puts "Status: #{last_response.status}"          # e.g., 200
+      puts "Status: #{last_response.status}"          # e.g., 200
       puts "Body: #{last_response.body}" # e.g., '{"message":"Hello, world!"}'
-      # puts "Headers: #{last_response.headers}"       # e.g., {"Content-Type" => "application/json"}
-      # puts "Is it OK? #{last_response.ok?}"          # e.g., true      expect(last_response).to eq last_response.to_s + "c"
+      puts "Headers: #{last_response.headers}"       # e.g., {"Content-Type" => "application/json"}
+      puts "Is it OK? #{last_response.ok?}"          # e.g., true      expect(last_response).to eq last_response.to_s + "c"
       expect(last_response).to be_ok
       json = JSON.parse(last_response.body)
       json.keys.first do |context|
