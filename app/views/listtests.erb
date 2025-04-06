@@ -6,7 +6,9 @@
 <% @tests.each do |hash| %>
   <% found=true %>
   <% guid = hash.keys.first; value = hash[guid] %>
-  <br/><input type="checkbox" name="testid[]" value="<%= guid %>"/> <b> <%= guid %> </b> (<a href="<%= value["api"] %>">API</a>): <span title="<%= value["description"] %>"> <%= value["title"] %> </span>
+  <br/><input type="checkbox" name="testid[]" value="<%= guid %>"/> 
+  <b> <%= guid %> </b> (<a href="<%= value["api"] %>">API</a>): 
+  <span title="<%= value["description"] %>"> <%= value["title"] %> </span>
 <% end %>
 <% unless found %>
 <b>NO TESTS REGISTERED</b>

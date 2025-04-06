@@ -226,6 +226,45 @@ def set_routes()
     error 406
   end
 
+
+  # ######################### METRICS ####################################
+  # ######################### METRICS ####################################
+  # ######################### METRICS ####################################
+  # ######################### METRICS ####################################
+  # ######################### METRICS ####################################
+
+
+  # post '/champion/metrics' do
+  #   redirect '/champion/metrics/', 307
+  # end
+
+  # post '/champion/metrics/' do
+  #   if params[:dataservice]  # for calls from the Web form
+  #     api = params[:dataservice] 
+  #   else
+  #     payload = JSON.parse(request.body.read)
+  #     api = payload['openapi']
+  #   end
+  #   c = Champion::Core.new
+  #   testid = c.add_test(api: api)
+  #   warn "testid", testid
+  #   # this line retrieves the single new test from the database into the expected structure
+  #   _status, _headers, body = call env.merge("PATH_INFO" => "/champion/tests/#{testid}", 'REQUEST_METHOD' => "GET", 'HTTP_ACCEPT' => request.accept.first.to_s)
+  #   warn "testid", env.inspect
+
+  #   request.accept.each do |type|
+  #     case type.to_s
+  #     when 'text/html'
+  #       content_type :html
+  #       halt body
+  #     when 'text/json', 'application/json', 'application/ld+json'
+  #       content_type :json
+  #       halt body
+  #     end
+  #   end
+  #   error 406
+  # end
+
   # ####################################################################################
   # ####################################################################################
 
