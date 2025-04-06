@@ -197,7 +197,10 @@ module Champion
       result = client.query(sparql)
       # warn 'RESULT', result.inspect
       result.map do |r|
-        { r[:s].to_s => { 'api' => r[:g].to_s, 'title' => r[:title].to_s, 'description' => r[:description].to_s } }
+        api = r[:g].to_s
+        api = api.gsub(/\/$/, "")
+        api += "/api"  # the new API spec requires a different URL for the API
+        { r[:s].to_s => { 'api' => api, 'title' => r[:title].to_s, 'description' => r[:description].to_s } }
       end
     end
 
