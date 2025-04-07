@@ -33,23 +33,72 @@ module Champion
         _id, testdef = test.first # there is only one, and it is guid => {features...}
         warn 'point 3', testdef.inspect
 
-        results << run_test(guid: subject, testurl: testdef['api'])
+        results << run_test(guid: subject, testapi: testdef['api'])
       end
       # warn "RESULTS #{results}"
       output = Champion::Output.new(setid: "#{CHAMP_HOST}/sets/#{setid}", subject: subject)
       output.build_output(results: results)
     end
 
-    def run_test(testurl:, guid:)
-      warn "web call to #{testurl}"
+    def run_test(testapi:, guid:)
+      warn "web api is to #{testapi}"
+      # MUNGE IT TEMPORARILY!
+      testname = testapi.match(%r{.*/(\S+)/api})[1]
+      testurl = "https://tests.ostrails.eu/assess/test/#{testname}"
+      warn "POINT FINAL:  Test URL is #{testurl}"
+      RestClient.log = 'stderr' # Enable logging
       result = RestClient::Request.execute(
         url: testurl,
         method: :post,
-        payload: { 'subject' => guid }.to_json,
-        content_type: :json
+        payload: { 'resource_identifier' => guid }.to_json,
+        headers: {
+          'Content-Type' => 'application/json',
+          'Accept' => 'application/json'
+        }
       )
       JSON.parse(result.body)
     end
+
+    # GROK
+# require 'json'
+
+# # Load the OpenAPI document
+# openapi_json = File.read('openapi.json') # Replace with your file path
+# openapi_data = JSON.parse(openapi_json)
+
+# # Service name to match as part of the path (e.g., 'users')
+# service_name = 'users'
+
+# # Get the base URL (OpenAPI 3.x uses 'servers', OpenAPI 2.x uses 'host' and 'basePath')
+# base_url = if openapi_data['servers'] # OpenAPI 3.x
+#              openapi_data['servers'].first['url']
+#            elsif openapi_data['host'] # OpenAPI 2.x
+#              scheme = openapi_data['schemes']&.first || 'https'
+#              base_path = openapi_data['basePath'] || ''
+#              "#{scheme}://#{openapi_data['host']}#{base_path}"
+#            else
+#              raise "No base URL found in OpenAPI document"
+#            end
+
+# # Find PATCH paths where the service name is a component of the path
+# patch_paths = openapi_data['paths'].flat_map do |path, methods|
+#   if methods['patch'] && path.include?(service_name)
+#     full_url = "#{base_url}#{path}"
+#     { full_url: full_url, operation: methods['patch'] }
+#   end
+# end.compact
+
+# # Output results
+# if patch_paths.empty?
+#   puts "No PATCH endpoints found matching '#{service_name}'"
+# else
+#   patch_paths.each do |match|
+#     puts "Full URL: #{match[:full_url]}"
+#     puts "Operation ID: #{match[:operation]['operationId'] || 'N/A'}"
+#     puts "Tags: #{match[:operation]['tags']&.join(', ') || 'N/A'}"
+#     puts "---"
+#   end
+# end
 
     # ################################# SETS
     # ########################################################################

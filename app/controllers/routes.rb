@@ -4,7 +4,8 @@ require 'erb'
 def set_routes()
   set :server_settings, timeout: 180
   set :public_folder, 'public'
-  # set :bind, '0.0.0.0'  # Allow all hosts
+  set :bind, '0.0.0.0'  # Allow all hosts
+  set :views, File.join(File.dirname(__FILE__), '..', 'views')
 
   set :template_engines, {
     # :css=>[],
@@ -124,14 +125,38 @@ def set_routes()
     content_type :json
     setid = params[:setid]
     warn "received call to evaluate #{setid}"
-    if params[:subject]  # for calls from the Web form
-      subject = params[:subject] 
+    if params["resource_identifier"]  # for calls from the Web form
+      subject = params["resource_identifier"] 
     else
       payload = JSON.parse(request.body.read)
-      subject = payload['subject']
+      subject = payload['resource_identifier']
     end
     champ = Champion::Core.new
-    result = champ.run_assessment(subject: subject, setid: setid)
+    @result = champ.run_assessment(subject: subject, setid: setid)
+
+    request.accept.each do |type|
+      case type.to_s
+      when 'text/html', 'application/xhtml+xml'
+        content_type :html
+        data = JSON.parse(@result)
+        # Extract the result set and graph
+        @result_set = data['@graph'].find { |node| node['@type'].include?('ftr:TestResultSet') }
+        @graph = data['@graph']
+        # Render the ERB template
+        halt erb :evaluation_response
+      when 'text/json', 'application/json', 'application/ld+json'
+        content_type :json
+        halt @result
+      else 
+        warn "type is #{type}"
+        @result_set = data['@graph'].find { |node| node['@type'].include?('ftr:TestResultSet') }
+        @graph = data['@graph']
+        # Render the ERB template
+        halt erb :evaluation_response
+      end
+    end
+    error 406
+
     result
   end
 
