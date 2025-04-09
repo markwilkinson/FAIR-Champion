@@ -160,6 +160,56 @@ def set_routes()
     result
   end
 
+  # this is the Benchmark API
+  # /assess/benchmark/{bmid} 
+  post '/champion/assess/benchmark/' do
+    content_type :json
+    bmid = params["bmid"]
+    # methodology:  call GET on BMID, BMID is a FAIRsharing DOI, 
+    # so call it (eventauly!  Not yet, because we are working with Pablo's BMs files)
+    # for now, just call the URL of the benchmark and assume that it is DCAT
+    # extract the URIs of the metrics
+    # Lookup in FDP Index to get the Tests
+
+    warn "received call to evaluate #{setid}"
+    if params["resource_identifier"]  # for calls from the Web form
+      subject = params["resource_identifier"] 
+    else
+      payload = JSON.parse(request.body.read)
+      subject = payload['resource_identifier']
+    end
+    champ = Champion::Core.new
+    @result = champ.run_benchmark_assessment(subject: subject, bmid: bmid)
+
+
+
+
+    request.accept.each do |type|
+      case type.to_s
+      when 'text/html', 'application/xhtml+xml'
+        content_type :html
+        data = JSON.parse(@result)
+        # Extract the result set and graph
+        @result_set = data['@graph'].find { |node| node['@type'].include?('ftr:TestResultSet') }
+        @graph = data['@graph']
+        # Render the ERB template
+        halt erb :evaluation_response
+      when 'text/json', 'application/json', 'application/ld+json'
+        content_type :json
+        halt @result
+      else 
+        warn "type is #{type}"
+        @result_set = data['@graph'].find { |node| node['@type'].include?('ftr:TestResultSet') }
+        @graph = data['@graph']
+        # Render the ERB template
+        halt erb :evaluation_response
+      end
+    end
+    error 406
+
+    result
+  end
+
   # get '/sets/:setid/assessments/:assid' do
   #   content_type :json
   #   # setid = params[:setid]

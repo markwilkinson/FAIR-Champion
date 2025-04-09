@@ -1,4 +1,15 @@
 <h2>New Evaluation</h2>
+
+Generic CURL command (note that you POST to the set ID):
+
+<pre>
+curl -H "Content-type: application/json" -H "Accept: application/json" 
+   -d '{"resource_identifier": "https://exampledataset.org"}' 
+    https://tools.ostrails.eu/champion/sets/772894317/assessments/
+</pre>
+<br/><br/>
+
+
 <h3>Using Set: <%= @setid %> </h3>
 
 <form action = "/champion/sets/<%= @setid %>/assessments/" method="post">

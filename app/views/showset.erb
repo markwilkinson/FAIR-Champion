@@ -1,6 +1,16 @@
 <h1> SET </h1>
 <!-- <%= @sets.inspect %> -->
 
+Generic CURL command (note that you POST to the set ID):
+
+<pre>
+curl -H "Content-type: application/json" -H "Accept: application/json" 
+   -d '{"resource_identifier": "https://exampledataset.org"}' 
+    https://tools.ostrails.eu/champion/sets/772894317/assessments/
+</pre>
+<br/><br/>
+
+
 <% @sets.each_key do |setid| %>
   <% set = @sets[setid] %>
 

@@ -40,6 +40,69 @@ module Champion
       output.build_output(results: results)
     end
 
+
+
+
+
+
+    # we get the GUID of tghe benchmark.  We need to extract the GUIDs of the Metrics first
+    # then get the tests that are associated with that metric
+    def run_benchmark_assessment(subject:, bmid:)
+      results = []
+      # BMID is the id of the benchmark.  I resolve it to DCAT turtle (or whatever)
+      g = RDF::Repository.load(bmid)
+      query = <<-SPARQL
+      SELECT ?metric
+        WHERE { ?s <https://w3id.org/ftr#hasAssociatedMetric> ?metric }
+SPARQL
+      solutions = SPARQL.execute(query, g)
+      metrics = []
+      solutions.each do |metricsol|
+        metrics << metricsol[:metric].value  # get the URI of the metric, to look-up in FDP
+      end
+      # metrics contains the Metric DOI from fairsharing.  Now lookip against FDP Index to get the tests
+      #<http://semanticscience.org/resource/SIO_000233>
+
+      require 'sparql/client'
+      # Define the remote SPARQL endpoint URL
+      endpoint_url = "https://tools.ostrails.eu/repositories/fdpindex-fdp" # Replace with your actual endpoint
+
+      # Create a SPARQL client instance
+      client = SPARQL::Client.new(endpoint_url)
+
+    endpoints = []  # the list of applicable tests
+      metrics.each do |metric}
+        # Define your SPARQL query to get the associated metric for a test
+        # TODO CAN I GET THE API HERE?  YES?
+        query = <<-SPARQL
+          PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+          PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+          SELECT distinct ?test ?metric ?endpoint WHERE {
+            ?test <http://semanticscience.org/resource/SIO_000233> ?metric . # is implementation of
+            ?test <http://www.w3.org/ns/dcat#endpointURL> ?endpoint .
+          }
+SPARQL
+
+        # Execute the query
+        solutions = client.query(query)
+        solutions.each do |result|
+          next unless metrics.include? result[:metric].value # does this test refer to a metric of interest?
+        endpoints << result[:endpoint]
+        end
+      end
+
+      # now execute!
+
+    endpoints.each do |endpoint|
+        warn 'benchmark point 2', endpoint.inspect
+        results << run_test(guid: subject, testapi: endpoint)
+      end
+      # warn "RESULTS #{results}"
+      setid="just_testing"
+      output = Champion::Output.new(setid: "#{CHAMP_HOST}/sets/#{setid}", subject: subject)
+      output.build_output(results: results)
+    end
+
     def run_test(testapi:, guid:)
       warn "web api is to #{testapi}"
       # MUNGE IT TEMPORARILY!

@@ -50,3 +50,5 @@ gem "openapi_parser", "~> 2.1"
 
 # end
 
+
+gem "sparql-client", "~> 3.3"
