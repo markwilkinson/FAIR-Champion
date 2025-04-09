@@ -1,7 +1,7 @@
 require 'parseconfig'
 
-# testt = true
-testt = false
+testt = true
+# testt = false
 
 if testt
   TEST_HOST = 'https://tests.ostrails.eu/tests'.freeze

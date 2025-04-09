@@ -1,10 +1,10 @@
 require 'erb'
 
 # def set_routes(classes: allclasses)
-def set_routes()
+def set_routes
   set :server_settings, timeout: 180
   set :public_folder, 'public'
-  set :bind, '0.0.0.0'  # Allow all hosts
+  set :bind, '0.0.0.0' # Allow all hosts
   set :views, File.join(File.dirname(__FILE__), '..', 'views')
 
   set :template_engines, {
@@ -21,7 +21,6 @@ def set_routes()
   #   Swagger::Blocks.build_root_json(classes).to_json
   # end
 
-
   # ###########################################  SETS
   # ###########################################  SETS
   # ###########################################  SETS
@@ -33,7 +32,7 @@ def set_routes()
   get '/champion/sets/', provides: %i[html json jsonld] do
     c = Champion::Core.new
     @sets = c.get_sets
-    request.accept.each do |type|  # Sinatra::Request::AcceptEntry
+    request.accept.each do |type| # Sinatra::Request::AcceptEntry
       case type.to_s
       when 'text/html'
         halt erb :listsets
@@ -47,7 +46,7 @@ def set_routes()
   get '/champion/sets/:setid' do
     c = Champion::Core.new
     setid = params[:setid]
-    @sets = c.get_sets(setid: setid)  # sets is a hash
+    @sets = c.get_sets(setid: setid) # sets is a hash
     request.accept.each do |type|
       case type.to_s
       when 'text/html'
@@ -67,11 +66,11 @@ def set_routes()
     content_type :json
     puts "Request ENV: #{request.env.inspect}"
 
-    warn "PARAMS", params.keys
+    warn 'PARAMS', params.keys
     if params[:title]
       title = params[:title]
-      desc = params.fetch(:description, "No Description")
-      email = params.fetch(:email, "nobody@anonymous.org")
+      desc = params.fetch(:description, 'No Description')
+      email = params.fetch(:email, 'nobody@anonymous.org')
       tests = params.fetch(:testid)
     else
       payload = JSON.parse(request.body.read)
@@ -82,7 +81,8 @@ def set_routes()
     end
     champ = Champion::Core.new
     result = champ.add_set(title: title, desc: desc, email: email, tests: tests)
-    _status, _headers, body = call env.merge("PATH_INFO" => "/champion/sets/#{result}", 'REQUEST_METHOD' => "GET", 'HTTP_ACCEPT' => request.accept.first.to_s)
+    _status, _headers, body = call env.merge('PATH_INFO' => "/champion/sets/#{result}", 'REQUEST_METHOD' => 'GET',
+                                             'HTTP_ACCEPT' => request.accept.first.to_s)
     request.accept.each do |type|
       warn "ACCEPT REQ #{type}"
       case type.to_s
@@ -97,10 +97,9 @@ def set_routes()
     error 406
   end
 
-    # ###########################################  ASSESSMENTS
-    # ###########################################  ASSESSMENTS
-    # ###########################################  ASSESSMENTS
-
+  # ###########################################  ASSESSMENTS
+  # ###########################################  ASSESSMENTS
+  # ###########################################  ASSESSMENTS
 
   get '/champion/sets/:setid/assessments' do
     id = params[:setid]
@@ -125,8 +124,8 @@ def set_routes()
     content_type :json
     setid = params[:setid]
     warn "received call to evaluate #{setid}"
-    if params["resource_identifier"]  # for calls from the Web form
-      subject = params["resource_identifier"] 
+    if params['resource_identifier'] # for calls from the Web form
+      subject = params['resource_identifier']
     else
       payload = JSON.parse(request.body.read)
       subject = payload['resource_identifier']
@@ -147,7 +146,7 @@ def set_routes()
       when 'text/json', 'application/json', 'application/ld+json'
         content_type :json
         halt @result
-      else 
+      else
         warn "type is #{type}"
         @result_set = data['@graph'].find { |node| node['@type'].include?('ftr:TestResultSet') }
         @graph = data['@graph']
@@ -161,28 +160,32 @@ def set_routes()
   end
 
   # this is the Benchmark API
-  # /assess/benchmark/{bmid} 
+  # /assess/benchmark/{bmid}
   post '/champion/assess/benchmark/' do
     content_type :json
-    bmid = params["bmid"]
-    # methodology:  call GET on BMID, BMID is a FAIRsharing DOI, 
+    body = request.body.read # might be empty
+    if params['bmid'] # for calls from the Web form
+      bmid = params['bmid']
+    else
+      payload = JSON.parse(body)
+      bmid = payload['bmid']
+    end
+
+    # methodology:  call GET on BMID, BMID is a FAIRsharing DOI,
     # so call it (eventauly!  Not yet, because we are working with Pablo's BMs files)
     # for now, just call the URL of the benchmark and assume that it is DCAT
     # extract the URIs of the metrics
     # Lookup in FDP Index to get the Tests
 
-    warn "received call to evaluate #{setid}"
-    if params["resource_identifier"]  # for calls from the Web form
-      subject = params["resource_identifier"] 
+    warn "received call to evaluate benchmark #{bmid}"
+    if params['resource_identifier'] # for calls from the Web form
+      subject = params['resource_identifier']
     else
-      payload = JSON.parse(request.body.read)
+      payload = JSON.parse(body)
       subject = payload['resource_identifier']
     end
     champ = Champion::Core.new
     @result = champ.run_benchmark_assessment(subject: subject, bmid: bmid)
-
-
-
 
     request.accept.each do |type|
       case type.to_s
@@ -197,7 +200,7 @@ def set_routes()
       when 'text/json', 'application/json', 'application/ld+json'
         content_type :json
         halt @result
-      else 
+      else
         warn "type is #{type}"
         @result_set = data['@graph'].find { |node| node['@type'].include?('ftr:TestResultSet') }
         @graph = data['@graph']
@@ -218,7 +221,6 @@ def set_routes()
   #   # #  TODO  SET Location Header!!!!!!!!!!!!!!!!
   #   # result
   # end
-
 
   # ###########################################  TESTS
   # ###########################################  TESTS
@@ -252,11 +254,11 @@ def set_routes()
   get '/champion/tests/:testid' do
     testid = params[:testid]
 
-    warn "getting testid", testid
+    warn 'getting testid', testid
 
     c = Champion::Core.new
     @tests = c.get_tests(testid: testid)
-    warn "got ", @tests.inspect
+    warn 'got ', @tests.inspect
     request.accept.each do |type|
       case type.to_s
       when 'text/html'
@@ -275,18 +277,19 @@ def set_routes()
   end
 
   post '/champion/tests/' do
-    if params[:openapi]  # for calls from the Web form
-      api = params[:openapi] 
+    if params[:openapi] # for calls from the Web form
+      api = params[:openapi]
     else
       payload = JSON.parse(request.body.read)
       api = payload['openapi']
     end
     c = Champion::Core.new
     testid = c.add_test(api: api)
-    warn "testid", testid
+    warn 'testid', testid
     # this line retrieves the single new test from the database into the expected structure
-    _status, _headers, body = call env.merge("PATH_INFO" => "/champion/tests/#{testid}", 'REQUEST_METHOD' => "GET", 'HTTP_ACCEPT' => request.accept.first.to_s)
-    warn "testid", env.inspect
+    _status, _headers, body = call env.merge('PATH_INFO' => "/champion/tests/#{testid}", 'REQUEST_METHOD' => 'GET',
+                                             'HTTP_ACCEPT' => request.accept.first.to_s)
+    warn 'testid', env.inspect
 
     request.accept.each do |type|
       case type.to_s
@@ -301,13 +304,11 @@ def set_routes()
     error 406
   end
 
-
   # ######################### METRICS ####################################
   # ######################### METRICS ####################################
   # ######################### METRICS ####################################
   # ######################### METRICS ####################################
   # ######################### METRICS ####################################
-
 
   # post '/champion/metrics' do
   #   redirect '/champion/metrics/', 307
@@ -315,7 +316,7 @@ def set_routes()
 
   # post '/champion/metrics/' do
   #   if params[:dataservice]  # for calls from the Web form
-  #     api = params[:dataservice] 
+  #     api = params[:dataservice]
   #   else
   #     payload = JSON.parse(request.body.read)
   #     api = payload['openapi']

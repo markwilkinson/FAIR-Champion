@@ -10,7 +10,6 @@ module Champion
   class Core
     attr_accessor :testhost, :champhost, :reponame, :graphdbhost
 
-
     def initialize; end
 
     # ################################# ASSESSMENTS
@@ -40,73 +39,73 @@ module Champion
       output.build_output(results: results)
     end
 
-
-
-
-
-
     # we get the GUID of tghe benchmark.  We need to extract the GUIDs of the Metrics first
     # then get the tests that are associated with that metric
     def run_benchmark_assessment(subject:, bmid:)
       results = []
       # BMID is the id of the benchmark.  I resolve it to DCAT turtle (or whatever)
-      g = RDF::Repository.load(bmid)
+      bm_dcat = RDF::Repository.load(bmid)
       query = <<-SPARQL
       SELECT ?metric
         WHERE { ?s <https://w3id.org/ftr#hasAssociatedMetric> ?metric }
-SPARQL
-      solutions = SPARQL.execute(query, g)
-      metrics = []
-      solutions.each do |metricsol|
-        metrics << metricsol[:metric].value  # get the URI of the metric, to look-up in FDP
-      end
+      SPARQL
+      solutions = SPARQL.execute(query, bm_dcat)
+      metrics = solutions.map { |metricsol| metricsol[:metric].value } # get the URIs of the metrics, to look-up in FDP
+
+      warn "FOUND METRICS #{metrics}"
+
       # metrics contains the Metric DOI from fairsharing.  Now lookip against FDP Index to get the tests
-      #<http://semanticscience.org/resource/SIO_000233>
+      # <http://semanticscience.org/resource/SIO_000233>
 
       require 'sparql/client'
       # Define the remote SPARQL endpoint URL
-      endpoint_url = "https://tools.ostrails.eu/repositories/fdpindex-fdp" # Replace with your actual endpoint
+      endpoint_url = 'https://tools.ostrails.eu/repositories/fdpindex-fdp'
 
       # Create a SPARQL client instance
       client = SPARQL::Client.new(endpoint_url)
 
-    endpoints = []  # the list of applicable tests
-      metrics.each do |metric}
-        # Define your SPARQL query to get the associated metric for a test
+      endpoints = [] # the list of applicable tests
+      metrics.each do |metric|
+        # Define your SPARQL query to get the associated test for a metric
         # TODO CAN I GET THE API HERE?  YES?
         query = <<-SPARQL
           PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
           PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-          SELECT distinct ?test ?metric ?endpoint WHERE {
-            ?test <http://semanticscience.org/resource/SIO_000233> ?metric . # is implementation of
+          SELECT distinct ?endpoint WHERE {
+            ?test <http://semanticscience.org/resource/SIO_000233> <#{metric.strip}> . # is implementation of
             ?test <http://www.w3.org/ns/dcat#endpointURL> ?endpoint .
           }
-SPARQL
+        SPARQL
 
         # Execute the query
         solutions = client.query(query)
         solutions.each do |result|
-          next unless metrics.include? result[:metric].value # does this test refer to a metric of interest?
-        endpoints << result[:endpoint]
+          endpoints << result[:endpoint].value
         end
       end
 
+      warn "FOUND ENDPOINTS #{endpoints}"
+
       # now execute!
 
-    endpoints.each do |endpoint|
+      endpoints.each do |endpoint|
         warn 'benchmark point 2', endpoint.inspect
         results << run_test(guid: subject, testapi: endpoint)
       end
       # warn "RESULTS #{results}"
-      setid="just_testing"
-      output = Champion::Output.new(setid: "#{CHAMP_HOST}/sets/#{setid}", subject: subject)
+      output = Champion::Output.new(setid: bmid, subject: subject)
       output.build_output(results: results)
     end
 
     def run_test(testapi:, guid:)
       warn "web api is to #{testapi}"
       # MUNGE IT TEMPORARILY!
-      testname = testapi.match(%r{.*/(\S+)/api})[1]
+      # the asesss/test should really consume the name of the test, not the shortname
+      testname = if testapi.match(%r{.*/(\S+)/api})
+                   testapi.match(%r{.*/(\S+)/api})[1]
+                 else
+                   testapi.match(%r{.*/(\S+)/?$})[1]
+                 end
       testurl = "https://tests.ostrails.eu/assess/test/#{testname}"
       warn "POINT FINAL:  Test URL is #{testurl}"
       RestClient.log = 'stderr' # Enable logging
@@ -123,45 +122,45 @@ SPARQL
     end
 
     # GROK
-# require 'json'
+    # require 'json'
 
-# # Load the OpenAPI document
-# openapi_json = File.read('openapi.json') # Replace with your file path
-# openapi_data = JSON.parse(openapi_json)
+    # # Load the OpenAPI document
+    # openapi_json = File.read('openapi.json') # Replace with your file path
+    # openapi_data = JSON.parse(openapi_json)
 
-# # Service name to match as part of the path (e.g., 'users')
-# service_name = 'users'
+    # # Service name to match as part of the path (e.g., 'users')
+    # service_name = 'users'
 
-# # Get the base URL (OpenAPI 3.x uses 'servers', OpenAPI 2.x uses 'host' and 'basePath')
-# base_url = if openapi_data['servers'] # OpenAPI 3.x
-#              openapi_data['servers'].first['url']
-#            elsif openapi_data['host'] # OpenAPI 2.x
-#              scheme = openapi_data['schemes']&.first || 'https'
-#              base_path = openapi_data['basePath'] || ''
-#              "#{scheme}://#{openapi_data['host']}#{base_path}"
-#            else
-#              raise "No base URL found in OpenAPI document"
-#            end
+    # # Get the base URL (OpenAPI 3.x uses 'servers', OpenAPI 2.x uses 'host' and 'basePath')
+    # base_url = if openapi_data['servers'] # OpenAPI 3.x
+    #              openapi_data['servers'].first['url']
+    #            elsif openapi_data['host'] # OpenAPI 2.x
+    #              scheme = openapi_data['schemes']&.first || 'https'
+    #              base_path = openapi_data['basePath'] || ''
+    #              "#{scheme}://#{openapi_data['host']}#{base_path}"
+    #            else
+    #              raise "No base URL found in OpenAPI document"
+    #            end
 
-# # Find PATCH paths where the service name is a component of the path
-# patch_paths = openapi_data['paths'].flat_map do |path, methods|
-#   if methods['patch'] && path.include?(service_name)
-#     full_url = "#{base_url}#{path}"
-#     { full_url: full_url, operation: methods['patch'] }
-#   end
-# end.compact
+    # # Find PATCH paths where the service name is a component of the path
+    # patch_paths = openapi_data['paths'].flat_map do |path, methods|
+    #   if methods['patch'] && path.include?(service_name)
+    #     full_url = "#{base_url}#{path}"
+    #     { full_url: full_url, operation: methods['patch'] }
+    #   end
+    # end.compact
 
-# # Output results
-# if patch_paths.empty?
-#   puts "No PATCH endpoints found matching '#{service_name}'"
-# else
-#   patch_paths.each do |match|
-#     puts "Full URL: #{match[:full_url]}"
-#     puts "Operation ID: #{match[:operation]['operationId'] || 'N/A'}"
-#     puts "Tags: #{match[:operation]['tags']&.join(', ') || 'N/A'}"
-#     puts "---"
-#   end
-# end
+    # # Output results
+    # if patch_paths.empty?
+    #   puts "No PATCH endpoints found matching '#{service_name}'"
+    # else
+    #   patch_paths.each do |match|
+    #     puts "Full URL: #{match[:full_url]}"
+    #     puts "Operation ID: #{match[:operation]['operationId'] || 'N/A'}"
+    #     puts "Tags: #{match[:operation]['tags']&.join(', ') || 'N/A'}"
+    #     puts "---"
+    #   end
+    # end
 
     # ################################# SETS
     # ########################################################################
@@ -310,8 +309,8 @@ SPARQL
       # warn 'RESULT', result.inspect
       result.map do |r|
         api = r[:g].to_s
-        api = api.gsub(/\/$/, "")
-        api += "/api"  # the new API spec requires a different URL for the API
+        api = api.gsub(%r{/$}, '')
+        api += '/api' # the new API spec requires a different URL for the API
         { r[:s].to_s => { 'api' => api, 'title' => r[:title].to_s, 'description' => r[:description].to_s } }
       end
     end
@@ -361,15 +360,12 @@ SPARQL
       resp
     end
 
-
     # ##############################################################
     #     BENCHMARK
     # ##############################################################
 
     def get_benchmark(bmid: '')
       warn 'IN GET BENCHMARKS'
-      
     end
-
   end
 end
