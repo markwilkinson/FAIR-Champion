@@ -1,25 +1,33 @@
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/styles.css">
+  <title>FAIR Champion: List Known Sets</title>
+</head>
+<body>
 <h1> SETS </h1>
 <!-- <%= @sets.inspect %> -->
 
 Generic CURL command (note that you POST to the set ID):
 
+      <div class="code-block">
 <pre>
 curl -H "Content-type: application/json" -H "Accept: application/json" 
    -d '{"resource_identifier": "https://exampledataset.org"}' 
     https://tools.ostrails.eu/champion/sets/772894317/assessments/
 </pre>
 <br/><br/>
-
+</div>
 
 <% found=false %>
 <% @sets.each_key do |setid| %>
   <% found=true %>
 
   <% set = @sets[setid] %>
-
-  <h1><%= set[:identifier] %></h1>
+  <div style="padding: 70px">
+  <h3><%= set[:identifier] %></h3>
   <% url ="#{set[:identifier]}/assessments/new"%>
-  <a href="<%= url %>"><input type="submit" value="Execute an Assessment"></a><br/>
+  <a href="<%= url %>" class="submit-link">Execute an Assessment</a><br/>
   <b>Title:</b> <%= set[:title] %><br/>
   <b>Description:</b> <%= set[:description] %><br/>
   <b>Creator:</b> <%= set[:creator] %><br/>
@@ -27,7 +35,8 @@ curl -H "Content-type: application/json" -H "Accept: application/json"
   <% set[:tests].each do |test| %>
     - <%= test %><br/>
   <% end %>
-  <br/><br/><br/>
+  <br/>
+  </div>
   <% unless found %>
     <b>NO SETS REGISTERED</b>
   <% end %>

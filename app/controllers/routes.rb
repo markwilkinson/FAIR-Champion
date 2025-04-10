@@ -3,7 +3,8 @@ require 'erb'
 # def set_routes(classes: allclasses)
 def set_routes
   set :server_settings, timeout: 180
-  set :public_folder, 'public'
+  set :public_folder, File.join(__dir__, '../public')
+
   set :bind, '0.0.0.0' # Allow all hosts
   set :views, File.join(File.dirname(__FILE__), '..', 'views')
 
@@ -16,10 +17,9 @@ def set_routes
     json: []
   }
 
-  # get '/champion' do
-  #   content_type :json
-  #   Swagger::Blocks.build_root_json(classes).to_json
-  # end
+  get %r{/champion/?}  do
+    halt erb :homepage
+  end
 
   # ###########################################  SETS
   # ###########################################  SETS
@@ -161,6 +161,13 @@ def set_routes
 
   # this is the Benchmark API
   # /assess/benchmark/{bmid}
+  get  '/champion/assess/benchmark/new' do
+    erb :init_benchmark_assessment
+  end
+
+  
+  # redirect "/champion/assess/benchmark", 307
+
   post '/champion/assess/benchmark/' do
     content_type :json
     body = request.body.read # might be empty
@@ -212,15 +219,6 @@ def set_routes
 
     result
   end
-
-  # get '/sets/:setid/assessments/:assid' do
-  #   content_type :json
-  #   # setid = params[:setid]
-  #   # evalid = params[:evalid]
-  #   # result = champ.run_evaluation(subject: subject, setid: setid)
-  #   # #  TODO  SET Location Header!!!!!!!!!!!!!!!!
-  #   # result
-  # end
 
   # ###########################################  TESTS
   # ###########################################  TESTS
@@ -304,45 +302,6 @@ def set_routes
     error 406
   end
 
-  # ######################### METRICS ####################################
-  # ######################### METRICS ####################################
-  # ######################### METRICS ####################################
-  # ######################### METRICS ####################################
-  # ######################### METRICS ####################################
-
-  # post '/champion/metrics' do
-  #   redirect '/champion/metrics/', 307
-  # end
-
-  # post '/champion/metrics/' do
-  #   if params[:dataservice]  # for calls from the Web form
-  #     api = params[:dataservice]
-  #   else
-  #     payload = JSON.parse(request.body.read)
-  #     api = payload['openapi']
-  #   end
-  #   c = Champion::Core.new
-  #   testid = c.add_test(api: api)
-  #   warn "testid", testid
-  #   # this line retrieves the single new test from the database into the expected structure
-  #   _status, _headers, body = call env.merge("PATH_INFO" => "/champion/tests/#{testid}", 'REQUEST_METHOD' => "GET", 'HTTP_ACCEPT' => request.accept.first.to_s)
-  #   warn "testid", env.inspect
-
-  #   request.accept.each do |type|
-  #     case type.to_s
-  #     when 'text/html'
-  #       content_type :html
-  #       halt body
-  #     when 'text/json', 'application/json', 'application/ld+json'
-  #       content_type :json
-  #       halt body
-  #     end
-  #   end
-  #   error 406
-  # end
-
-  # ####################################################################################
-  # ####################################################################################
 
   before do
     # warn 'woohoo'
