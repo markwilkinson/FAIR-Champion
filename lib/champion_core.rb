@@ -44,6 +44,11 @@ module Champion
     def run_benchmark_assessment(subject:, bmid:)
       results = []
       # BMID is the id of the benchmark.  I resolve it to DCAT turtle (or whatever)
+      # TODO THIS WILL EVENTUALLY USE the dcat profile in the Accept headers!
+#       repo = RDF::Repository.new
+#       repo.load("https://ruby-rdf.github.io/rdf/etc/doap.ttl", 
+#           headers: { "Accept" => "text/turtle;q=1.0, application/rdf+xml;q=0.8" })
+#       puts "Loaded #{repo.count} statements"
       bm_dcat = RDF::Repository.load(bmid)
       query = <<-SPARQL
       SELECT ?metric

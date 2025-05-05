@@ -159,8 +159,17 @@ def set_routes
     result
   end
 
+
+
+  # ###########################################  BENCHMARKS
+  # ###########################################  BENCHMARKS
+  # ###########################################  BENCHMARKS
+
+
+
+
+
   # this is the Benchmark API
-  # /assess/benchmark/{bmid}
   get  '/champion/assess/benchmark/new' do
     erb :init_benchmark_assessment
   end
@@ -183,6 +192,7 @@ def set_routes
     # for now, just call the URL of the benchmark and assume that it is DCAT
     # extract the URIs of the metrics
     # Lookup in FDP Index to get the Tests
+    
 
     warn "received call to evaluate benchmark #{bmid}"
     if params['resource_identifier'] # for calls from the Web form
@@ -192,6 +202,7 @@ def set_routes
       subject = payload['resource_identifier']
     end
     champ = Champion::Core.new
+    #  THIS WILL EVENTUALLY USE the dcat profile in the Accept headers!
     @result = champ.run_benchmark_assessment(subject: subject, bmid: bmid)
 
     request.accept.each do |type|
