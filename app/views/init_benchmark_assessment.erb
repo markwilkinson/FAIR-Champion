@@ -5,31 +5,37 @@
 
 <body>
   <div class="container">
-    <header class="header">
-      <h2>New Benchmark Execution</h2>
-      <div class="code-block">
-        <p>Generic CURL command (note that you POST to the set ID):</p>
-        <pre>
-curl -H "Content-type: application/json" -H "Accept: application/json" 
-   -d '{"resource_identifier": "https://exampledataset.org", "bmid": "https://fairsharing.org/10.123/456.789"}' 
-    https://tools.ostrails.eu/champion/assess/benchmark/
-        </pre>
-      </div>
-    </header>
-
-    <div class="form-card">
-      <h3>Select Benchmark and GUID to Assess:</h3>
-      <form action="/champion/assess/benchmark/" method="post">
-        <label>Benchmark (URL of Benchmark DCAT record):</label>
-        <input type="text" name="bmid">
-        <span class="example">example: https://ostrails.github.io/sandbox/mockbenchmark1.ttl</span>
-
-        <label>GUID to test:</label>
-        <input type="text" name="resource_identifier">
-        <span class="example">example: https://w3id.org/duchenne-fdp</span>
-
-        <input type="submit" value="Begin Benchmark Assessment">
-      </form>
+    <div class="header">
+      <img src="/champion/champion_whitebgcrop.png" alt="FAIR Champion Logo"/>
+      <h2>FAIR Champion: Benchmark Execution</h2>
     </div>
+  </div>
+
+  <div class="container">
+
+    <header class="header">
+        <div class="code-block">
+          <p>Generic CURL command (note that you POST to the set ID):</p>
+          <pre>
+  curl -H "Content-type: application/json" -H "Accept: application/json" 
+    -d '{"resource_identifier": "https://exampledataset.org", "bmid": "https://fairsharing.org/10.123/456.789"}' 
+      https://tools.ostrails.eu/champion/assess/benchmark/
+          </pre>
+        </div>
+    </header>
+  </div>
+  <div class="form-card">
+    <h3>Select Benchmark and GUID to Assess:</h3>
+    <form action="/champion/assess/benchmark/" method="post">
+      <label>Benchmark (URL of Benchmark DCAT record):</label>
+      <input type="text" name="bmid">
+      <span class="example">example: https://ostrails.github.io/sandbox/mockbenchmark1.ttl</span>
+
+      <label>GUID to test:</label>
+      <input type="text" name="resource_identifier">
+      <span class="example">example: https://w3id.org/duchenne-fdp</span>
+
+      <input type="submit" value="Begin Benchmark Assessment">
+    </form>
   </div>
 </body>
