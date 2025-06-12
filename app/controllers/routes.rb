@@ -24,6 +24,12 @@ def set_routes
   # ###########################################  SETS
   # ###########################################  SETS
   # ###########################################  SETS
+  # DEPRECATED DEPRECATED
+  # DEPRECATED DEPRECATED
+  # DEPRECATED DEPRECATED
+  # DEPRECATED DEPRECATED
+  # DEPRECATED DEPRECATED
+  # DEPRECATED DEPRECATED
 
   get '/champion/sets' do
     redirect '/champion/sets/', 307
@@ -96,6 +102,13 @@ def set_routes
     end
     error 406
   end
+  # END OF DEPRECATED DEPRECATED
+  # END OF DEPRECATED DEPRECATED
+  # END OF DEPRECATED DEPRECATED
+
+  # TODO
+  # /metrics
+
 
   # ###########################################  ASSESSMENTS
   # ###########################################  ASSESSMENTS
