@@ -58,41 +58,69 @@ module Champion
       metrics = solutions.map { |metricsol| metricsol[:metric].value } # get the URIs of the metrics, to look-up in FDP
 
       warn "FOUND METRICS #{metrics}"
-
-      # metrics contains the Metric DOI from fairsharing.  Now lookip against FDP Index to get the tests
-      # <http://semanticscience.org/resource/SIO_000233>
-
-      require 'sparql/client'
-      # Define the remote SPARQL endpoint URL
-      endpoint_url = 'https://tools.ostrails.eu/repositories/fdpindex-fdp'
-
-      # Create a SPARQL client instance
-      client = SPARQL::Client.new(endpoint_url)
-
-      endpoints = [] # the list of applicable tests
+      endpoints = []
       metrics.each do |metric|
-        # Define your SPARQL query to get the associated test for a metric
-        # TODO CAN I GET THE API HERE?  YES?
-        query = <<-SPARQL
-          PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-          PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-          SELECT distinct ?endpoint WHERE {
-            ?test <http://semanticscience.org/resource/SIO_000233> <#{metric.strip}> . # is implementation of
-            ?test <http://www.w3.org/ns/dcat#endpointURL> ?endpoint .
-          }
-        SPARQL
-
-        # Execute the query
-        solutions = client.query(query)
-        solutions.each do |result|
-          endpoints << result[:endpoint].value
+        pairs << get_test_endpoints_for_metric(metric: metric)
+        warn "FOUND ENDPOINT LIST PAIRS #{pairs.inspect}"
+        pairs.each do |testid, endpoint|
+          endpoints << [testid, endpoint]
         end
       end
+      endpointurls = endpoints.map {|testid, endpoint| endpoint}
+  
+      # now execute
+      return execute_on_endpoints(subject: subject, endpoints: endpointurls, bmid: bmid)
+    end
 
-      warn "FOUND ENDPOINTS #{endpoints}"
+    def get_test_endpoints_for_metric(metric:)
+      # metrics contains the Metric DOI from fairsharing.  Now lookip against FDP Index to get the tests
+      # <http://semanticscience.org/resource/SIO_000233>
+      # Define the remote SPARQL endpoint URL
+      fdp_url = 'https://tools.ostrails.eu/repositories/fdpindex-fdp'
+      # Create a SPARQL client instance
+      client = SPARQL::Client.new(fdp_url)
+      endpoints = []
 
-      # now execute!
+      # Define your SPARQL query to get the associated test for a metric
+      # TODO CAN I GET THE API HERE?  YES?
+      query = <<-SPARQL
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        SELECT distinct ?testid ?endpoint WHERE {
+          ?testid <http://semanticscience.org/resource/SIO_000233> <#{metric.strip}> . # is implementation of
+          ?testid <http://www.w3.org/ns/dcat#endpointURL> ?endpoint .
+        }
+      SPARQL
 
+      # Execute the query
+      solutions = client.query(query)
+      solutions.each do |result|
+        endpoints << [ result[:testid].value, result[:endpoint].value ]
+      end
+      endpoints
+    end
+
+    def get_test_endpoint_for_testid(testid:)
+      fdp_url = 'https://tools.ostrails.eu/repositories/fdpindex-fdp'
+      # Create a SPARQL client instance
+      client = SPARQL::Client.new(fdp_url)
+      # Define your SPARQL query to get the associated endpoint for a testid
+      query = <<-SPARQL
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        SELECT distinct ?endpoint WHERE {
+          <#{testid.to_s.strip}> <http://www.w3.org/ns/dcat#endpointURL> ?endpoint .
+        }
+      SPARQL
+
+      # Execute the query
+      solutions = client.query(query)
+      solutions.first[:endpoint].value  # can be onlhy one
+    end
+
+
+    def execute_on_endpoints(subject:, endpoints:, bmid:)
+      results = []
       endpoints.each do |endpoint|
         warn 'benchmark point 2', endpoint.inspect
         results << run_test(guid: subject, testapi: endpoint)
@@ -124,8 +152,8 @@ module Champion
         }
       )
       JSON.parse(result.body)
-    end
 
+    end
     # GROK
     # require 'json'
 

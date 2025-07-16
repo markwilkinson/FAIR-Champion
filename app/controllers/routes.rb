@@ -1,4 +1,5 @@
 require 'erb'
+require_relative './algorithm_routes.rb'
 
 # def set_routes(classes: allclasses)
 def set_routes
@@ -218,6 +219,10 @@ def set_routes
     #  THIS WILL EVENTUALLY USE the dcat profile in the Accept headers!
     @result = champ.run_benchmark_assessment(subject: subject, bmid: bmid)
 
+    warn "\n\n\n"
+    warn @result
+    warn "\n\n\n"
+
     request.accept.each do |type|
       case type.to_s
       when 'text/html', 'application/xhtml+xml'
@@ -326,6 +331,33 @@ def set_routes
     error 406
   end
 
+  ##############################  ALGORITHMS
+  ##############################  ALGORITHMS
+  ##############################  ALGORITHMS
+  ##############################  ALGORITHMS
+  ##############################  ALGORITHMS
+
+
+  get '/champion/algorithm' do
+    erb :algorithm_input, layout: :algorithm_layout
+  end
+
+  post '/champion/algorithm/run' do
+    calculation_uri = params[:calculation_uri]
+    guid = params[:guid]
+    
+    unless calculation_uri && guid
+      halt 400, erb(:error, locals: { message: 'Benchmark URI and GUID are required' })
+    end
+
+#    begin
+      algorithm = Algorithm.new(calculation_uri, guid)
+      @result = algorithm.process
+      erb :algorithm_output, layout: :layout
+#    rescue StandardError => e
+      halt 500, erb(:error, locals: { message: "Error processing algorithm: #{e.message}" })
+#    end
+  end
 
   before do
     # warn 'woohoo'

@@ -1,0 +1,20 @@
+<!-- views/_test_results.erb -->
+<h2>Test Results</h2>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Test ID</th>
+      <th>Result</th>
+      <th>Weight</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% test_results.each do |id, data| %>
+      <tr>
+        <td><%= id %></td>
+        <td><%= data[:result] %></td>
+        <td><%= data[:weight] %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

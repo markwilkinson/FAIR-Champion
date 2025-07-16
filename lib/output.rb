@@ -70,7 +70,7 @@ module Champion
       # triplify(tid, RDF.type, RDF::Vocab::PROV.Entity, g)
       # triplify(tid, schema.identifier, subject, g)
       # triplify(tid, schema.url, subject, g) if subject =~ /^https?\:\/\//
-      triplify(uniqueid, RDF::Vocab::PROV.wasDerivedFrom, subject, g)
+      triplify(uniqueid, ftr.assessmentTarget, subject, g)
 
       # g.dump(:jsonld)
       w = RDF::Writer.for(:jsonld)

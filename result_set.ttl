@@ -1,0 +1,1703 @@
+@prefix dc: <http://purl.org/dc/terms/> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix schema: <http://schema.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<urn:ostrails:testexecutionactivity:152a4486-f113-441b-a3e1-9be5938e49c3> a <https://w3id.org/ftr#TestExecutionActivity>;
+  prov:generated <urn:fairtestoutput:9313617e-cc14-4943-9abc-2afe8d3c1948>;
+  prov:used <https://w3id.org/duchenne-fdp>;
+  prov:wasAssociatedWith <https://tests.ostrails.eu/tests/fc_metadata_authorization> .
+
+<urn:ostrails:testexecutionactivity:42c79dfe-fc9a-40db-84b6-6a3e69b8afab> a <https://w3id.org/ftr#TestExecutionActivity>;
+  prov:generated <urn:fairtestoutput:2152d30f-516c-43da-b647-4f4726c33fbb>;
+  prov:used <https://w3id.org/duchenne-fdp>;
+  prov:wasAssociatedWith <https://tests.ostrails.eu/tests/fc_metadata_includes_license> .
+
+<urn:ostrails:testexecutionactivity:d6f7b656-97b0-424a-9659-644261a728d4> a <https://w3id.org/ftr#TestExecutionActivity>;
+  prov:generated <urn:fairtestoutput:2290b297-fc82-4e9e-986c-3769ac73a0a2>;
+  prov:used <https://w3id.org/duchenne-fdp>;
+  prov:wasAssociatedWith <https://tests.ostrails.eu/tests/fc_metadata_includes_license_weak> .
+
+<urn:fairchampionexecution:c4e488d9-a3cf-4bce-b7df-9ce741e1e345> a <https://w3id.org/ftr#TestExecutionActivity>;
+  schema:softwareVersion "1.1.0"^^xsd:float;
+  prov:used <https://w3id.org/duchenne-fdp> .
+
+<urn:fairchampionoutput:3492661e-ac18-49b8-a6f1-9f34d3eacc0c> a <https://w3id.org/ftr#TestResultSet>,
+    prov:Collection;
+  dc:title "FAIR Champion output"@en;
+  dc:description "Results of the execution of test set"@en;
+  dc:identifier <urn:fairchampionoutput:3492661e-ac18-49b8-a6f1-9f34d3eacc0c>;
+  dc:license <https://creativecommons.org/licenses/by/4.0/>;
+  prov:hadMember <urn:fairtestoutput:9313617e-cc14-4943-9abc-2afe8d3c1948>,
+    <urn:fairtestoutput:2152d30f-516c-43da-b647-4f4726c33fbb>,
+    <urn:fairtestoutput:2290b297-fc82-4e9e-986c-3769ac73a0a2>;
+  prov:wasGeneratedBy <urn:fairchampionexecution:c4e488d9-a3cf-4bce-b7df-9ce741e1e345>;
+  <https://w3id.org/ftr#assessmentTarget> <https://w3id.org/duchenne-fdp> .
+
+<urn:fairtestoutput:2152d30f-516c-43da-b647-4f4726c33fbb> a <https://w3id.org/ftr#TestResult>;
+  dc:title "FAIR Champion: Metadata Includes License (strong) OUTPUT"@en;
+  dc:description "OUTPUT OF Maturity Indicator to test if the linked data metadata contains an explicit pointer to the license.  Tests: xhtml, dvia, dcterms, cc, data.gov.au, and Schema license predicates in linked data, and validates the value of those properties."@en;
+  dc:identifier <urn:fairtestoutput:2152d30f-516c-43da-b647-4f4726c33fbb>;
+  dc:license <https://creativecommons.org/publicdomain/zero/1.0/>;
+  prov:generatedAtTime "2025-07-16T12:50:24+00:00"^^xsd:date;
+  prov:value "pass"@en;
+  <https://w3id.org/ftr#assessmentTarget> <https://w3id.org/duchenne-fdp>;
+  <https://w3id.org/ftr#completion> "100"^^xsd:int;
+  <https://w3id.org/ftr#log> """INFO: TEST VERSION 'Hvst-1.4.2:Tst-2.0.0'
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Linked data found.  Testing for one of the following predicates: [\"http://www.w3.org/1999/xhtml/vocab#license\", \"https://www.w3.org/1999/xhtml/vocab#license\", \"http://purl.org/ontology/dvia#hasLicense\", \"https://purl.org/ontology/dvia#hasLicense\", \"http://purl.org/dc/terms/license\", \"https://purl.org/dc/terms/license\", \"http://creativecommons.org/ns#license\", \"https://creativecommons.org/ns#license\", \"http://reference.data.gov.au/def/ont/dataset#hasLicense\", \"https://reference.data.gov.au/def/ont/dataset#hasLicense\"].
+SUCCESS: Found the http://purl.org/dc/terms/license predicate with a Resource as its value.
+INFO:  Testing for <https://schema.org/license>.
+INFO:  Testing for <http://schema.org/license>."""@en;
+  <https://w3id.org/ftr#outputFromTest> <https://tests.ostrails.eu/tests/fc_metadata_includes_license>;
+  <https://w3id.org/ftr#summary> ""@en .
+
+<urn:fairtestoutput:2290b297-fc82-4e9e-986c-3769ac73a0a2> a <https://w3id.org/ftr#TestResult>;
+  dc:title "FAIR Champion: Metadata Includes License (weak) OUTPUT"@en;
+  dc:description "OUTPUT OF Maturity Indicator to test if the metadata contains an explicit pointer to the license.  This 'weak' test will use a case-insensitive regular expression, and scan both key/value style metadata, as well as linked data metadata.  Tests: xhtml, dvia, dcterms, cc, data.gov.au, and Schema license predicates in linked data, and validates the value of those properties."@en;
+  dc:identifier <urn:fairtestoutput:2290b297-fc82-4e9e-986c-3769ac73a0a2>;
+  dc:license <https://creativecommons.org/publicdomain/zero/1.0/>;
+  prov:generatedAtTime "2025-07-16T12:50:25+00:00"^^xsd:date;
+  prov:value "pass"@en;
+  <https://w3id.org/ftr#assessmentTarget> <https://w3id.org/duchenne-fdp>;
+  <https://w3id.org/ftr#completion> "100"^^xsd:int;
+  <https://w3id.org/ftr#log> """INFO: TEST VERSION 'Hvst-1.4.2:Tst-2.0.0'
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Found a URI.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.
+INFO: parsing as linked data. 
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.
+INFO: parsing as XML. 
+INFO: The XML is being converted into a simple hash structure.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.
+WARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.
+INFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.
+INFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...
+INFO: Link Header and Meta Link parsing complete.  Back in main thread.
+INFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.
+INFO: parsing as linked data. 
+INFO: END OF HARVESTING
+INFO: Linked data found.  Testing for one of the following predicates: [\"http://www.w3.org/1999/xhtml/vocab#license\", \"https://www.w3.org/1999/xhtml/vocab#license\", \"http://purl.org/ontology/dvia#hasLicense\", \"https://purl.org/ontology/dvia#hasLicense\", \"http://purl.org/dc/terms/license\", \"https://purl.org/dc/terms/license\", \"http://creativecommons.org/ns#license\", \"https://creativecommons.org/ns#license\", \"http://reference.data.gov.au/def/ont/dataset#hasLicense\", \"https://reference.data.gov.au/def/ont/dataset#hasLicense\"].
+SUCCESS: Found the http://purl.org/dc/terms/license predicate with a Resource as its value.
+INFO:  Testing for <https://schema.org/license>.
+INFO:  Testing for <http://schema.org/license>."""@en;
+  <https://w3id.org/ftr#outputFromTest> <https://tests.ostrails.eu/tests/fc_metadata_includes_license_weak>;
+  <https://w3id.org/ftr#summary> ""@en .
+
+<urn:fairtestoutput:9313617e-cc14-4943-9abc-2afe8d3c1948> a <https://w3id.org/ftr#TestResult>;
+  dc:title "FAIR Champion: Metadata Authorization OUTPUT"@en;
+  dc:description "OUTPUT OF Tests metadata GUID for the ability to implement authentication and authorization in its resolution protocol.  Currently passes InChI Keys, DOIs, Handles, and URLs.  Recognition of other identifiers will be added upon request by the community."@en;
+  dc:identifier <urn:fairtestoutput:9313617e-cc14-4943-9abc-2afe8d3c1948>;
+  dc:license <https://creativecommons.org/publicdomain/zero/1.0/>;
+  prov:generatedAtTime "2025-07-16T12:50:24+00:00"^^xsd:date;
+  prov:value "pass"@en;
+  <https://w3id.org/ftr#assessmentTarget> <https://w3id.org/duchenne-fdp>;
+  <https://w3id.org/ftr#completion> "100"^^xsd:int;
+  <https://w3id.org/ftr#log> """INFO: TEST VERSION 'Hvst-1.4.2:Tst-2.0.0'
+PASS:  The GUID of the metadata is a uri, which is known to be allow authentication/authorization."""@en;
+  <https://w3id.org/ftr#outputFromTest> <https://tests.ostrails.eu/tests/fc_metadata_authorization>;
+  <https://w3id.org/ftr#summary> ""@en .
+
+<https://tests.ostrails.eu/tests/fc_metadata_authorization> a <https://w3id.org/ftr#Test>,
+    schema:SoftwareApplication,
+    dcat:DataService;
+  dc:title "FAIR Champion: Metadata Authorization"@en;
+  dc:description "Tests metadata GUID for the ability to implement authentication and authorization in its resolution protocol.  Currently passes InChI Keys, DOIs, Handles, and URLs.  Recognition of other identifiers will be added upon request by the community."@en;
+  dc:identifier "https://tests.ostrails.eu/tests/fc_metadata_authorization";
+  dc:license <https://github.com/wilkinsonlab/FAIR-Core-Tests/blob/main/LICENSE>;
+  <http://semanticscience.org/resource/SIO_000233> <https://doi.org/10.25504/FAIRsharing.VrP6sm>;
+  dcat:endpointDescription <https://tests.ostrails.eu/tests/fc_metadata_authorization>;
+  dcat:endpointURL <https://tests.ostrails.eu/tests/fc_metadata_authorization>;
+  dcat:version "Hvst-1.4.2:Tst-2.0.0 OutputVersion:1.1.0"@en .
+
+<https://tests.ostrails.eu/tests/fc_metadata_includes_license> a <https://w3id.org/ftr#Test>,
+    schema:SoftwareApplication,
+    dcat:DataService;
+  dc:title "FAIR Champion: Metadata Includes License (strong)"@en;
+  dc:description "Maturity Indicator to test if the linked data metadata contains an explicit pointer to the license.  Tests: xhtml, dvia, dcterms, cc, data.gov.au, and Schema license predicates in linked data, and validates the value of those properties."@en;
+  dc:identifier "https://tests.ostrails.eu/tests/fc_metadata_includes_license";
+  dc:license <https://github.com/wilkinsonlab/FAIR-Core-Tests/blob/main/LICENSE>;
+  <http://semanticscience.org/resource/SIO_000233> <https://doi.org/10.25504/FAIRsharing.VrP6sm>;
+  dcat:endpointDescription <https://tests.ostrails.eu/tests/fc_metadata_includes_license>;
+  dcat:endpointURL <https://tests.ostrails.eu/tests/fc_metadata_includes_license>;
+  dcat:version "Hvst-1.4.2:Tst-2.0.0 OutputVersion:1.1.0"@en .
+
+<https://tests.ostrails.eu/tests/fc_metadata_includes_license_weak> a <https://w3id.org/ftr#Test>,
+    schema:SoftwareApplication,
+    dcat:DataService;
+  dc:title "FAIR Champion: Metadata Includes License (weak)"@en;
+  dc:description "Maturity Indicator to test if the metadata contains an explicit pointer to the license.  This 'weak' test will use a case-insensitive regular expression, and scan both key/value style metadata, as well as linked data metadata.  Tests: xhtml, dvia, dcterms, cc, data.gov.au, and Schema license predicates in linked data, and validates the value of those properties."@en;
+  dc:identifier "https://tests.ostrails.eu/tests/fc_metadata_includes_license_weak";
+  dc:license <https://github.com/wilkinsonlab/FAIR-Core-Tests/blob/main/LICENSE>;
+  <http://semanticscience.org/resource/SIO_000233> <https://doi.org/10.25504/FAIRsharing.fsB7NK>;
+  dcat:endpointDescription <https://tests.ostrails.eu/tests/fc_metadata_includes_license_weak>;
+  dcat:endpointURL <https://tests.ostrails.eu/tests/fc_metadata_includes_license_weak>;
+  dcat:version "Hvst-1.4.2:Tst-2.0.0 OutputVersion:1.1.0"@en .
+
+<https://w3id.org/duchenne-fdp> a prov:Entity .

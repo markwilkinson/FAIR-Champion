@@ -1,0 +1,5 @@
+<!-- views/algorithm_output.erb -->
+<h1>Benchmark Assessment Results</h1>
+<%= erb :_metadata, locals: { metadata: @result[:metadata] } %>
+<%= erb :_test_results, locals: { test_results: @result[:test_results] } %>
+<%= erb :_narratives, locals: { narratives: @result[:narratives] } %>
