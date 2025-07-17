@@ -1,17 +1,25 @@
 <!-- views/algorithm_input.erb -->
-<h1 class="text-center mb-4">Run Benchmark Quality Assessment</h1>
 <div class="container">
-  <form action="/champion/algorithm/run" method="post" class="form max-w-md mx-auto">
-    <div class="form-group mb-3">
-      <label for="calculation_uri" class="block text-sm font-medium mb-1">Benchmark Configuration Spreadsheet URI:</label>
-      <input type="text" id="calculation_uri" name="calculation_uri" class="form-control w-full" placeholder="e.g., https://docs.google.com/spreadsheets/d/..." required>
-    </div>
-    <div class="form-group mb-3">
-      <label for="guid" class="block text-sm font-medium mb-1">GUID:</label>
-      <input type="text" id="guid" name="guid" class="form-control w-full" placeholder="e.g., https://example.org/object/123" required>
-    </div>
-    <div class="text-center">
-      <button type="submit" class="btn btn-primary">Run Benchmark Quality Assessment</button>
-    </div>
-  </form>
+  <div class="header">
+    <img src="/champion/champion_whitebgcrop.png" alt="FAIR Champion Logo"/>
+    <h2>Run Benchmark Quality Assessment</h2>
+  </div>
+</div>
+<div class="container">
+  <div class="form-card">
+
+    <form action="/champion/assess/algorithm" method="post" class="">
+      <div class="form-group mb-3">
+        <label for="calculation_uri" class="block text-sm font-medium mb-1">Benchmark Configuration Spreadsheet URI: (<a href="https://docs.google.com/spreadsheets/d/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w/edit?gid=0#gid=0">Example</a>)</label>
+        <input type="text" id="calculation_uri" name="calculation_uri" class="form-control w-full" placeholder="e.g., https://docs.google.com/spreadsheets/d/..." required>
+      </div>
+      <div class="form-group mb-3">
+        <label for="guid" class="block text-sm font-medium mb-1">GUID:</label>
+        <input type="text" id="guid" name="guid" class="form-control w-full" placeholder="https://w3id.org/duchenne-fdp" required>
+      </div>
+      <div class="text-center">
+        <button type="submit" class="btn btn-primary">Run Benchmark Quality Assessment</button>
+      </div>
+    </form>
+  </div>
 </div>

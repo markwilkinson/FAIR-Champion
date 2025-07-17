@@ -338,11 +338,11 @@ def set_routes
   ##############################  ALGORITHMS
 
 
-  get '/champion/algorithm' do
+  get '/champion/assess/algorithm/new' do
     erb :algorithm_input, layout: :algorithm_layout
   end
 
-  post '/champion/algorithm/run' do
+  post '/champion/assess/algorithm' do
     calculation_uri = params[:calculation_uri]
     guid = params[:guid]
     
@@ -350,13 +350,13 @@ def set_routes
       halt 400, erb(:error, locals: { message: 'Benchmark URI and GUID are required' })
     end
 
-#    begin
+   begin
       algorithm = Algorithm.new(calculation_uri, guid)
       @result = algorithm.process
-      erb :algorithm_output, layout: :layout
-#    rescue StandardError => e
+      halt erb :algorithm_output, layout: :algorithm_layout
+   rescue StandardError => e
       halt 500, erb(:error, locals: { message: "Error processing algorithm: #{e.message}" })
-#    end
+   end
   end
 
   before do

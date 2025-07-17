@@ -42,13 +42,12 @@ module Champion
     # we get the GUID of tghe benchmark.  We need to extract the GUIDs of the Metrics first
     # then get the tests that are associated with that metric
     def run_benchmark_assessment(subject:, bmid:)
-      results = []
       # BMID is the id of the benchmark.  I resolve it to DCAT turtle (or whatever)
       # TODO THIS WILL EVENTUALLY USE the dcat profile in the Accept headers!
-#       repo = RDF::Repository.new
-#       repo.load("https://ruby-rdf.github.io/rdf/etc/doap.ttl", 
-#           headers: { "Accept" => "text/turtle;q=1.0, application/rdf+xml;q=0.8" })
-#       puts "Loaded #{repo.count} statements"
+      #       repo = RDF::Repository.new
+      #       repo.load("https://ruby-rdf.github.io/rdf/etc/doap.ttl",
+      #           headers: { "Accept" => "text/turtle;q=1.0, application/rdf+xml;q=0.8" })
+      #       puts "Loaded #{repo.count} statements"
       bm_dcat = RDF::Repository.load(bmid)
       query = <<-SPARQL
       SELECT ?metric
@@ -60,16 +59,16 @@ module Champion
       warn "FOUND METRICS #{metrics}"
       endpoints = []
       metrics.each do |metric|
-        pairs << get_test_endpoints_for_metric(metric: metric)
+        pairs = get_test_endpoints_for_metric(metric: metric)
         warn "FOUND ENDPOINT LIST PAIRS #{pairs.inspect}"
         pairs.each do |testid, endpoint|
           endpoints << [testid, endpoint]
         end
       end
-      endpointurls = endpoints.map {|testid, endpoint| endpoint}
-  
+      endpointurls = endpoints.map { |_testid, endpoint| endpoint }
+
       # now execute
-      return execute_on_endpoints(subject: subject, endpoints: endpointurls, bmid: bmid)
+      execute_on_endpoints(subject: subject, endpoints: endpointurls, bmid: bmid)
     end
 
     def get_test_endpoints_for_metric(metric:)
@@ -95,7 +94,7 @@ module Champion
       # Execute the query
       solutions = client.query(query)
       solutions.each do |result|
-        endpoints << [ result[:testid].value, result[:endpoint].value ]
+        endpoints << [result[:testid].value, result[:endpoint].value]
       end
       endpoints
     end
@@ -115,9 +114,8 @@ module Champion
 
       # Execute the query
       solutions = client.query(query)
-      solutions.first[:endpoint].value  # can be onlhy one
+      solutions.first[:endpoint].value # can be onlhy one
     end
-
 
     def execute_on_endpoints(subject:, endpoints:, bmid:)
       results = []
@@ -152,7 +150,6 @@ module Champion
         }
       )
       JSON.parse(result.body)
-
     end
     # GROK
     # require 'json'

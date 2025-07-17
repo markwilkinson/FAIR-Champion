@@ -1,6 +1,8 @@
 <head>
-  <title>FAIR Champion: Benchmark Assessment</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/champion/css/styles.css">
+  <title>FAIR Champion: Benchmark Assessment</title>
 </head>
 
 <body>
@@ -15,7 +17,7 @@
 
     <header class="header">
         <div class="code-block">
-          <p>Generic CURL command (note that you POST to the set ID):</p>
+          <p>Generic CURL command (note that you POST including the benchmark ID):</p>
           <pre>
   curl -H "Content-type: application/json" -H "Accept: application/json" 
     -d '{"resource_identifier": "https://exampledataset.org", "bmid": "https://fairsharing.org/10.123/456.789"}' 
@@ -24,18 +26,26 @@
         </div>
     </header>
   </div>
-  <div class="form-card">
-    <h3>Select Benchmark and GUID to Assess:</h3>
-    <form action="/champion/assess/benchmark/" method="post">
-      <label>Benchmark (URL of Benchmark DCAT record):</label>
-      <input type="text" name="bmid">
-      <span class="example">example: https://ostrails.github.io/sandbox/mockbenchmark1.ttl</span>
 
-      <label>GUID to test:</label>
-      <input type="text" name="resource_identifier">
-      <span class="example">example: https://w3id.org/duchenne-fdp</span>
+  <div class="container">
 
-      <input type="submit" value="Begin Benchmark Assessment">
-    </form>
+    <div class="form-card">
+      <h3>Select Benchmark and GUID to Assess:</h3>
+      <form action="/champion/assess/benchmark/" method="post">
+        <div class="form-group mb-3">
+          <label>Benchmark (URL of Benchmark DCAT record):</label><br/>
+          <input type="text" name="bmid"><br/>
+          <span class="example">example: https://ostrails.github.io/sandbox/mockbenchmark1.ttl</span>
+        </div>
+        <div class="form-group mb-3">
+          <label>GUID to test:</label><br/>
+          <input type="text" name="resource_identifier"><br/>
+          <span class="example">example: https://w3id.org/duchenne-fdp</span>
+        </div>
+        <div class="form-group mb-3">
+          <input type="submit" value="Begin Benchmark Assessment">
+        <div>
+      </form>
+    </div>
   </div>
 </body>

@@ -1,5 +1,23 @@
-<!-- views/algorithm_output.erb -->
-<h1>Benchmark Assessment Results</h1>
-<%= erb :_metadata, locals: { metadata: @result[:metadata] } %>
-<%= erb :_test_results, locals: { test_results: @result[:test_results] } %>
-<%= erb :_narratives, locals: { narratives: @result[:narratives] } %>
+<div class="container">
+
+    <div class="header">
+      <img src="/champion/champion_whitebgcrop.png" alt="FAIR Champion Logo"/>
+      <h2>Quality Assessment</h2>
+    </div>
+
+    <div class="form-card">
+      <div style="display: block; max-width: 36rem; margin-left: auto; margin-right: auto; padding: 20px;">
+        <div>
+          <%= erb :_metadata, locals: { metadata: @result[:metadata] } %>
+        </div>
+        <br/><br/>
+        <div>
+          <%= erb :_test_results, locals: { test_results: @result[:test_results] } %>
+        </div>
+        <br/><br/>
+        <div>
+          <%= erb :_narratives, locals: { narratives: @result[:narratives] } %>
+        </div>
+      </div>
+    </div>
+</div>

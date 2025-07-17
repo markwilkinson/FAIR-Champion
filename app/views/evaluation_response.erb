@@ -2,27 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/champion/css/styles.css">
   <title><%= @result_set['dct:title']['@value'] %> - FAIR Champion</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    h1 { color: #333; }
-    .section { margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
-    .metadata { font-size: 0.9em; color: #666; }
-    .test-output { margin-left: 20px; }
-    .log { white-space: pre-wrap; font-family: monospace; background: #f5f5f5; padding: 10px; border-radius: 3px; }
-    a { color: #0066cc; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    .pass { color: green; font-weight: bold; }
-    .fail { color: red; font-weight: bold; }
-    details { margin-top: 10px; }
-    summary { cursor: pointer; font-weight: bold; }
-  </style>
 </head>
 <body>
-  <h1><%= @result_set['dct:title']['@value'] %></h1>
+<div class="container">
+  <div class="header">
+    <img src="/champion/champion_whitebgcrop.png" alt="FAIR Champion Logo"/>
+    <h2><%= @result_set['dct:title']['@value'] %></h2>
+  </div>
+</div>
 
-
-  <div class="section">
+<div class="container">
+  <div class="form-card">
     <h2>Test Results Overview</h2>
     <% total_tests = @result_set['prov:hadMember'].length %>
     <% pass_count = @result_set['prov:hadMember'].count { |member| @graph.find { |node| node['@id'] == member['@id'] }['prov:value']['@value'] == 'pass' } %>
@@ -38,9 +31,10 @@
       <strong><%= fail_count %></strong> Failed (<%= fail_percentage %>%)
     </p>
   </div>
+</div>
 
-
-  <div class="section">
+<div class="container">
+  <div class="form-card">
     <h2>Test Result Set</h2>
     <div class="metadata">
       <p><strong>ID:</strong> <%= @result_set['dct:identifier']['@id'] %></p>
@@ -50,37 +44,41 @@
       <p><strong>Assessment Target:</strong> <a href="<%= @result_set['ftr:assessmentTarget']['@id'] %>"><%= @result_set['ftr:assessmentTarget']['@id'] %></a></p>
     </div>
   </div>
-
-<div class="section">
-  <h2>Test Outputs</h2>
-  <% @result_set['prov:hadMember'].each_with_index do |member, index| %>
-    <% test_result = @graph.find { |node| node['@id'] == member['@id'] } %>
-    <% execution = @graph.find { |node| node['prov:generated'] && node['prov:generated']['@id'] == test_result['@id'] } %>
-    <% test = @graph.find { |node| node['@id'] == execution['prov:wasAssociatedWith']['@id'] } %>
-    <div class="test-output">
-      <h3>Test Output <%= index + 1 %>: <%= test['dct:title']['@value'] %></h3>
-      <div class="metadata">
-        <p><strong>ID:</strong> <%= test_result['dct:identifier']['@id'] %></p>
-        <p><strong>Description:</strong> <%= test_result['dct:description']['@value'] %></p>
-        <p><strong>Result:</strong> <span class="<%= test_result['prov:value']['@value'] == 'pass' ? 'pass' : 'fail' %>"><%= test_result['prov:value']['@value'].capitalize %></span></p>
-        <p><strong>Generated At:</strong> <%= test_result['prov:generatedAtTime']['@value'] %></p>
-        <p><strong>Completion:</strong> <%= test_result['ftr:completion']['@value'] %>%</p>
-        <p><strong>Test:</strong> <a href="<%= test['dcat:endpointURL']['@id'] %>"><%= test['dct:identifier'] %></a></p>
-        <p><strong>Evaluated Metric:</strong> <a href="<%= test['sio:SIO_000233']['@id'] %>"><%= test['sio:SIO_000233']['@id'] %></a></p>
-        <p><strong>Assessment Target:</strong> <a href="<%= test_result['ftr:assessmentTarget']['@id'] %>"><%= test_result['ftr:assessmentTarget']['@id'] %></a></p>
-        <p><strong>License:</strong> <a href="<%= test_result['dct:license']['@id'] %>"><%= test_result['dct:license']['@id'] %></a></p>
-        <% if test_result['ftr:summary']['@value'].to_s.strip.length > 0 %>
-          <p><strong>Summary:</strong> <%= test_result['ftr:summary']['@value'] %></p>
-        <% end %>
-        <details>
-          <summary>View Log</summary>
-          <div class="log"><%= test_result['ftr:log']['@value'] %></div>
-        </details>
-      </div>
-    </div>
-  <% end %>
 </div>
-  <div class="section">
+
+<div class="container">
+  <div class="form-card">
+    <h2>Test Outputs</h2>
+    <% @result_set['prov:hadMember'].each_with_index do |member, index| %>
+      <% test_result = @graph.find { |node| node['@id'] == member['@id'] } %>
+      <% execution = @graph.find { |node| node['prov:generated'] && node['prov:generated']['@id'] == test_result['@id'] } %>
+      <% test = @graph.find { |node| node['@id'] == execution['prov:wasAssociatedWith']['@id'] } %>
+      <div class="test-output">
+        <h3>Test Output <%= index + 1 %>: <%= test['dct:title']['@value'] %></h3>
+        <div class="metadata">
+          <p><strong>ID:</strong> <%= test_result['dct:identifier']['@id'] %></p>
+          <p><strong>Description:</strong> <%= test_result['dct:description']['@value'] %></p>
+          <p><strong>Result:</strong> <span class="<%= test_result['prov:value']['@value'] == 'pass' ? 'pass' : 'fail' %>"><%= test_result['prov:value']['@value'].capitalize %></span></p>
+          <p><strong>Generated At:</strong> <%= test_result['prov:generatedAtTime']['@value'] %></p>
+          <p><strong>Completion:</strong> <%= test_result['ftr:completion']['@value'] %>%</p>
+          <p><strong>Test:</strong> <a href="<%= test['dcat:endpointURL']['@id'] %>"><%= test['dct:identifier'] %></a></p>
+          <p><strong>Evaluated Metric:</strong> <a href="<%= test['sio:SIO_000233']['@id'] %>"><%= test['sio:SIO_000233']['@id'] %></a></p>
+          <p><strong>Assessment Target:</strong> <a href="<%= test_result['ftr:assessmentTarget']['@id'] %>"><%= test_result['ftr:assessmentTarget']['@id'] %></a></p>
+          <p><strong>License:</strong> <a href="<%= test_result['dct:license']['@id'] %>"><%= test_result['dct:license']['@id'] %></a></p>
+          <% if test_result['ftr:summary']['@value'].to_s.strip.length > 0 %>
+            <p><strong>Summary:</strong> <%= test_result['ftr:summary']['@value'] %></p>
+          <% end %>
+          <details>
+            <summary>View Log</summary>
+            <div class="log"><%= test_result['ftr:log']['@value'] %></div>
+          </details>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+<div class="container">
+  <div class="form-card">
     <h2>Execution Details</h2>
     <% execution = @graph.find { |node| node['@id'] == @result_set['prov:wasGeneratedBy']['@id'] } %>
     <div class="metadata">
@@ -90,5 +88,6 @@
       <p><strong>Software Version:</strong> <%= execution['schema:softwareVersion']['@value'] %></p>
     </div>
   </div>
+</div>
 </body>
 </html>

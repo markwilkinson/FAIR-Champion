@@ -1,11 +1,12 @@
-<!-- views/algorithm_layout.erb -->
+<!-- views/layout.erb -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Quality Assessment</title>
-  <link rel="stylesheet" href="https://tools.ostrails.eu/champion/css/styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/champion/css/styles.css">
 </head>
-<body>
+<body id="<%= request.path_info == '/champion/algorithm/run' ? 'algorithm-output' : 'default' %>">
   <div class="container">
     <%= yield %>
   </div>

@@ -1,19 +1,18 @@
-<!-- views/_test_results.erb -->
-<h2>Test Results</h2>
-<table class="table">
+<h2 class="mb-3">Test Results</h2>
+<table class="table w-full border-collapse">
   <thead>
-    <tr>
-      <th>Test ID</th>
-      <th>Result</th>
-      <th>Weight</th>
+    <tr class="bg-gray-200">
+      <th class="p-2 border text-left">Test ID</th>
+      <th class="p-2 border text-left">Result</th>
+      <th class="p-2 border text-left">Weight</th>
     </tr>
   </thead>
   <tbody>
     <% test_results.each do |id, data| %>
       <tr>
-        <td><%= id %></td>
-        <td><%= data[:result] %></td>
-        <td><%= data[:weight] %></td>
+        <td class="p-2 border"><%= id %></td>
+        <td class="p-2 border"><%= data[:result] %></td>
+        <td class="p-2 border"><%= data[:weight] %></td>
       </tr>
     <% end %>
   </tbody>

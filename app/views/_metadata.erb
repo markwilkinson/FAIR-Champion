@@ -1,0 +1,13 @@
+<h2 class="mb-3">Metadata</h2>
+<ul class="list-group p-2">
+  <li class="list-group-item p-2">
+    <strong>Assesssed GUID</strong>: <%= metadata["Assessed GUID"] %>
+  </li>
+  <% metadata.delete("Assessed GUID") %>
+
+  <% metadata.sort_by { |k, _| k }.each do |key, value| %>
+    <li class="list-group-item p-2">
+      <strong><%= key %>:</strong> <%= value %>
+    </li>
+  <% end %>
+</ul>

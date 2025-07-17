@@ -1,5 +1,6 @@
 require 'rdf'
 require 'rdf/ntriples'
+require 'rdf/vocab'
 require 'csv'
 require 'rest-client'
 require 'json'
@@ -49,13 +50,14 @@ class Algorithm
 
     # Ensure we have at least two empty lines to separate three blocks
     raise "Invalid CSV structure: Expected at least two empty lines to separate three blocks" if empty_line_indices.size < 2
-    @metadata = {}
+
     # Parse metadata block (rows 0 to first empty line, with header)
     metadata_csv = csv_lines[0...empty_line_indices[0]].join
     csv_data = CSV.parse(metadata_csv, headers: true)
     @metadata = csv_data.each_with_object({}) do |row, hash|
       hash[row['Property']] = row['Value']
     end
+    @metadata["Assessed GUID"] = @guid
 
     c = Champion::Core.new
 
@@ -127,6 +129,7 @@ class Algorithm
     c = Champion::Core.new
     result_set = c.execute_on_endpoints(subject: @guid, endpoints: endpoints, bmid: @metadata["Benchmark GUID"]) # ResultSet is the shared datastructure in the IF
 
+    # warn "RESULT SET", result_set, "\n\n"
     results = {}
     @tests.each do |test|
       passfail = parse_single_test_response(result_set: result_set, testid: test[:name]) # extract result for THAT test from the restul-set
@@ -145,9 +148,10 @@ class Algorithm
 
   # Stub for test response parsing (to be implemented in your existing codebase)
   def parse_single_test_response(result_set:, testid:)
-    format = "jsonld"
-    graph = RDF::Graph.new << RDF::Reader.for(format).new(result_set)
-
+    format = :jsonld
+    graph = RDF::Graph.new
+    graph << RDF::Reader.for(format).new(result_set)
+warn "GRAPH:", graph.dump(:turtle), "\n\n"
 # <urn:ostrails:testexecutionactivity:42c79dfe-fc9a-40db-84b6-6a3e69b8afab> a <https://w3id.org/ftr#TestExecutionActivity>;
 #   prov:generated <urn:fairtestoutput:2152d30f-516c-43da-b647-4f4726c33fbb>;
 #   prov:used <https://w3id.org/duchenne-fdp>;
@@ -157,21 +161,24 @@ class Algorithm
 
     dcat = RDF::Vocab::DCAT
     prov = RDF::Vocab::PROV
-    ftr = RDF::Vocab.new("https://w3id.org/ftr")
+    ftr = RDF::Vocabulary.new("https://w3id.org/ftr#")
+    warn "PROV: ", prov.inspect, "\n\n"
+    warn "FTR: ", ftr.inspect, "\n\n"
     solutions = RDF::Query.execute(graph) do
       pattern [:execution, RDF.type, ftr.TestExecutionActivity]
-      pattern [:execution, prov.wasAssociatedWith, "<#{testid}>"]
       pattern [:execution, prov.generated, :result]
       pattern [:result, RDF.type, ftr.TestResult]
       pattern [:result, prov.value, :value]
     end
+    warn "SOLUTIONS for <#{testid}>", solutions.inspect, "\n"
 
     passfail = solutions.map { |solution| solution[:value].to_s }.uniq
     if passfail.empty?
       raise "no score found for test #{testid}"
     elsif passfail.size > 1
-      puts "Warning: Multiple scores found.  Returning onlkh the first one."
+      warn "Warning: Multiple scores found.  Returning onlkh the first one."
     end
+
     passfail.first
   end
 
