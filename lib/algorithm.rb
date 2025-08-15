@@ -5,36 +5,51 @@ require 'csv'
 require 'rest-client'
 require 'json'
 require 'linkeddata'
-require_relative './dcat_extractor.rb'
+require_relative 'dcat_extractor'
 
 class Algorithm
   include RDF
+  DCAT = RDF::Vocabulary.new('http://www.w3.org/ns/dcat#') # for some reason the built-in DCAT vocab doesnt recognize "version"
+  FTR = RDF::Vocabulary.new('https://w3id.org/ftr#')
+  VIVO = RDF::Vocabulary.new('http://vivoweb.org/ontology/core#')
+  DOAP = RDF::Vocab::DOAP
+  VCARD = RDF::Vocab::VCARD
+  DC = RDF::Vocab::DC
 
-  def initialize(calculation_uri, guid)
+  PREDICATES = { title: DC.title,
+                 version: DCAT.version,
+                 description: DC.description,
+                 endpointtDescription: DCAT.endpointDescription,
+                 endpointURL: DCAT.endpointURL,
+                 keyword: DCAT.keyword,
+                 abbreviation: VIVO.abbreviation,
+                 repository: DOAP.repository,
+                 type: DC.type,
+                 license: DC.license,
+                 applicationArea: FTR.applicationArea,
+                 isApplicableFor: FTR.isApplicableFor,
+                 isScoringFunctionFor: FTR.isScoringFunctionFor,
+                 contactPoint: DCAT.contactPoint }.freeze
+
+  attr_accessor :calculation_uri, :csv, :algorithm_id, :guid, :resultset, :valid, :metadata, :graph, :tests, :conditions
+
+  def initialize(calculation_uri:, guid: nil, resultset: nil)
     @calculation_uri = calculation_uri
     @guid = guid
+    @resultset = resultset
     @graph = RDF::Graph.new
     @metadata = {}
     @tests = []
     @conditions = []
-  end
-
-    # Prepare output data
-  def process
-    load_configuration
-    test_results = run_tests
-    narratives = evaluate_conditions(test_results)
-    {
-      metadata: @metadata,
-      test_results: test_results,
-      narratives: narratives
-    }
-  end
-
-  # Parse the Google Spreadsheet configuration
-  def load_configuration
+    @valid = false
+    # Must be a google docs template ands either a guid to test or the inut from another tools resultset
+    @valid = true if @calculation_uri =~ %r{docs\.google\.com/spreadsheets} && (guid || resultset)
+    # spreadsheets/d/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w
+    @algorithm_id = @calculation_uri.match(%r{/spreadsheets/\w/([^/]+)})[1]
     # Transform the spreadsheet URL to CSV export format
-    csv_url = @calculation_uri.sub(/\/edit.*$/, '') + '/export?exportFormat=csv'
+    # https://docs.google.com/spreadsheets/d/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w/edit?gid=0#gid=0
+    calculation_uri.sub!(%r{/edit.*$}, '')
+    csv_url = "#{calculation_uri}/export?exportFormat=csv"
     # Use RestClient with follow redirects (default max_redirects is 10)
     response = RestClient::Request.execute(
       method: :get,
@@ -42,26 +57,37 @@ class Algorithm
       headers: { accept: 'text/csv' },
       max_redirects: 10
     )
-    
     # Split CSV into lines to identify blocks
-    csv_lines = response.body.lines
-    # Find separator lines (containing only commas, whitespace, or empty after strip)
-    empty_line_indices = csv_lines.each_with_index.select { |line, _| line.strip.gsub(/,+/, '').empty? }.map(&:last)
+    @csv = response.body.lines
+  end
 
+  # Prepare output data
+  def process
+    load_configuration
+    test_results = resultset || run_tests
+    narratives = evaluate_conditions(test_results)
+    {
+      metadata: metadata,
+      test_results: test_results,
+      narratives: narratives
+    }
+  end
+
+  # Parse the Google Spreadsheet configuration
+  def load_configuration
+    gather_metadata
+
+    empty_line_indices = csv.each_with_index.select { |line, _| line.strip.gsub(/,+/, '').empty? }.map(&:last)
     # Ensure we have at least two empty lines to separate three blocks
-    raise "Invalid CSV structure: Expected at least two empty lines to separate three blocks" if empty_line_indices.size < 2
-
-    # Parse metadata block (rows 0 to first empty line, with header)
-    metadata_csv = csv_lines[0...empty_line_indices[0]].join
-    csv_data = CSV.parse(metadata_csv, headers: true)
-    @metadata = csv_data.each_with_object({}) do |row, hash|
-      hash[row['Property']] = row['Value']
+    if empty_line_indices.size < 2
+      raise 'Invalid CSV structure: Expected at least two empty lines to separate three blocks'
     end
-    @metadata["Assessed GUID"] = @guid
+
+    @metadata['Assessed GUID'] = @guid
 
     c = Champion::Core.new
 
-    test_csv = csv_lines[(empty_line_indices[0] + 1)...empty_line_indices[1]].join
+    test_csv = csv[(empty_line_indices[0] + 1)...empty_line_indices[1]].join
     csv_data = CSV.parse(test_csv, headers: true)
     @tests = csv_data.map do |row|
       {
@@ -76,16 +102,16 @@ class Algorithm
     end
 
     # Parse conditions (remaining rows after empty row)
-  # Parse conditions block (rows after second separator, with header)
-  condition_csv = csv_lines[(empty_line_indices[1] + 1)..-1].join
-  csv_data = CSV.parse(condition_csv, headers: true)
-  @conditions = csv_data.map do |row|
+    # Parse conditions block (rows after second separator, with header)
+    condition_csv = csv[(empty_line_indices[1] + 1)..-1].join
+    csv_data = CSV.parse(condition_csv, headers: true)
+    @conditions = csv_data.map do |row|
       {
         condition: row['Condition'],
         description: row['Description'],
         formula: row['Formula'],
         success: row['Success Message'],
-        failure: row['Fail Message'],
+        failure: row['Fail Message']
       }
     end
 
@@ -93,41 +119,88 @@ class Algorithm
     build_rdf_graph
   end
 
+  def gather_metadata
+    metadata = RDF::Graph.new
+    # Find separator lines (containing only commas, whitespace, or empty after strip)
+    empty_line_indices = csv.each_with_index.select { |line, _| line.strip.gsub(/,+/, '').empty? }.map(&:last)
+
+    # Ensure we have at least two empty lines to separate three blocks
+    if empty_line_indices.size < 2
+      raise 'Invalid CSV structure: Expected at least two empty lines to separate three blocks'
+    end
+
+    # Parse metadata block (rows 0 to first empty line, with header)
+    metadata_csv = csv[0...empty_line_indices[0]].join
+    csv_data = CSV.parse(metadata_csv, headers: true)
+    subject = RDF::URI.new("https://tools.ostrails.eu/champion/algorithms/#{algorithm_id}")
+    csv_data.each do |row|
+      # warn row.inspect
+      # warn row["DCAT Property"]
+
+      # Process COntactPoint separately
+      if row['DCAT Property'].strip == 'contactPoint'
+        uniqid = Time.now.to_i
+        contactnode = RDF::URI.new("urn:local:champion:contactpoint:#{uniqid}")
+        predicate = PREDICATES[:contactPoint]
+        metadata << RDF::Statement.new(subject, predicate, contactnode)
+        metadata << RDF::Statement.new(contactnode, RDF.type, VCARD.Individual)
+        metadata << RDF::Statement.new(contactnode, VCARD.hasEmail, RDF::Literal.new(row['Value']))
+        next
+      end
+
+      predicate = PREDICATES[row['DCAT Property'].strip.to_sym]
+      # warn "working with predicate #{predicate}"
+      predicate ||= RDF::URI.new("urn:unknown_property:#{row['DCAT Property']}")
+      value = row['Value']
+      value = if value =~ %r{^https?://}
+                RDF::URI.new(value)
+              else
+                RDF::Literal.new(value)
+              end
+      metadata << RDF::Statement.new(subject, predicate, value)
+    end
+
+    metadata << RDF::Statement.new(subject, RDF.type, FTR.ScoringAlgorithm)
+    metadata << RDF::Statement.new(subject, RDF.type, DCAT.DataService)
+    metadata << RDF::Statement.new(subject, DC.identifier, subject)
+    metadata
+  end
+
   # Build RDF graph for semantic representation
   # not sure this is useful....??
   def build_rdf_graph
     algo = RDF::URI.new(@calculation_uri)
-    @graph << [algo, RDF.type, RDF::URI.new("https://w3id.org/ftr#Algorithm")]
+    @graph << [algo, RDF.type, RDF::URI.new('https://w3id.org/ftr#Algorithm')]
     @metadata.each do |key, value|
       @graph << [algo, RDF::URI.new("http://example.org/#{key}"), value]
     end
 
     @tests.each do |test|
-        # reference: row['Test Reference'],
-        # name: row['Test GUID'],
-        # testid: row['Test GUID'],
-        # endpoint: get_test_endpoint_for_testid(testid: row['Test GUID'])
-        # pass_weight: row['Pass Weight'].to_f,
-        # fail_weight: row['Fail Weight'].to_f,
-        # indeterminate_weight: row['Indeterminate Weight'].to_f
+      # reference: row['Test Reference'],
+      # name: row['Test GUID'],
+      # testid: row['Test GUID'],
+      # endpoint: get_test_endpoint_for_testid(testid: row['Test GUID'])
+      # pass_weight: row['Pass Weight'].to_f,
+      # fail_weight: row['Fail Weight'].to_f,
+      # indeterminate_weight: row['Indeterminate Weight'].to_f
 
       test_uri = RDF::URI.new(test[:testid])
-      @graph << [test_uri, RDF.type, RDF::URI.new("http://example.org/Test")]
-      @graph << [test_uri, RDF::URI.new("http://example.org/reference"), test[:reference]]
-      @graph << [test_uri, RDF::URI.new("http://example.org/identifier"), test[:name]]
-      @graph << [test_uri, RDF::URI.new("http://example.org/endpoint"), test[:endpoint]]
-      @graph << [test_uri, RDF::URI.new("http://example.org/passWeight"), test[:pass_weight]]
-      @graph << [test_uri, RDF::URI.new("http://example.org/failWeight"), test[:fail_weight]]
-      @graph << [test_uri, RDF::URI.new("http://example.org/indeterminateWeight"), test[:indeterminate_weight]]
-      @graph << [algo, RDF::URI.new("http://example.org/hasTest"), test_uri]
+      @graph << [test_uri, RDF.type, RDF::URI.new('http://example.org/Test')]
+      @graph << [test_uri, RDF::URI.new('http://example.org/reference'), test[:reference]]
+      @graph << [test_uri, RDF::URI.new('http://example.org/identifier'), test[:name]]
+      @graph << [test_uri, RDF::URI.new('http://example.org/endpoint'), test[:endpoint]]
+      @graph << [test_uri, RDF::URI.new('http://example.org/passWeight'), test[:pass_weight]]
+      @graph << [test_uri, RDF::URI.new('http://example.org/failWeight'), test[:fail_weight]]
+      @graph << [test_uri, RDF::URI.new('http://example.org/indeterminateWeight'), test[:indeterminate_weight]]
+      @graph << [algo, RDF::URI.new('http://example.org/hasTest'), test_uri]
     end
   end
 
   # Run tests and collect results
   def run_tests
-    endpoints = @tests.map {|test| test[:endpoint]}
+    endpoints = @tests.map { |test| test[:endpoint] }
     c = Champion::Core.new
-    result_set = c.execute_on_endpoints(subject: @guid, endpoints: endpoints, bmid: @metadata["Benchmark GUID"]) # ResultSet is the shared datastructure in the IF
+    result_set = c.execute_on_endpoints(subject: @guid, endpoints: endpoints, bmid: @metadata['Benchmark GUID']) # ResultSet is the shared datastructure in the IF
 
     # warn "RESULT SET", result_set, "\n\n"
     results = {}
@@ -151,19 +224,17 @@ class Algorithm
     format = :jsonld
     graph = RDF::Graph.new
     graph << RDF::Reader.for(format).new(result_set)
-warn "GRAPH:", graph.dump(:turtle), "\n\n"
-# <urn:ostrails:testexecutionactivity:42c79dfe-fc9a-40db-84b6-6a3e69b8afab> a <https://w3id.org/ftr#TestExecutionActivity>;
-#   prov:generated <urn:fairtestoutput:2152d30f-516c-43da-b647-4f4726c33fbb>;
-#   prov:used <https://w3id.org/duchenne-fdp>;
-#   prov:wasAssociatedWith <https://tests.ostrails.eu/tests/fc_metadata_includes_license> .
-# <urn:fairtestoutput:2152d30f-516c-43da-b647-4f4726c33fbb> a <https://w3id.org/ftr#TestResult>;
-#   prov:value "pass"@en;
-
-    dcat = RDF::Vocab::DCAT
+    warn 'GRAPH:', graph.dump(:turtle), "\n\n"
+    # <urn:ostrails:testexecutionactivity:42c79dfe-fc9a-40db-84b6-6a3e69b8afab> a <https://w3id.org/ftr#TestExecutionActivity>;
+    #   prov:generated <urn:fairtestoutput:2152d30f-516c-43da-b647-4f4726c33fbb>;
+    #   prov:used <https://w3id.org/duchenne-fdp>;
+    #   prov:wasAssociatedWith <https://tests.ostrails.eu/tests/fc_metadata_includes_license> .
+    # <urn:fairtestoutput:2152d30f-516c-43da-b647-4f4726c33fbb> a <https://w3id.org/ftr#TestResult>;
+    #   prov:value "pass"@en;
     prov = RDF::Vocab::PROV
-    ftr = RDF::Vocabulary.new("https://w3id.org/ftr#")
-    warn "PROV: ", prov.inspect, "\n\n"
-    warn "FTR: ", ftr.inspect, "\n\n"
+    ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
+    warn 'PROV: ', prov.inspect, "\n\n"
+    warn 'FTR: ', ftr.inspect, "\n\n"
     solutions = RDF::Query.execute(graph) do
       pattern [:execution, RDF.type, ftr.TestExecutionActivity]
       pattern [:execution, prov.generated, :result]
@@ -176,7 +247,7 @@ warn "GRAPH:", graph.dump(:turtle), "\n\n"
     if passfail.empty?
       raise "no score found for test #{testid}"
     elsif passfail.size > 1
-      warn "Warning: Multiple scores found.  Returning onlkh the first one."
+      warn 'Warning: Multiple scores found.  Returning onlkh the first one.'
     end
 
     passfail.first
@@ -184,10 +255,10 @@ warn "GRAPH:", graph.dump(:turtle), "\n\n"
 
   # Evaluate conditions and generate narratives
   def evaluate_conditions(test_results)
-      # results[T1] = {
-      #   result: "pass",
-      #   weight: 10
-      # } ...
+    # results[T1] = {
+    #   result: "pass",
+    #   weight: 10
+    # } ...
 
     narratives = []
     @conditions.each do |condition|
@@ -216,16 +287,15 @@ warn "GRAPH:", graph.dump(:turtle), "\n\n"
       begin
         # Evaluate the formula (e.g., "A1 + B1 > 1.0")
         is_met = eval(formula)
-        if is_met
-          narratives << condition[:success] + ";"
-        else
-          narratives << condition[:failure] + ";"
-        end
-      rescue StandardError => e
+        narratives << if is_met
+                        (condition[:success] + ';')
+                      else
+                        (condition[:failure] + ';')
+                      end
+      rescue StandardError
         narratives << "Problem solving for #{formula}; "
       end
     end
     narratives
   end
-
 end

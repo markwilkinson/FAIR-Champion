@@ -100,6 +100,9 @@ module Champion
     end
 
     def get_test_endpoint_for_testid(testid:)
+      
+      # TODO In principle we can get this directly from the DCAT, right??  Why use the registry?
+
       fdp_url = 'https://tools.ostrails.eu/repositories/fdpindex-fdp'
       # Create a SPARQL client instance
       client = SPARQL::Client.new(fdp_url)

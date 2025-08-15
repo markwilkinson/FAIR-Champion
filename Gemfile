@@ -18,7 +18,6 @@ gem 'openapi3_parser', '~> 0.9.2'
 gem 'parseconfig', '~>1.1.2'
 gem 'rake', '~> 13.0'
 gem 'rdf-raptor', '~> 3.1.0'
-gem 'rdf-vocab'
 gem 'require_all', '~> 3.0.0'
 gem 'rest-client', '~>2.1.0'
 gem 'rspec', '~> 3.11.0'
@@ -52,3 +51,5 @@ gem "openapi_parser", "~> 2.1"
 
 
 gem "sparql-client", "~> 3.3"
+
+gem "rdf-vocab", "~> 3.3"

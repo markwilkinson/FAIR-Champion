@@ -1,0 +1,1 @@
+curl -v -L -H "content-type: application/json" -d '{"clientUrl": "https://my.domain.org/path/to/DCAT/record.ttl"}' https://tools.ostrails.eu/fdp-index-proxy/proxy  

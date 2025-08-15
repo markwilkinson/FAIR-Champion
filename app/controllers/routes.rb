@@ -1,5 +1,5 @@
 require 'erb'
-require_relative './algorithm_routes.rb'
+require_relative 'algorithm_routes'
 
 # def set_routes(classes: allclasses)
 def set_routes
@@ -18,7 +18,7 @@ def set_routes
     json: []
   }
 
-  get %r{/champion/?}  do
+  get %r{/champion/?} do
     halt erb :homepage
   end
 
@@ -110,7 +110,6 @@ def set_routes
   # TODO
   # /metrics
 
-
   # ###########################################  ASSESSMENTS
   # ###########################################  ASSESSMENTS
   # ###########################################  ASSESSMENTS
@@ -173,22 +172,15 @@ def set_routes
     result
   end
 
-
-
   # ###########################################  BENCHMARKS
   # ###########################################  BENCHMARKS
   # ###########################################  BENCHMARKS
-
-
-
-
 
   # this is the Benchmark API
-  get  '/champion/assess/benchmark/new' do
+  get '/champion/assess/benchmark/new' do
     erb :init_benchmark_assessment
   end
 
-  
   # redirect "/champion/assess/benchmark", 307
 
   post '/champion/assess/benchmark/' do
@@ -206,7 +198,6 @@ def set_routes
     # for now, just call the URL of the benchmark and assume that it is DCAT
     # extract the URIs of the metrics
     # Lookup in FDP Index to get the Tests
-    
 
     warn "received call to evaluate benchmark #{bmid}"
     if params['resource_identifier'] # for calls from the Web form
@@ -337,6 +328,27 @@ def set_routes
   ##############################  ALGORITHMS
   ##############################  ALGORITHMS
 
+  get '/champion/algorithms/:id' do
+    googleid = params[:id]
+    calculation_uri = "https://docs.google.com/spreadsheets/d/#{googleid}"
+    algorithm = Algorithm.new(calculation_uri: calculation_uri, guid: "http://example.org/mock")
+    graph = algorithm.gather_metadata
+
+    request.accept.each do |type|
+      case type.to_s
+      when 'text/turtle'
+        content_type "text/turtle"
+        halt graph.dump(:turtle)
+      when 'text/json', 'application/json', 'application/ld+json'
+        content_type :json
+        halt graph.dump(:jsonld)
+      else
+        content_type "text/turtle"
+        halt graph.dump(:turtle)
+      end
+    end
+    error 406
+  end
 
   get '/champion/assess/algorithm/new' do
     erb :algorithm_input, layout: :algorithm_layout
@@ -345,18 +357,35 @@ def set_routes
   post '/champion/assess/algorithm' do
     calculation_uri = params[:calculation_uri]
     guid = params[:guid]
-    
-    unless calculation_uri && guid
-      halt 400, erb(:error, locals: { message: 'Benchmark URI and GUID are required' })
-    end
 
-   begin
-      algorithm = Algorithm.new(calculation_uri, guid)
+    halt 400, erb(:error, locals: { message: 'Benchmark URI and GUID are required' }) unless calculation_uri && guid
+
+    begin
+      algorithm = Algorithm.new(calculation_uri: calculation_uri, guid: guid)
       @result = algorithm.process
       halt erb :algorithm_output, layout: :algorithm_layout
-   rescue StandardError => e
+    rescue StandardError => e
       halt 500, erb(:error, locals: { message: "Error processing algorithm: #{e.message}" })
-   end
+    end
+  end
+
+  post '/champion/assess/algorithm/resultset' do
+    calculation_uri = params[:calculation_uri]
+    resultset = params[:resultset]
+
+    unless calculation_uri && resultset
+      halt 406, erb(:error, locals: { message: 'Benchmark URI and ResultSet Object are required, and the sheet must be a google docs sheet with the correct template fields' }) 
+    end
+    begin
+      algorithm = Algorithm.new(calculation_uri: calculation_uri, resultset: resultset)
+      unless algorithm.valid
+        halt 406, erb(:error, locals: { message: "The data provided were invalid. Check that you are using a Google Doc spreadsheet that follows the Champion algorithm template" }) 
+      end
+      @result = algorithm.process
+      halt erb :algorithm_output, layout: :algorithm_layout
+    rescue StandardError => e
+      halt 500, erb(:error, locals: { message: "Error processing algorithm: #{e.message}" })
+    end
   end
 
   before do
