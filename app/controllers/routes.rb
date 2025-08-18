@@ -328,33 +328,62 @@ def set_routes
   ##############################  ALGORITHMS
   ##############################  ALGORITHMS
 
-  get '/champion/algorithms/:id' do
-    googleid = params[:id]
-    calculation_uri = "https://docs.google.com/spreadsheets/d/#{googleid}"
-    algorithm = Algorithm.new(calculation_uri: calculation_uri, guid: "http://example.org/mock")
-    graph = algorithm.gather_metadata
+  #  HUMAN
 
+  # this gives the human drop-down interface
+  get '/champion/algorithms/new' do
+    erb :algorithm_input, layout: :algorithm_layout
+  end
+  post '/champion/algorithms/new' do
+    calculation_uri = params['calculation_uri']
+    algorithm = Algorithm.new(calculation_uri: calculation_uri, guid: "http://example.org/mock")
+    response = algorithm.register
+    warn response
+    redirect to(algorithm.algorithm_id), 302  # this returns turtle
+  end
+
+
+  # GET /champion/algorithms/  {algorithm: ALGOID}  --> DCAT
+  # GET /champion/algorithms/ALGOID ==> DCAT
+  # GET /champion/algorithms/ --> List
+  # POST /champion/assess/algorithm/ALGOID
+
+  get %r{/champion/algorithms/?} do
+    # get a list of all known champion algos from FDP Index
+    # request.accept.each do |type|
+    #   case type.to_s
+    #   when 'text/json', 'application/json', 'application/ld+json'
+    #     content_type :json
+    #     halt graph.dump(:jsonld)
+    #   else
+    #     content_type "text/turtle"
+    #     halt graph.dump(:turtle)
+    #   end
+    # end
+    error 406  # should never get here
+  end
+
+
+
+  get '/champion/algorithms/:algorithmid' do
+    # googleid = params[:algorithmid]  # deprecated
+    @results_json = Algorithm.retrieve_by_id(algorithm_id: params[:algorithmid])
     request.accept.each do |type|
       case type.to_s
-      when 'text/turtle'
-        content_type "text/turtle"
-        halt graph.dump(:turtle)
+      when 'text/html'
+        content_type :html
+        halt erb :algorithm_display, layout: :algorithm_layout
       when 'text/json', 'application/json', 'application/ld+json'
         content_type :json
-        halt graph.dump(:jsonld)
-      else
-        content_type "text/turtle"
-        halt graph.dump(:turtle)
+        halt results_json
       end
     end
     error 406
   end
 
-  get '/champion/assess/algorithm/new' do
-    erb :algorithm_input, layout: :algorithm_layout
-  end
 
-  post '/champion/assess/algorithm' do
+  post '/champion/assess/algorithm/:algorithmid' do
+    Algorithm.retrieve_by_id(params[:algorithmid])
     calculation_uri = params[:calculation_uri]
     guid = params[:guid]
 

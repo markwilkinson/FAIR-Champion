@@ -1,0 +1,21 @@
+<!-- views/algorithm_input.erb -->
+<div class="container">
+  <div class="header">
+    <img src="/champion/champion_whitebgcrop.png" alt="FAIR Champion Logo"/>
+    <h2>Register Benchmark Assessment Algorithm</h2>
+  </div>
+</div>
+<div class="container">
+  <div class="form-card">
+
+    <form action="/champion/algorithms/new" method="post" class="">
+      <div class="form-group mb-3">
+        <label for="calculation_uri" class="block text-sm font-medium mb-1">Algorithm Configuration Spreadsheet URI: (<a href="https://docs.google.com/spreadsheets/d/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w/edit?gid=0#gid=0">Example</a>)</label>
+        <input type="text" id="calculation_uri" name="calculation_uri" class="form-control w-full" placeholder="e.g., https://docs.google.com/spreadsheets/d/..." required>
+      </div>
+      <div class="text-center">
+        <button type="submit" class="btn btn-primary">Register Benchmark Assessment Algorithm</button>
+      </div>
+    </form>
+  </div>
+</div>

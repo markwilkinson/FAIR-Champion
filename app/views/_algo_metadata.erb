@@ -1,0 +1,40 @@
+<h2 class="mb-3">Metadata</h2>
+<% json_array.each do |item| %>
+  <div class="card mb-3">
+    <div class="card-header">
+      <strong>Subject</strong>: <%= item[:subject] %>
+    </div>
+    <ul class="list-group p-2">
+      <% if item[:title] %>
+        <li class="list-group-item p-2">
+          <strong>Title</strong>: <%= item[:title] %>
+        </li>
+      <% end %>
+      <% if item[:description] %>
+        <li class="list-group-item p-2">
+          <strong>Description</strong>: <%= item[:description] %>
+        </li>
+      <% end %>
+      <% if item[:dimension] %>
+        <li class="list-group-item p-2">
+          <strong>Dimension</strong>: <%= item[:dimension] %>
+        </li>
+      <% end %>
+      <% if item[:benchmark] %>
+        <li class="list-group-item p-2">
+          <strong>Benchmark</strong>: <%= item[:benchmark] %>
+        </li>
+      <% end %>
+      <% if item[:objects]&.any? %>
+        <li class="list-group-item p-2">
+          <strong>Objects</strong>: <%= item[:objects].join(", ") %>
+        </li>
+      <% end %>
+      <% if item[:domains]&.any? %>
+        <li class="list-group-item p-2">
+          <strong>Domains</strong>: <%= item[:domains].join(", ") %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>

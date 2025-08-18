@@ -3,6 +3,7 @@ require 'rdf/ntriples'
 require 'rdf/vocab'
 require 'csv'
 require 'rest-client'
+require 'sparql-client'
 require 'json'
 require 'linkeddata'
 require_relative 'dcat_extractor'
@@ -12,9 +13,15 @@ class Algorithm
   DCAT = RDF::Vocabulary.new('http://www.w3.org/ns/dcat#') # for some reason the built-in DCAT vocab doesnt recognize "version"
   FTR = RDF::Vocabulary.new('https://w3id.org/ftr#')
   VIVO = RDF::Vocabulary.new('http://vivoweb.org/ontology/core#')
+  SIO = RDF::Vocabulary.new('http://semanticscience.org/resource/')
   DOAP = RDF::Vocab::DOAP
   VCARD = RDF::Vocab::VCARD
   DC = RDF::Vocab::DC
+  # curl -v -L -H "content-type: application/json"
+  # -d '{"clientUrl": "https://my.domain.org/path/to/DCAT/record.ttl"}'
+  # https://tools.ostrails.eu/fdp-index-proxy/proxy
+  FDPINDEXPROXY = ENV['FDPINDEXPROXY'] || 'https://tools.ostrails.eu/fdp-index-proxy/proxy'
+  FDPSPARQL = ENV['FDPSPARQL'] || 'https://tools.ostrails.eu/repositories/fdpindex-fdp'
 
   PREDICATES = { title: DC.title,
                  version: DCAT.version,
@@ -28,13 +35,18 @@ class Algorithm
                  license: DC.license,
                  applicationArea: FTR.applicationArea,
                  isApplicableFor: FTR.isApplicableFor,
-                 isScoringFunctionFor: FTR.isScoringFunctionFor,
-                 contactPoint: DCAT.contactPoint }.freeze
+                 isImplementationOf:  SIO['SIO_000233'], # points to benchmark
+                 scoringFunction: FTR.scoringFunction, # points to google sheet
+                 contactPoint: DCAT.contactPoint
+                }.freeze
 
-  attr_accessor :calculation_uri, :csv, :algorithm_id, :guid, :resultset, :valid, :metadata, :graph, :tests, :conditions
+  attr_accessor :calculation_uri, :baseURI, :csv, :algorithm_id, :guid, :resultset, 
+                :valid, :metadata, :graph, :tests,
+                :conditions
 
-  def initialize(calculation_uri:, guid: nil, resultset: nil)
+  def initialize(calculation_uri:, baseURI: 'https://tools.ostrails.eu/champion', guid: nil, resultset: nil)
     @calculation_uri = calculation_uri
+    @baseURI = baseURI
     @guid = guid
     @resultset = resultset
     @graph = RDF::Graph.new
@@ -44,7 +56,7 @@ class Algorithm
     @valid = false
     # Must be a google docs template ands either a guid to test or the inut from another tools resultset
     @valid = true if @calculation_uri =~ %r{docs\.google\.com/spreadsheets} && (guid || resultset)
-    # spreadsheets/d/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w
+    # spreadsheets/d/  --> 16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w
     @algorithm_id = @calculation_uri.match(%r{/spreadsheets/\w/([^/]+)})[1]
     # Transform the spreadsheet URL to CSV export format
     # https://docs.google.com/spreadsheets/d/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w/edit?gid=0#gid=0
@@ -163,8 +175,112 @@ class Algorithm
     metadata << RDF::Statement.new(subject, RDF.type, FTR.ScoringAlgorithm)
     metadata << RDF::Statement.new(subject, RDF.type, DCAT.DataService)
     metadata << RDF::Statement.new(subject, DC.identifier, subject)
+
+    endpoint = "#{baseURI}/assess/algorithm/#{algorithm_id}"
+    metadata << RDF::Statement.new(subject, DCAT.endpointDescription, endpoint)
+    metadata << RDF::Statement.new(subject, DCAT.endpointURL, endpoint)
+    metadata << RDF::Statement.new(subject, FTR.scoringFunction, calculation_uri)
     metadata
   end
+
+  def register
+    # curl -v -L -H "content-type: application/json"
+    # -d '{"clientUrl": "https://my.domain.org/path/to/DCAT/record.ttl"}'
+    # https://tools.ostrails.eu/fdp-index-proxy/proxy
+    # FDPINDEXPROXY = ENV['FDPINDEXPROXY'] || "https://tools.ostrails.eu/fdp-index-proxy/proxy"
+    get '/champion/algorithms/:algorithm'
+    RestClient::Request.execute(
+      method: :post,
+      url: FDPINDEXPROXY,
+      payload: { 'clientUrl' => algorithm_id }.to_json,
+      headers: { accept: 'application/json', content_type: 'application/json' },
+      max_redirects: 10
+    )
+  end
+
+  def self.retrieve_by_id(algorithm_id:)
+    query = <<EOQ
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX dqv: <http://www.w3.org/ns/dqv#>
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX dcat: <http://www.w3.org/ns/dcat#>
+PREFIX sio: <http://semanticscience.org/resource/>
+PREFIX dpv: <http://www.w3.org/ns/dpv#>
+PREFIX ftr: <https://w3id.org/ftr#>
+SELECT distinct ?subject ?identifier ?title ?description ?dimension ?objects ?domains ?algorithm ?benchmark_or_metric WHERE {
+  ?subject a <https://w3id.org/ftr#ScoringAlgorithm> ;
+    dct:title ?title ;
+  	dct:description ?description ;
+    dct:identifier ?identifier ;
+    dqv:inDimension ?dimension .
+    OPTIONAL {?sub dpv:isApplicableFor ?objects }
+    OPTIONAL {?sub ftr:applicationArea ?domains  }
+    OPTIONAL {?sub ftr:hasScoringFunction ?algorithm  }
+    OPTIONAL {?sub sio:SIO_000233 ?benchmark_or_metric  }  # implementation of
+    FILTER(CONTAINS(str(?identifier), "/champion/"))
+    FILTER(CONTAINS(str(?identifier), "#{algorithm_id}"))        
+} 
+EOQ
+
+    endpoint = SPARQL::Client.new(FDPSPARQL)
+
+    begin
+      # Execute the query
+      results = endpoint.query(query)
+
+      # Group results by subject into a hierarchical structure
+      hierarchical_data = {}
+      results.each do |solution|
+        subject = solution[:subject]&.to_s
+        next unless subject # Skip if subject is unbound
+
+        # Initialize the subject entry if it doesn't exist
+        hierarchical_data[subject] ||= {
+          title: nil,
+          description: nil,
+          dimension: nil,
+          benchmark: nil,
+          objects: [],
+          domains: []
+        }
+
+        # Set scalar properties (only overwrite if unbound to preserve first value)
+        hierarchical_data[subject][:title] ||= solution[:title]&.to_s
+        hierarchical_data[subject][:description] ||= solution[:description]&.to_s
+        hierarchical_data[subject][:dimension] ||= solution[:dimension]&.to_s
+        hierarchical_data[subject][:benchmark] ||= solution[:benchmark_or_metric]&.to_s
+
+        # Append objects and domains, ensuring no duplicates
+        object = solution[:objects]&.to_s
+        hierarchical_data[subject][:objects] << object if object && !hierarchical_data[subject][:objects].include?(object)
+
+        domain = solution[:domains]&.to_s
+        hierarchical_data[subject][:domains] << domain if domain && !hierarchical_data[subject][:domains].include?(domain)
+      end
+
+      # Convert to an array of objects for JSON
+      json_array = hierarchical_data.map do |subject, data|
+        {
+          subject: subject,
+          title: data[:title],
+          description: data[:description],
+          dimension: data[:dimension],
+          benchmark: data[:benchmark],
+          objects: data[:objects].compact, # Remove nil values
+          domains: data[:domains].compact  # Remove nil values
+        }
+      end
+
+      # Convert to JSON and print
+      warn JSON.pretty_generate(json_array)
+      JSON.pretty_generate(json_array)
+
+    rescue StandardError => e
+      raise "Error executing SPARQL query: #{e.message}"
+    end
+  end
+
 
   # Build RDF graph for semantic representation
   # not sure this is useful....??
