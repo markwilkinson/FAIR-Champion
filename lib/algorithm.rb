@@ -10,6 +10,7 @@ require_relative 'dcat_extractor'
 
 class Algorithm
   include RDF
+
   DCAT = RDF::Vocabulary.new('http://www.w3.org/ns/dcat#') # for some reason the built-in DCAT vocab doesnt recognize "version"
   FTR = RDF::Vocabulary.new('https://w3id.org/ftr#')
   VIVO = RDF::Vocabulary.new('http://vivoweb.org/ontology/core#')
@@ -61,7 +62,7 @@ class Algorithm
     @algorithm_guid = "#{@baseURI}/algorithms/#{algorithm_id}"
     # Transform the spreadsheet URL to CSV export format
     # https://docs.google.com/spreadsheets/d/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w/edit?gid=0#gid=0
-    calculation_uri.sub!(%r{/edit.*$}, '')
+    calculation_uri = calculation_uri.sub(%r{/edit.*$}, '')
     csv_url = "#{calculation_uri}/export?exportFormat=csv"
     # Use RestClient with follow redirects (default max_redirects is 10)
     response = RestClient::Request.execute(
@@ -184,106 +185,81 @@ class Algorithm
     metadata
   end
 
-  def register
+  def register  # initialize has already been called so all vars are full
+
+    filename = "/tmp/#{algorithm_id}"  # I need to know this exactly one time, to create the metadata when the object is not yet registered!
+    
+    # Store the mapping in a file
+    File.write(filename, {calculation_uri => algorithm_guid }.to_json)
+    warn "Stored mapping"
+
     # curl -v -L -H "content-type: application/json"
     # -d '{"clientUrl": "https://my.domain.org/path/to/DCAT/record.ttl"}'
     # https://tools.ostrails.eu/fdp-index-proxy/proxy
     # FDPINDEXPROXY = ENV['FDPINDEXPROXY'] || "https://tools.ostrails.eu/fdp-index-proxy/proxy"
     # get '/champion/algorithms/:algorithm'
 
-    resp = RestClient::Request.execute(
+    warn "client url is #{algorithm_guid}"
+    RestClient::Request.execute(
       method: :post,
       url: FDPINDEXPROXY,
-      payload: { 'clientUrl' => algorithm_guid }.to_json,
+      payload: { 'clientUrl' => algorithm_guid }.to_json,   # this needs to respond with DCAT, so I need to have access to the calculation_uri to generate that
       headers: { accept: 'application/json', content_type: 'application/json' },
       max_redirects: 10
     )
-    warn "registration response #{resp}"
   end
 
   def self.retrieve_by_id(algorithm_id:)
-    query = <<EOQ
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX dqv: <http://www.w3.org/ns/dqv#>
-PREFIX dct: <http://purl.org/dc/terms/>
-PREFIX dcat: <http://www.w3.org/ns/dcat#>
-PREFIX sio: <http://semanticscience.org/resource/>
-PREFIX dpv: <http://www.w3.org/ns/dpv#>
-PREFIX ftr: <https://w3id.org/ftr#>
-SELECT distinct ?subject ?identifier ?title ?description ?dimension ?objects ?domains ?scoringfunction ?benchmark_or_metric WHERE {
-  ?subject a <https://w3id.org/ftr#ScoringAlgorithm> ;
-    dct:title ?title ;
-  	dct:description ?description ;
-    dct:identifier ?identifier ;
-    dqv:inDimension ?dimension .
-    OPTIONAL {?sub dpv:isApplicableFor ?objects }
-    OPTIONAL {?sub ftr:applicationArea ?domains  }
-    OPTIONAL {?sub ftr:scoringFunction ?scoringfunction  }
-    OPTIONAL {?sub sio:SIO_000233 ?benchmark_or_metric  }  # implementation of
-    FILTER(CONTAINS(str(?identifier), "/champion/"))
-    FILTER(CONTAINS(str(?identifier), "#{algorithm_id}"))
-} 
+
+    # Check if file exists
+    # THE PROBLEM:  we cannot predict the Google Sheets URI, but we need it to create the object
+    # so get it from the cache, or get it from the FDP Index
+    if File.exist?("/tmp/#{algorithm_id}")  # this is the first time it has been called, so need to get calculation_uri from cache
+      # Read and parse the mapping
+      warn "RETRIEVING FROM CACHE"
+      mapping = ::JSON.parse(File.read("/tmp/#{algorithm_id}"))
+      calculation_uri, algorithm_guid = mapping.first
+
+      File.delete("/tmp/#{algorithm_id}") if File.exist?("/tmp/#{algorithm_id}")
+
+      warn "Retrieved: #{calculation_uri}, #{algorithm_guid}"
+      return calculation_uri
+    else
+      # if that temp mapping file doesn't exist, then the data is in the FDP registry, so we can get it from there... 
+      query = <<EOQ
+      PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+      PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+      PREFIX dqv: <http://www.w3.org/ns/dqv#>
+      PREFIX dct: <http://purl.org/dc/terms/>
+      PREFIX dcat: <http://www.w3.org/ns/dcat#>
+      PREFIX sio: <http://semanticscience.org/resource/>
+      PREFIX dpv: <http://www.w3.org/ns/dpv#>
+      PREFIX ftr: <https://w3id.org/ftr#>
+      SELECT distinct ?identifier ?scoringfunction WHERE {
+        ?subject a <https://w3id.org/ftr#ScoringAlgorithm> ;
+          dct:identifier ?identifier ;
+          ftr:scoringFunction ?scoringfunction .
+          FILTER(CONTAINS(str(?identifier), "/champion/"))
+          FILTER(CONTAINS(str(?identifier), "#{algorithm_id}"))
+      } 
 EOQ
 
-    endpoint = SPARQL::Client.new(FDPSPARQL)
+warn "query is #{query}"
+      endpoint = SPARQL::Client.new(FDPSPARQL)
 
-    begin
-      # Execute the query
-      results = endpoint.query(query)
+      begin
+        # Execute the query
+        results = endpoint.query(query)
+        warn "results:   #{results.inspect}"
+        if results.first
+          solution = results.first
+          warn "solution:   #{solution.inspect}"
 
-      # Group results by subject into a hierarchical structure
-      hierarchical_data = {}
-      results.each do |solution|
-        subject = solution[:subject]&.to_s
-        next unless subject # Skip if subject is unbound
-
-        # Initialize the subject entry if it doesn't exist
-        hierarchical_data[subject] ||= {
-          title: nil,
-          description: nil,
-          dimension: nil,
-          benchmark: nil,
-          scoringfunction: nil,
-          objects: [],
-          domains: []
-        }
-
-        # Set scalar properties (only overwrite if unbound to preserve first value)
-        hierarchical_data[subject][:title] ||= solution[:title]&.to_s
-        hierarchical_data[subject][:description] ||= solution[:description]&.to_s
-        hierarchical_data[subject][:dimension] ||= solution[:dimension]&.to_s
-        hierarchical_data[subject][:benchmark] ||= solution[:benchmark_or_metric]&.to_s
-        hierarchical_data[subject][:scoringfunction] ||= solution[:scoringfunction]&.to_s
-
-        # Append objects and domains, ensuring no duplicates
-        object = solution[:objects]&.to_s
-        hierarchical_data[subject][:objects] << object if object && !hierarchical_data[subject][:objects].include?(object)
-
-        domain = solution[:domains]&.to_s
-        hierarchical_data[subject][:domains] << domain if domain && !hierarchical_data[subject][:domains].include?(domain)
+          return solution[:scoringfunction].to_s  # this is the calculation_uri requried to initialize the object
+        else
+          return false
+        end
       end
-
-      # Convert to an array of objects for JSON
-      json_array = hierarchical_data.map do |subject, data|
-        {
-          subject: subject,
-          title: data[:title],
-          description: data[:description],
-          dimension: data[:dimension],
-          benchmark: data[:benchmark],
-          scoringfunction: data[:scoringfunction],
-          objects: data[:objects].compact, # Remove nil values
-          domains: data[:domains].compact  # Remove nil values
-        }
-      end
-
-      # Convert to JSON and print
-      warn JSON.pretty_generate(json_array)
-      JSON.pretty_generate(json_array)
-
-    rescue StandardError => e
-      raise "Error executing SPARQL query: #{e.message}"
     end
   end
 

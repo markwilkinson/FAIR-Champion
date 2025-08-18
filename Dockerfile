@@ -14,19 +14,22 @@ RUN apt-get update -q && \
     locales \
     software-properties-common \
     cron && \
-    apt-get clean
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Update RubyGems and install Bundler
 RUN gem update --system && \
     gem install bundler:2.3.12
 
 # Create and set working directory
-RUN mkdir /server
 WORKDIR /server
 
-# Copy application code and install dependencies
-COPY . /server
+# Copy Gemfile and Gemfile.lock first to cache bundle install
+COPY Gemfile Gemfile.lock fair-champion.gemspec /server/
 RUN bundle install
+
+# Copy the rest of the application code
+COPY . /server
 
 # Set entrypoint
 ENTRYPOINT ["sh", "/server/entrypoint.sh"]
