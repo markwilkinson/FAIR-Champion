@@ -3,7 +3,7 @@ require 'rdf/ntriples'
 require 'rdf/vocab'
 require 'csv'
 require 'rest-client'
-require 'sparql-client'
+require 'sparql/client'
 require 'json'
 require 'linkeddata'
 require_relative 'dcat_extractor'
@@ -40,7 +40,7 @@ class Algorithm
                  contactPoint: DCAT.contactPoint
                 }.freeze
 
-  attr_accessor :calculation_uri, :baseURI, :csv, :algorithm_id, :guid, :resultset, 
+  attr_accessor :calculation_uri, :baseURI, :csv, :algorithm_id, :algorithm_guid, :guid, :resultset, 
                 :valid, :metadata, :graph, :tests,
                 :conditions
 
@@ -58,6 +58,7 @@ class Algorithm
     @valid = true if @calculation_uri =~ %r{docs\.google\.com/spreadsheets} && (guid || resultset)
     # spreadsheets/d/  --> 16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w
     @algorithm_id = @calculation_uri.match(%r{/spreadsheets/\w/([^/]+)})[1]
+    @algorithm_guid = "#{@baseURI}/algorithms/#{algorithm_id}"
     # Transform the spreadsheet URL to CSV export format
     # https://docs.google.com/spreadsheets/d/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w/edit?gid=0#gid=0
     calculation_uri.sub!(%r{/edit.*$}, '')
@@ -188,14 +189,16 @@ class Algorithm
     # -d '{"clientUrl": "https://my.domain.org/path/to/DCAT/record.ttl"}'
     # https://tools.ostrails.eu/fdp-index-proxy/proxy
     # FDPINDEXPROXY = ENV['FDPINDEXPROXY'] || "https://tools.ostrails.eu/fdp-index-proxy/proxy"
-    get '/champion/algorithms/:algorithm'
-    RestClient::Request.execute(
+    # get '/champion/algorithms/:algorithm'
+
+    resp = RestClient::Request.execute(
       method: :post,
       url: FDPINDEXPROXY,
-      payload: { 'clientUrl' => algorithm_id }.to_json,
+      payload: { 'clientUrl' => algorithm_guid }.to_json,
       headers: { accept: 'application/json', content_type: 'application/json' },
       max_redirects: 10
     )
+    warn "registration response #{resp}"
   end
 
   def self.retrieve_by_id(algorithm_id:)
@@ -208,7 +211,7 @@ PREFIX dcat: <http://www.w3.org/ns/dcat#>
 PREFIX sio: <http://semanticscience.org/resource/>
 PREFIX dpv: <http://www.w3.org/ns/dpv#>
 PREFIX ftr: <https://w3id.org/ftr#>
-SELECT distinct ?subject ?identifier ?title ?description ?dimension ?objects ?domains ?algorithm ?benchmark_or_metric WHERE {
+SELECT distinct ?subject ?identifier ?title ?description ?dimension ?objects ?domains ?scoringfunction ?benchmark_or_metric WHERE {
   ?subject a <https://w3id.org/ftr#ScoringAlgorithm> ;
     dct:title ?title ;
   	dct:description ?description ;
@@ -216,10 +219,10 @@ SELECT distinct ?subject ?identifier ?title ?description ?dimension ?objects ?do
     dqv:inDimension ?dimension .
     OPTIONAL {?sub dpv:isApplicableFor ?objects }
     OPTIONAL {?sub ftr:applicationArea ?domains  }
-    OPTIONAL {?sub ftr:hasScoringFunction ?algorithm  }
+    OPTIONAL {?sub ftr:scoringFunction ?scoringfunction  }
     OPTIONAL {?sub sio:SIO_000233 ?benchmark_or_metric  }  # implementation of
     FILTER(CONTAINS(str(?identifier), "/champion/"))
-    FILTER(CONTAINS(str(?identifier), "#{algorithm_id}"))        
+    FILTER(CONTAINS(str(?identifier), "#{algorithm_id}"))
 } 
 EOQ
 
@@ -241,6 +244,7 @@ EOQ
           description: nil,
           dimension: nil,
           benchmark: nil,
+          scoringfunction: nil,
           objects: [],
           domains: []
         }
@@ -250,6 +254,7 @@ EOQ
         hierarchical_data[subject][:description] ||= solution[:description]&.to_s
         hierarchical_data[subject][:dimension] ||= solution[:dimension]&.to_s
         hierarchical_data[subject][:benchmark] ||= solution[:benchmark_or_metric]&.to_s
+        hierarchical_data[subject][:scoringfunction] ||= solution[:scoringfunction]&.to_s
 
         # Append objects and domains, ensuring no duplicates
         object = solution[:objects]&.to_s
@@ -267,6 +272,7 @@ EOQ
           description: data[:description],
           dimension: data[:dimension],
           benchmark: data[:benchmark],
+          scoringfunction: data[:scoringfunction],
           objects: data[:objects].compact, # Remove nil values
           domains: data[:domains].compact  # Remove nil values
         }

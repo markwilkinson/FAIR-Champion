@@ -331,15 +331,17 @@ def set_routes
   #  HUMAN
 
   # this gives the human drop-down interface
+  # REGISTER INIT
   get '/champion/algorithms/new' do
-    erb :algorithm_input, layout: :algorithm_layout
+    erb :algorithm_register, layout: :algo_register_layout
   end
+  # REGISTER
   post '/champion/algorithms/new' do
     calculation_uri = params['calculation_uri']
     algorithm = Algorithm.new(calculation_uri: calculation_uri, guid: "http://example.org/mock")
     response = algorithm.register
     warn response
-    redirect to(algorithm.algorithm_id), 302  # this returns turtle
+    redirect to(algorithm.algorithm_guid), 302  # this returns turtle
   end
 
 
@@ -383,38 +385,40 @@ def set_routes
 
 
   post '/champion/assess/algorithm/:algorithmid' do
-    Algorithm.retrieve_by_id(params[:algorithmid])
-    calculation_uri = params[:calculation_uri]
-    guid = params[:guid]
+    algo_json = Algorithm.retrieve_by_id(params[:algorithmid])
 
-    halt 400, erb(:error, locals: { message: 'Benchmark URI and GUID are required' }) unless calculation_uri && guid
-
-    begin
-      algorithm = Algorithm.new(calculation_uri: calculation_uri, guid: guid)
-      @result = algorithm.process
-      halt erb :algorithm_output, layout: :algorithm_layout
-    rescue StandardError => e
-      halt 500, erb(:error, locals: { message: "Error processing algorithm: #{e.message}" })
+    unless algo_json
+      halt 404, erb(:error, locals: { message: 'valid algorithm id (in the URL, and already registered in the OSTrails Index) is required'}) 
     end
-  end
-
-  post '/champion/assess/algorithm/resultset' do
-    calculation_uri = params[:calculation_uri]
+    calculation_uri = algo_json[:scoringfunction]
+    guid = params[:guid]
     resultset = params[:resultset]
 
-    unless calculation_uri && resultset
-      halt 406, erb(:error, locals: { message: 'Benchmark URI and ResultSet Object are required, and the sheet must be a google docs sheet with the correct template fields' }) 
-    end
-    begin
-      algorithm = Algorithm.new(calculation_uri: calculation_uri, resultset: resultset)
-      unless algorithm.valid
-        halt 406, erb(:error, locals: { message: "The data provided were invalid. Check that you are using a Google Doc spreadsheet that follows the Champion algorithm template" }) 
+    halt 400, erb(:error, locals: { message: 'GUID or ResultSet are required in the JSON post body' }) unless resultset || guid
+    if guid
+      begin
+        algorithm = Algorithm.new(calculation_uri: calculation_uri, guid: guid)
+        unless algorithm.valid
+          halt 406, erb(:error, locals: { message: "The data provided were invalid. Check that you are using a registered algorithm" }) 
+        end
+        @result = algorithm.process
+        halt erb :algorithm_output, layout: :algorithm_layout
+      rescue StandardError => e
+        halt 500, erb(:error, locals: { message: "Error processing algorithm: #{e.message}" })
       end
-      @result = algorithm.process
-      halt erb :algorithm_output, layout: :algorithm_layout
-    rescue StandardError => e
-      halt 500, erb(:error, locals: { message: "Error processing algorithm: #{e.message}" })
+    else
+      begin
+        algorithm = Algorithm.new(calculation_uri: calculation_uri, resultset: resultset)
+        unless algorithm.valid
+          halt 406, erb(:error, locals: { message: "The data provided were invalid. Check that you are using a registered algorithm" }) 
+        end
+        @result = algorithm.process
+        halt erb :algorithm_output, layout: :algorithm_layout
+      rescue StandardError => e
+        halt 500, erb(:error, locals: { message: "Error processing algorithm: #{e.message}" })
+      end
     end
+    error 406
   end
 
   before do
