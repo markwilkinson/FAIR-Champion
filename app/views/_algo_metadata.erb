@@ -1,38 +1,44 @@
-<h2 class="mb-3">Metadata</h2>
-<% json_array.each do |item| %>
+<h2 class="mb-3">Metadata Registered (selected fields shown)</h2>
+<% @dcat.query([nil, RDF.type, RDF::URI('https://w3id.org/ftr#ScoringAlgorithm')]).subjects.uniq.each do |subject| %>
   <div class="card mb-3">
     <div class="card-header">
-      <strong>Subject</strong>: <%= item[:subject] %>
+      <strong>Subject</strong>: <%= subject.to_s %>
     </div>
     <ul class="list-group p-2">
-      <% if item[:title] %>
+      <% title = @dcat.query([subject, RDF::Vocab::DC.title, nil]).first&.object&.to_s %>
+      <% if title %>
         <li class="list-group-item p-2">
-          <strong>Title</strong>: <%= item[:title] %>
+          <strong>Title</strong>: <%= title %>
         </li>
       <% end %>
-      <% if item[:description] %>
+      <% description = @dcat.query([subject, RDF::Vocab::DC.description, nil]).first&.object&.to_s %>
+      <% if description %>
         <li class="list-group-item p-2">
-          <strong>Description</strong>: <%= item[:description] %>
+          <strong>Description</strong>: <%= description %>
         </li>
       <% end %>
-      <% if item[:dimension] %>
+      <% abbr = @dcat.query([subject, RDF::URI('http://vivoweb.org/ontology/core#abbreviation'), nil]).first&.object&.to_s %>
+      <% if abbr %>
         <li class="list-group-item p-2">
-          <strong>Dimension</strong>: <%= item[:dimension] %>
+          <strong>Abbreviation</strong>: <%= abbr %>
         </li>
       <% end %>
-      <% if item[:benchmark] %>
+      <% benchmark = @dcat.query([subject, RDF::URI('http://semanticscience.org/resource/SIO_000233'), nil]).first&.object&.to_s %>
+      <% if benchmark %>
         <li class="list-group-item p-2">
-          <strong>Benchmark</strong>: <%= item[:benchmark] %>
+          <strong>Benchmark</strong>: <%= benchmark %>
         </li>
       <% end %>
-      <% if item[:objects]&.any? %>
+      <% objects = @dcat.query([subject, RDF::URI('https://w3id.org/ftr#isApplicableFor'), nil]).map { |s| s.object.to_s } %>
+      <% if objects.any? %>
         <li class="list-group-item p-2">
-          <strong>Objects</strong>: <%= item[:objects].join(", ") %>
+          <strong>Objects</strong>: <%= objects.join(", ") %>
         </li>
       <% end %>
-      <% if item[:domains]&.any? %>
+      <% domains = @dcat.query([subject, RDF::URI('https://w3id.org/ftr#applicationArea'), nil]).map { |s| s.object.to_s } %>
+      <% if domains.any? %>
         <li class="list-group-item p-2">
-          <strong>Domains</strong>: <%= item[:domains].join(", ") %>
+          <strong>Domains</strong>: <%= domains.join(", ") %>
         </li>
       <% end %>
     </ul>

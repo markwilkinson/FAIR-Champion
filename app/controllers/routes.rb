@@ -319,7 +319,7 @@ def set_routes
     algorithm.register
     sleep 10  # need time for the FDP index to ingest, then we can redirect to pull info from the sparql endpoint
 
-    redirect to(algorithm.algorithm_guid), 302 # algorithm's guid returns turtle
+    redirect to("#{algorithm.algorithm_guid}/display"), 302 # algorithm's guid returns turtle
   end
 
   # GET /champion/algorithms/  {algorithm: ALGOID}  --> DCAT
@@ -328,17 +328,33 @@ def set_routes
   # POST /champion/assess/algorithm/ALGOID
 
   get %r{/champion/algorithms/?}, provides: [:html, :json, 'application/ld+json'] do
+    @list = Algorithm.list
+    # list[identifier] = [title, function]    
     # get a list of all known champion algos from FDP Index
-    #
-    #   case content_type
-    #   when   'application/json', 'application/ld+json'
-    #     content_type :json
-    #     halt graph.dump(:jsonld)
-    #   else
-    #     content_type "text/turtle"
-    #     halt graph.dump(:turtle)
-    #   end
-    # end
+    
+    case content_type
+    when %r{application/json} || %r{application/ld+json}
+      content_type :json
+      halt @list.dump(:json)
+    else
+      halt erb :_algo_list, layout: :algorithm_layout
+    end
+  end
+
+  get '/champion/algorithms/:algorithmid/display', provides: [:html] do
+
+    calculation_uri = Algorithm.retrieve_by_id(algorithm_id: params[:algorithmid])
+    if calculation_uri == false
+      halt 406, erb(:error, locals: { message: 'The server was unable to find that algorithm.  This may be a temporary problem'})
+    end
+    warn "retrieved calc uri is #{calculation_uri}"
+    algorithm = Algorithm.new(calculation_uri: calculation_uri, guid: 'http://example.org/mock')
+    @dcat = algorithm.gather_metadata
+    warn "dcat is #{@dcat.inspect} with content type #{content_type}"
+    warn "dcat is #{@dcat.size} with content type #{content_type}"
+    content_type = "text/html"
+    halt erb :algorithm_display, layout: :algorithm_layout
+
   end
 
   get '/champion/algorithms/:algorithmid', provides: [:html, :json, 'text/turtle', 'application/ld+json'] do
@@ -350,8 +366,9 @@ def set_routes
     warn "retrieved calc uri is #{calculation_uri}"
     algorithm = Algorithm.new(calculation_uri: calculation_uri, guid: 'http://example.org/mock')
     @dcat = algorithm.gather_metadata
-    warn "dcat is #{@dcat} with content type #{content_type}"
-
+    warn "dcat is #{@dcat.inspect} with content type #{content_type}"
+    warn "dcat is #{@dcat.size} with content type #{content_type}"
+    content_type = "text/turtle"
     case content_type
     when %r{text/html}
       halt erb :algorithm_display, layout: :algorithm_layout

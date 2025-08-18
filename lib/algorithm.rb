@@ -65,13 +65,22 @@ class Algorithm
     calculation_uri = calculation_uri.sub(%r{/edit.*$}, '')
     csv_url = "#{calculation_uri}/export?exportFormat=csv"
     # Use RestClient with follow redirects (default max_redirects is 10)
+    warn "executing get on #{csv_url} with good headers"
+
     response = RestClient::Request.execute(
       method: :get,
       url: csv_url,
-      headers: { accept: 'text/csv' },
-      max_redirects: 10
+      headers: {
+          'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
+          'Accept' => 'text/csv, text/plain, application/octet-stream, */*',
+          'Accept-Language' => 'en-US,en;q=0.9',
+          'Referer' => 'https://docs.google.com/',
+          'Connection' => 'keep-alive'
+        },
+        max_redirects: 10
     )
     # Split CSV into lines to identify blocks
+    warn "response is #{response.inspect}"
     @csv = response.body.lines
   end
 
@@ -220,7 +229,7 @@ class Algorithm
       mapping = ::JSON.parse(File.read("/tmp/#{algorithm_id}"))
       calculation_uri, algorithm_guid = mapping.first
 
-      File.delete("/tmp/#{algorithm_id}") if File.exist?("/tmp/#{algorithm_id}")
+#      File.delete("/tmp/#{algorithm_id}") if File.exist?("/tmp/#{algorithm_id}")
 
       warn "Retrieved: #{calculation_uri}, #{algorithm_guid}"
       return calculation_uri
@@ -396,4 +405,43 @@ warn "query is #{query}"
     end
     narratives
   end
+
+
+  def self.list
+    query = <<EOQ
+      PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+      PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+      PREFIX dqv: <http://www.w3.org/ns/dqv#>
+      PREFIX dct: <http://purl.org/dc/terms/>
+      PREFIX dcat: <http://www.w3.org/ns/dcat#>
+      PREFIX sio: <http://semanticscience.org/resource/>
+      PREFIX dpv: <http://www.w3.org/ns/dpv#>
+      PREFIX ftr: <https://w3id.org/ftr#>
+      SELECT distinct ?identifier ?title ?scoringfunction WHERE {
+        ?subject a <https://w3id.org/ftr#ScoringAlgorithm> ;
+          dct:identifier ?identifier ;
+          dct:title ?title ;
+          ftr:scoringFunction ?scoringfunction .
+          FILTER(CONTAINS(str(?identifier), "/champion/"))
+      } 
+EOQ
+
+    warn "query is #{query}"
+    endpoint = SPARQL::Client.new(FDPSPARQL)
+    list = {}
+    begin
+      # Execute the query
+      results = endpoint.query(query)
+      warn "results:   #{results.inspect}"
+
+      results.each  do |solution|
+        function = solution[:scoringfunction].to_s  # this is the calculation_uri requried to initialize the object
+        title = solution[:title].to_s  # this is the calculation_uri requried to initialize the object
+        identifier =  solution[:identifier].to_s  # this is the calculation_uri requried to initialize the object
+        list[identifier] = [title, function]
+      end
+    end
+    list
+  end
+
 end

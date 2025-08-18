@@ -1,0 +1,26 @@
+<h2 class="mb-3">Known Algorithms</h2>
+<% @list.each do |identifier, data| %>
+  <div class="card mb-3">
+    <div class="card-header">
+      <strong>Title</strong>: <%= data[0] %>
+    </div>
+    <ul class="list-group p-2">
+        <li class="list-group-item p-2">
+          <strong>Identifier</strong>: <a href="<%= identifier %>"><%= identifier %></a>
+        </li>
+      <% if data[1] %>
+        <li class="list-group-item p-2">
+          <strong>Function</strong>: <a href="<%= data[1] %>"><%= data[1] %></a>
+        </li>
+      <% end %>
+      <li class="list-group-item p-2">
+        <% id = identifier.match(/.*\/(\w+)/)[1] %>
+        <form method="post" action="/champion/assess/algorithm/<%= id %>">
+          GUID to Test: <input type="text" name="guid"/>
+          <strong><input type="submit" label="EXECUTE THIS ALGORITHM on the provided GUID"></strong>
+        </form>
+      </li>
+
+    </ul>
+  </div>
+<% end %>
