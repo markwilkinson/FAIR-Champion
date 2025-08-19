@@ -1,0 +1,5 @@
+    <% @tests.each do |thistest|  %>
+        <div>
+          <%= erb :_onetest, locals: { test: thistest } %> 
+        </div>
+    <% end %>

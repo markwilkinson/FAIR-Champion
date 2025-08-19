@@ -12,6 +12,7 @@ if testt
   GRAPHDB_PORT = '443'.freeze
   GRAPHDB_PASS = File.read('/tmp/championpass.txt').strip.freeze
   GRAPHDB_REPONAME = 'champion'.freeze
+  FDPINDEX_SPARQL = 'https://tools.ostrails.eu/repositories/fdpindex-fdp'
 else
   TEST_HOST = ENV.fetch('TEST_HOST', 'https://tests.ostrails.eu/tests').gsub(%r{/+$}, '') unless defined? TEST_HOST
   unless defined? CHAMP_HOST
@@ -24,6 +25,7 @@ else
   GRAPHDB_HOST = ENV.fetch('GRAPHDB_HOST') unless defined? GRAPHDB_HOST # relative on docker network
   GRAPHDB_PORT = ENV.fetch('GRAPHDB_PORT', 443) unless defined? GRAPHDB_PORT # relative on docker network
   GRAPHDB_REPONAME = ENV.fetch('GRAPHDB_REPONAME', 'champion') unless defined? GRAPHDB_REPONAME
+  FDPINDEX_SPARQL = ENV.fetch('FDPINDEX_SPARQL', 'https://tools.ostrails.eu/repositories/fdpindex-fdp') unless defined? GRAPHDB_REPONAME
 end
 
 CHAMPION_REPO = "#{GRAPHDB_PROTOCOL}://#{GRAPHDB_HOST}:#{GRAPHDB_PORT}/repositories/#{GRAPHDB_REPONAME}".freeze

@@ -1,3 +1,4 @@
+<!-- views/layout.erb -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,11 +9,12 @@
   <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
 </head>
+
 <body id="default">
-  <div class="container">
+  <div class="container" style="max-width: 80rem; width: 100%; margin-left: auto; margin-right: auto; padding: 20px;">
     <div class="header">
       <img src="/champion/champion_whitebgcrop.png" alt="FAIR Champion Logo"/>
-      <h2>Algorithms Available in the Registry</h2>
+      <h2>Benchmark Assessment Outputs</h2>
     </div>
     <%= yield %>
   </div>

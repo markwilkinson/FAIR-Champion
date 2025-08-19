@@ -1,26 +1,39 @@
-<h2 class="mb-3">Known Algorithms</h2>
 <% @list.each do |identifier, data| %>
-  <div class="card mb-3">
-    <div class="card-header">
-      <strong>Title</strong>: <%= data[0] %>
-    </div>
-    <ul class="list-group p-2">
-        <li class="list-group-item p-2">
-          <strong>Identifier</strong>: <a href="<%= identifier %>"><%= identifier %></a>
-        </li>
-      <% if data[1] %>
-        <li class="list-group-item p-2">
-          <strong>Function</strong>: <a href="<%= data[1] %>"><%= data[1] %></a>
-        </li>
-      <% end %>
-      <li class="list-group-item p-2">
-        <% id = identifier.match(/.*\/(\w+)/)[1] %>
-        <form method="post" action="/champion/assess/algorithm/<%= id %>">
-          GUID to Test: <input type="text" name="guid"/>
-          <strong><input type="submit" label="EXECUTE THIS ALGORITHM on the provided GUID"></strong>
-        </form>
-      </li>
 
-    </ul>
-  </div>
+<div class="form-card">
+  <h2 class="mb-3">
+    <a href="<%= identifier %>" class="submit-link"><%= data[0] %></a>
+  </h2>
+  <% if data[1] %>
+    <p class="mb-3">
+      <a href="<%= data[1] %>" class="submit-link">Function Definition</a>
+    </p>
+  <% end %>
+
+  <details class="mb-3">
+    <summary>Additional Details</summary>
+    <table class="table" style="width: 100%;">
+      <tr>
+        <th class="bg-gray-200 text-left">Identifier</th>
+        <td><a href="<%= identifier %>"><%= identifier %></a></td>
+      </tr>
+      <% if data[1] %>
+        <tr>
+          <th class="bg-gray-200 text-left">Function</th>
+          <td><a href="<%= data[1] %>"><%= data[1] %></a></td>
+        </tr>
+      <% end %>
+      <tr>
+        <th class="bg-gray-200 text-left">Execute</th>
+        <td>
+          <% id = identifier.match(/.*\/(\w+)/)[1] %>
+          <form method="post" action="/champion/assess/algorithm/<%= id %>">
+            GUID to Test: <input type="text" name="guid"/>
+            <input type="submit" value="Execute Algorithm" class="submit-link">
+          </form>
+        </td>
+      </tr>
+    </table>
+  </details>
+</div>
 <% end %>
