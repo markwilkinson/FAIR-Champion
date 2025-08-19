@@ -79,10 +79,6 @@ def set_routes
     redirect to("#{algorithm.algorithm_guid}/display"), 302 # algorithm's guid returns turtle
   end
 
-  # GET /champion/algorithms/  {algorithm: ALGOID}  --> DCAT
-  # GET /champion/algorithms/ALGOID ==> DCAT
-  # GET /champion/algorithms/ --> List
-  # POST /champion/assess/algorithm/ALGOID
 
   get %r{/champion/algorithms/?}, provides: [:html, :json, 'application/ld+json'] do
     @list = Algorithm.list
@@ -92,7 +88,7 @@ def set_routes
     case content_type
     when %r{application/json} || %r{application/ld+json}
       content_type :json
-      halt @list.dump(:json)
+      halt @list.to_json
     else
       halt erb :_algo_list, layout: :algorithm_layout
     end
@@ -122,16 +118,12 @@ def set_routes
     end
     warn "retrieved calc uri is #{calculation_uri}"
     algorithm = Algorithm.new(calculation_uri: calculation_uri, guid: 'http://example.org/mock')
-    @dcat = algorithm.gather_metadata
-    warn "dcat is #{@dcat.inspect} with content type #{content_type}"
-    warn "dcat is #{@dcat.size} with content type #{content_type}"
+    @dcat = algorithm.gather_metadata  # @dcat is an rdf::graph object
     content_type = 'text/turtle'
     case content_type
     when %r{text/html}
       halt erb :algorithm_display, layout: :algorithm_layout
-    when %r{application/json'}
-      halt @dcat.dump(:jsonld)
-    when %r{application/ld+json}
+    when %r{application/json'} || %r{application/ld+json}
       halt @dcat.dump(:jsonld)
     when %r{text/turtle}
       halt @dcat.dump(:turtle)

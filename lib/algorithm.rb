@@ -426,7 +426,7 @@ warn "query is #{query}"
       } 
 EOQ
 
-    warn "query is #{query}"
+    # warn "query is #{query}"
     endpoint = SPARQL::Client.new(FDPSPARQL)
     list = {}
     begin
