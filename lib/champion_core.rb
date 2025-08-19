@@ -157,6 +157,63 @@ module Champion
 
 
 
+
+    # ##############################################################
+    #     TESTS
+    # ##############################################################
+
+    def get_tests(testid: '')
+      warn 'IN GET TESTS'
+      testid = testid.to_s.gsub(%r{.*/}, '') # if we are sent the entire URI, then just take the identifier part at the end
+
+      schema = RDF::Vocab::SCHEMA
+      _dc = RDF::Vocab::DC
+      ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
+
+      sparqlurl = ENV['FDPINDEX_SPARQL'] || FDPINDEX_SPARQL
+      # sparqlurl = CHAMPION_REPO
+
+      client = SPARQL::Client.new(sparqlurl)
+
+      testsquery = <<EOQ
+      PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+      PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+      PREFIX dqv: <http://www.w3.org/ns/dqv#>
+      PREFIX dct: <http://purl.org/dc/terms/>
+      PREFIX dcat: <http://www.w3.org/ns/dcat#>
+      PREFIX sio: <http://semanticscience.org/resource/>
+      PREFIX dpv: <http://www.w3.org/ns/dpv#>
+      PREFIX ftr: <https://w3id.org/ftr#>
+      SELECT distinct ?identifier ?title ?description ?endpoint ?openapi ?dimension ?objects ?domain ?benchmark_or_metric WHERE {
+        ?sub a <https://w3id.org/ftr#Test> ;
+            dct:title ?title ;
+            dct:description ?description ;
+            dct:identifier ?identifier ;
+            dcat:endpointDescription ?openapi ;
+            dcat:endpointURL ?endpoint ;
+            dqv:inDimension ?dimension .
+            OPTIONAL {?sub dpv:isApplicableFor ?objects }
+            OPTIONAL {?sub ftr:applicationArea ?domain  }
+            OPTIONAL {?sub sio:SIO_000233 ?benchmark_or_metric  }  # implementation of
+      }
+EOQ
+
+      results = client.query(testsquery)
+      
+      results.select! { |res| res[:identifier] =~ /#{testid}/ } if testid
+
+      alltests = results.map do |solution|
+        solution.bindings.transform_values(&:to_s)
+      end
+      # warn alltests.to_json
+      alltests
+    end
+
+  end
+end
+
+
+
     # GROK
     # require 'json'
 
@@ -306,108 +363,3 @@ module Champion
     #   warn "graphdb response #{resp}"
     #   resp
     # end
-
-    # ##############################################################
-    #     TESTS
-    # ##############################################################
-
-    def get_tests(testid: '')
-      warn 'IN GET TESTS'
-      testid = testid.to_s.gsub(%r{.*/}, '') # if we are sent the entire URI, then just take the identifier part at the end
-
-      schema = RDF::Vocab::SCHEMA
-      _dc = RDF::Vocab::DC
-      ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
-
-      sparqlurl = ENV['FDPINDEX_SPARQL']
-      # sparqlurl = CHAMPION_REPO
-
-      client = SPARQL::Client.new(sparqlurl)
-
-      testsquery = <<EOQ
-      PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-      PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-      PREFIX dqv: <http://www.w3.org/ns/dqv#>
-      PREFIX dct: <http://purl.org/dc/terms/>
-      PREFIX dcat: <http://www.w3.org/ns/dcat#>
-      PREFIX sio: <http://semanticscience.org/resource/>
-      PREFIX dpv: <http://www.w3.org/ns/dpv#>
-      PREFIX ftr: <https://w3id.org/ftr#>
-      SELECT distinct ?identifier ?title ?description ?endpoint ?openapi ?dimension ?objects ?domain ?benchmark_or_metric WHERE {
-        ?sub a <https://w3id.org/ftr#Test> ;
-            dct:title ?title ;
-            dct:description ?description ;
-            dct:identifier ?identifier ;
-            dcat:endpointDescription ?openapi ;
-            dcat:endpointURL ?endpoint ;
-            dqv:inDimension ?dimension .
-            OPTIONAL {?sub dpv:isApplicableFor ?objects }
-            OPTIONAL {?sub ftr:applicationArea ?domain  }
-            OPTIONAL {?sub sio:SIO_000233 ?benchmark_or_metric  }  # implementation of
-      }
-EOQ
-
-      results = client.query(testsquery)
-
-      alltests = results.map do |solution|
-        solution.bindings.transform_values(&:to_s)
-      end
-      # warn alltests.to_json
-      alltests
-    end
-
-    # def add_test(api:)
-    #   SafeYAML::OPTIONS[:default_mode] = :safe
-    #   g = RDF::Repository.new
-
-    #   result = HTTPUtils.get(
-    #     url: api
-    #   )
-    #   y = YAML.safe_load(result)
-    #   testid = _build_test_record(yaml: y, graph: g, context: api)
-    #   newentry = g.dump(:nquads)
-    #   _write_test_to_graphdb(payload: newentry)
-    #   testid
-    # end
-
-    # def _build_test_record(yaml:, graph:, context:)
-    #   schema = RDF::Vocab::SCHEMA
-    #   dc = RDF::Vocab::DC
-    #   ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
-
-    #   title = yaml['info']['title']
-    #   description = yaml['info']['description']
-    #   version = yaml['info']['version']
-    #   contact = yaml['info']['contact']['email']
-    #   org = yaml['info']['contact']['url']
-    #   testid = Time.now.nsec
-
-    #   uniqueid = "#{CHAMP_HOST}/tests/#{testid}"
-    #   Champion::Output.triplify(uniqueid, RDF.type, ftr.TestDefinition, graph, context: context)
-    #   Champion::Output.triplify(uniqueid, schema.identifier, context, graph, context: context, datatype: 'xsd:string')
-    #   Champion::Output.triplify(uniqueid, schema.name, title, graph, context: context)
-    #   Champion::Output.triplify(uniqueid, schema.description, description, graph, context: context)
-    #   Champion::Output.triplify(uniqueid, schema.version, version, graph, context: context)
-    #   Champion::Output.triplify(uniqueid, dc.creator, contact, graph, context: context, datatype: 'xsd:string')
-    #   Champion::Output.triplify(uniqueid, dc.creator, org, graph, context: context, datatype: 'xsd:string')
-    #   testid
-    # end
-
-    # DEPRECATED
-    # def _write_test_to_graphdb(payload:)
-    #   url = "#{CHAMPION_REPO}/statements"
-    #   headers = { content_type: 'application/n-quads', accept: '*/*' }
-    #   resp =  HTTPUtils.post(url: url, headers: headers, payload: payload, user: GRAPHDB_USER, pass: GRAPHDB_PASS)
-    #   warn "graphdb response #{resp}"
-    #   resp
-    # end
-
-    # ##############################################################
-    #     BENCHMARK
-    # ##############################################################
-
-    # def get_benchmark(bmid: '')
-    #   warn 'IN GET BENCHMARKS'
-    # end
-  end
-end

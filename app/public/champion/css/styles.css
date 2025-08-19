@@ -16,13 +16,14 @@ body {
 
 .container {
   width: 100%;
-  max-width: 80rem; /* Updated from 36rem to match your layout.erb */
+  max-width: 80rem; 
   margin-left: auto;
   margin-right: auto;
   padding: 20px;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  flex-direction: column;
 }
 
 .header {
@@ -40,7 +41,7 @@ body {
 
 .header h2 {
   margin: 0;
-  font-size: 24px;
+  font-size: 22px;
   text-align: center; /* Ensure text is centered if it wraps */
 }
 
@@ -56,11 +57,26 @@ body {
 
 /* ... other existing styles ... */
 .form-card {
+  justify-content: center; /* Center contents horizontally */
+  align-items: normal; 
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  padding: 25px;
+  padding: 50px;
   margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  margin: 10px; 
+  width: 100%; /* Ensure header spans container width */
+
+}
+.form-card h2 {
+  margin: 5px;
+  font-size: 18px;
+}
+.form-card h3 {
+  margin: 5px;
+  font-size: 16px;
 }
 
 .submit-link {
@@ -100,21 +116,6 @@ body {
   overflow-x: auto;
   white-space: pre-wrap;
   word-wrap: break-word;
-}
-
-/* Form styling */
-.form-card {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  padding: 25px;
-  margin-bottom: 20px;
-}
-
-.form-card h3 {
-  font-size: 1.5rem;
-  margin-bottom: 20px;
-  color: #222;
 }
 
 .form-card form {
@@ -205,8 +206,3 @@ body {
 .bg-gray-200 { background-color: #e5e7eb; }
 .text-left { text-align: left; }
 section { overflow: hidden; } /* Prevents content overflow */
-
-/* Responsive design */
-@media (max-width: 768px) {
-  .container {
-    flex-direction: column;

@@ -11,9 +11,21 @@
 <body id="default">
   <div class="container" style="max-width: 80rem; width: 100%; margin-left: auto; margin-right: auto; padding: 20px;">
     <div class="header">
-      <img src="/champion/champion_whitebgcrop.png" alt="FAIR Champion Logo"/>
+      <a href="/champion"><img src="/champion/champion_whitebgcrop.png" alt="FAIR Champion Logo"/></a>
       <h2>Tests Available in the Registry</h2>
     </div>
+
+    <header class="header">
+        <div class="code-block">
+          <p>Generic CURL command:</p>
+          <pre>
+  curl -H "Accept: application/json" https://tools.ostrails.eu/champion/tests
+          </pre>
+        </div>
+    </header>
+
+
+
     <%= yield %>
   </div>
 </body>

@@ -1,0 +1,39 @@
+<!-- views/algorithm_input.erb -->
+<div class="container">
+  <header class="header">
+    <div class="code-block">
+      <p>Generic CURL command:</p>
+      <pre>
+curl -X POST -H "Accept: application/json" -H "Content-type: application/json" 
+      -d '{"calculation_uri":  "https://sheets.google.com....",
+           "guid":  "https://my.favorite.digital/object"}' 
+           https://tools.ostrails.eu/assess/algorithm
+      </pre>
+or, if you know the ID of the algorithm...
+      <pre>
+curl -X POST -H "Accept: application/json" -H "Content-type: application/json" 
+      -d  '{"guid":  "https://my.favorite.digital/object"}'
+           https://tools.ostrails.eu/assess/algorithm/AJURG8ewy45hIUDH38rhU
+      </pre>
+    </div>
+</header>
+
+</div>
+<div class="container">
+  <div class="form-card">
+
+    <form action="/champion/assess/algorithm" method="post" class="">
+      <div class="form-group mb-3">
+        <label for="calculation_uri" class="block text-sm font-medium mb-1">Benchmark Configuration Spreadsheet URI: (<a href="https://docs.google.com/spreadsheets/d/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w/edit?gid=0#gid=0">Example</a>)</label><br/>
+        <input type="text" id="calculation_uri" name="calculation_uri" class="form-control w-full" placeholder="e.g., https://docs.google.com/spreadsheets/d/..." required>
+      </div>
+      <div class="form-group mb-3">
+        <label for="guid" class="block text-sm font-medium mb-1">GUID:</label><br/>
+        <input type="text" id="guid" name="guid" class="form-control w-full" placeholder="https://w3id.org/duchenne-fdp" required>
+      </div>
+      <div class="text-center">
+        <button type="submit" class="btn btn-primary">Run Benchmark Quality Assessment</button>
+      </div>
+    </form>
+  </div>
+</div>

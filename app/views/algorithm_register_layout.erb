@@ -1,0 +1,33 @@
+<!-- views/layout.erb -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>FAIR Champion - Register Benchmark Assessment Algorithm</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="/champion/css/styles.css"/>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <a href="/champion"><img src="/champion/champion_whitebgcrop.png" alt="FAIR Champion Logo"/></a>
+    <h2>Register Benchmark Assessment Algorithm</h2>
+  </div>
+</div>
+<header class="header">
+    <div class="code-block">
+      <p>Generic CURL command:</p>
+      <pre>
+curl -X POST -H "Accept: application/json" -H "Content-type: application/json" 
+  -d '{"calculation_uri": "https://sheets.google.com/..."}'
+  https://tools.ostrails.eu/champion/algorithms
+      </pre>
+    </div>
+</header>
+
+
+  <div class="container">
+    <%= yield %>
+  </div>
+</body>
+</html>

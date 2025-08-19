@@ -66,7 +66,7 @@ def set_routes
   # this gives the human drop-down interface
   # REGISTER INIT
   get '/champion/algorithms/new' do
-    halt erb :algorithm_register, layout: :algo_register_layout
+    halt erb :algorithm_register, layout: :algorithm_register_layout
   end
   # REGISTER
   post '/champion/algorithms/new' do
@@ -104,8 +104,6 @@ def set_routes
     warn "retrieved calc uri is #{calculation_uri}"
     algorithm = Algorithm.new(calculation_uri: calculation_uri, guid: 'http://example.org/mock')
     @dcat = algorithm.gather_metadata
-    warn "dcat is #{@dcat.inspect} with content type #{content_type}"
-    warn "dcat is #{@dcat.size} with content type #{content_type}"
     halt erb :algorithm_display, layout: :algorithm_layout
   end
 
@@ -132,7 +130,7 @@ def set_routes
   end
 
   get '/champion/assess/algorithms/new' do
-    halt erb :algorithm_input, layout: :algo_register_layout
+    halt erb :algorithm_initiate, layout: :algorithm_initiate_layout
   end
 
   post %r{/champion/assess/algorithm/?} do

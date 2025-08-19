@@ -53,3 +53,5 @@ gem "openapi_parser", "~> 2.1"
 gem "sparql-client", "~> 3.3"
 
 gem "rdf-vocab", "~> 3.3"
+
+gem "erb_lint", "~> 0.9.0"

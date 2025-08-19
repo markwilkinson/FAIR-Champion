@@ -1,3 +1,4 @@
+<!-- views/layout.erb -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,22 +9,13 @@
   <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
 </head>
+
 <body id="default">
-  <div class="container">
+  <div class="container" style="max-width: 80rem; width: 100%; margin-left: auto; margin-right: auto; padding: 20px;">
     <div class="header">
-    <a href="/champion"><img src="/champion/champion_whitebgcrop.png" alt="FAIR Champion Logo"/></a>
-      <h2>Algorithms Available in the Registry</h2>
+      <a href="/champion"><img src="/champion/champion_whitebgcrop.png" alt="FAIR Champion Logo"/></a>
+      <h2>Execute Benchmark Assessment</h2>
     </div>
-
-    <header class="header">
-        <div class="code-block">
-          <p>Generic CURL command:</p>
-          <pre>
-  curl -H "Accept: application/json" https://tools.ostrails.eu/champion/algorithms
-          </pre>
-        </div>
-    </header>
-
     <%= yield %>
   </div>
 </body>
