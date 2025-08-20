@@ -1,6 +1,7 @@
 require 'rdf'
 require 'rdf/ntriples'
 require 'rdf/vocab'
+require 'json/ld'  # For JSON-LD parsing support
 require 'csv'
 require 'rest-client'
 require 'sparql/client'
@@ -18,6 +19,7 @@ class Algorithm
   DOAP = RDF::Vocab::DOAP
   VCARD = RDF::Vocab::VCARD
   DC = RDF::Vocab::DC
+  PROV = RDF::Vocab::PROV
   # curl -v -L -H "content-type: application/json"
   # -d '{"clientUrl": "https://my.domain.org/path/to/DCAT/record.ttl"}'
   # https://tools.ostrails.eu/fdp-index-proxy/proxy
@@ -36,14 +38,14 @@ class Algorithm
                  license: DC.license,
                  applicationArea: FTR.applicationArea,
                  isApplicableFor: FTR.isApplicableFor,
-                 isImplementationOf:  SIO['SIO_000233'], # points to benchmark
+                 isImplementationOf: SIO['SIO_000233'], # points to benchmark
                  scoringFunction: FTR.scoringFunction, # points to google sheet
-                 contactPoint: DCAT.contactPoint
-                }.freeze
+                 contactPoint: DCAT.contactPoint }.freeze
 
-  attr_accessor :calculation_uri, :baseURI, :csv, :algorithm_id, :algorithm_guid, :guid, :resultset, 
+  attr_accessor :calculation_uri, :baseURI, :csv, :algorithm_id, :algorithm_guid, 
+                :guid, :resultset,
                 :valid, :metadata, :graph, :tests,
-                :conditions
+                :benchmarkguid, :conditions
 
   def initialize(calculation_uri:, baseURI: 'https://tools.ostrails.eu/champion', guid: nil, resultset: nil)
     @calculation_uri = calculation_uri
@@ -51,10 +53,11 @@ class Algorithm
     @guid = guid
     @resultset = resultset
     @graph = RDF::Graph.new
-    @metadata = {}
+    @metadata = RDF::Graph.new
     @tests = []
     @conditions = []
     @valid = false
+    @benchmarkguid = "" 
     # Must be a google docs template ands either a guid to test or the inut from another tools resultset
     @valid = true if @calculation_uri =~ %r{docs\.google\.com/spreadsheets} && (guid || resultset)
     # spreadsheets/d/  --> 16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w
@@ -71,13 +74,13 @@ class Algorithm
       method: :get,
       url: csv_url,
       headers: {
-          'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
-          'Accept' => 'text/csv, text/plain, application/octet-stream, */*',
-          'Accept-Language' => 'en-US,en;q=0.9',
-          'Referer' => 'https://docs.google.com/',
-          'Connection' => 'keep-alive'
-        },
-        max_redirects: 10
+        'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
+        'Accept' => 'text/csv, text/plain, application/octet-stream, */*',
+        'Accept-Language' => 'en-US,en;q=0.9',
+        'Referer' => 'https://docs.google.com/',
+        'Connection' => 'keep-alive'
+      },
+      max_redirects: 10
     )
     # Split CSV into lines to identify blocks
     warn "response is #{response.inspect}"
@@ -92,21 +95,57 @@ class Algorithm
     {
       metadata: metadata,
       test_results: test_results,
-      narratives: narratives
+      narratives: narratives,
+      resultset: resultset
     }
+  end
+
+  def generate_execution_output_rdf(output:, algorithmid:) # output is the object above here... with metadata, test results, narratives, and resultset
+    benchmarkscore = RDF::Graph.new
+    uniqid = Time.now.to_i
+    subject = RDF::URI.new("https://tools.ostrails.eu/champion/assess/algorithm/#{algorithmid}/result_#{uniqid}")
+    activity = RDF::URI.new("https://tools.ostrails.eu/champion/assess/algorithm/#{algorithmid}/result_#{uniqid}/activity")
+    benchmarkscore << RDF::Statement.new(subject, RDF.type, FTR.BenchmarkScore)
+    benchmarkscore << RDF::Statement.new(subject, PROV.wasGeneratedBy, activity)
+    benchmarkscore << RDF::Statement.new(activity, RDF.type, FTR.ScoringAlgorithmActivity)
+    benchmarkscore << RDF::Statement.new(subject, PROV.value, RDF::Literal.new(0.99))
+    benchmarkscore << RDF::Statement.new(subject, FTR.log, RDF::Literal.new(output))
+    benchmarkscore << RDF::Statement.new(subject, FTR.outputFromAlgorithm, RDF::URI.new(algorithm_guid))
+
+    resultsetgraph = RDF::Graph.new
+    # data = StringIO.new(resultset)
+    resultsetgraph << RDF::Reader.for(:jsonld).new(resultset)
+    
+    # need the id of the resultset object
+    test_result_set_uri = nil
+    type_predicate = RDF::URI('http://www.w3.org/1999/02/22-rdf-syntax-ns#type')
+    test_result_set_type = RDF::URI('https://w3id.org/ftr#TestResultSet')
+
+    resultsetgraph.query([nil, type_predicate, test_result_set_type]) do |statement|
+      test_result_set_uri = statement.subject
+      break # Assuming only one such URI
+    end
+
+    if test_result_set_uri
+      warn "Found TestResultSet URI: #{test_result_set_uri}"
+    else
+      abort 'No TestResultSet URI found in the graph.'
+    end
+
+    benchmarkscore << RDF::Statement.new(subject, FTR.scoredTestResults, test_result_set_uri)
+    benchmarkscore << resultsetgraph # add the resultset to the benchmarkscore graph object
+    benchmarkscore # send back as RDF::Graph object
   end
 
   # Parse the Google Spreadsheet configuration
   def load_configuration
-    gather_metadata
+    gather_metadata # sets value for @metadata
 
     empty_line_indices = csv.each_with_index.select { |line, _| line.strip.gsub(/,+/, '').empty? }.map(&:last)
     # Ensure we have at least two empty lines to separate three blocks
     if empty_line_indices.size < 2
       raise 'Invalid CSV structure: Expected at least two empty lines to separate three blocks'
     end
-
-    @metadata['Assessed GUID'] = @guid
 
     c = Champion::Core.new
 
@@ -139,11 +178,10 @@ class Algorithm
     end
 
     # Store in RDF graph
-    build_rdf_graph
+    # build_rdf_graph
   end
 
   def gather_metadata
-    metadata = RDF::Graph.new
     # Find separator lines (containing only commas, whitespace, or empty after strip)
     empty_line_indices = csv.each_with_index.select { |line, _| line.strip.gsub(/,+/, '').empty? }.map(&:last)
 
@@ -151,14 +189,19 @@ class Algorithm
     if empty_line_indices.size < 2
       raise 'Invalid CSV structure: Expected at least two empty lines to separate three blocks'
     end
-
     # Parse metadata block (rows 0 to first empty line, with header)
     metadata_csv = csv[0...empty_line_indices[0]].join
     csv_data = CSV.parse(metadata_csv, headers: true)
-    subject = RDF::URI.new("https://tools.ostrails.eu/champion/algorithms/#{algorithm_id}")
+    subject = RDF::URI.new(algorithm_guid)
+
+    # metadata is an RDF__Graph
     csv_data.each do |row|
       # warn row.inspect
       # warn row["DCAT Property"]
+      if row['DCAT Property'].strip == "isImplementationOf"
+        @benchmarkguid = row["Value"]
+      end
+
 
       # Process COntactPoint separately
       if row['DCAT Property'].strip == 'contactPoint'
@@ -188,19 +231,18 @@ class Algorithm
     metadata << RDF::Statement.new(subject, DC.identifier, subject)
 
     endpoint = "#{baseURI}/assess/algorithm/#{algorithm_id}"
-    metadata << RDF::Statement.new(subject, DCAT.endpointDescription, endpoint)
-    metadata << RDF::Statement.new(subject, DCAT.endpointURL, endpoint)
-    metadata << RDF::Statement.new(subject, FTR.scoringFunction, calculation_uri)
+    metadata << RDF::Statement.new(subject, DCAT.endpointDescription, RDF::URI.new(endpoint))
+    metadata << RDF::Statement.new(subject, DCAT.endpointURL, RDF::URI.new(endpoint))
+    metadata << RDF::Statement.new(subject, FTR.scoringFunction, RDF::URI.new(calculation_uri))
     metadata
   end
 
-  def register  # initialize has already been called so all vars are full
+  def register # initialize has already been called so all vars are full
+    filename = "/tmp/#{algorithm_id}" # I need to know this exactly one time, to create the metadata when the object is not yet registered!
 
-    filename = "/tmp/#{algorithm_id}"  # I need to know this exactly one time, to create the metadata when the object is not yet registered!
-    
     # Store the mapping in a file
-    File.write(filename, {calculation_uri => algorithm_guid }.to_json)
-    warn "Stored mapping"
+    File.write(filename, { calculation_uri => algorithm_guid }.to_json)
+    warn 'Stored mapping'
 
     # curl -v -L -H "content-type: application/json"
     # -d '{"clientUrl": "https://my.domain.org/path/to/DCAT/record.ttl"}'
@@ -212,29 +254,28 @@ class Algorithm
     RestClient::Request.execute(
       method: :post,
       url: FDPINDEXPROXY,
-      payload: { 'clientUrl' => algorithm_guid }.to_json,   # this needs to respond with DCAT, so I need to have access to the calculation_uri to generate that
+      payload: { 'clientUrl' => algorithm_guid }.to_json, # this needs to respond with DCAT, so I need to have access to the calculation_uri to generate that
       headers: { accept: 'application/json', content_type: 'application/json' },
       max_redirects: 10
     )
   end
 
   def self.retrieve_by_id(algorithm_id:)
-
     # Check if file exists
     # THE PROBLEM:  we cannot predict the Google Sheets URI, but we need it to create the object
     # so get it from the cache, or get it from the FDP Index
-    if File.exist?("/tmp/#{algorithm_id}")  # this is the first time it has been called, so need to get calculation_uri from cache
+    if File.exist?("/tmp/#{algorithm_id}") # this is the first time it has been called, so need to get calculation_uri from cache
       # Read and parse the mapping
-      warn "RETRIEVING FROM CACHE"
+      warn 'RETRIEVING FROM CACHE'
       mapping = ::JSON.parse(File.read("/tmp/#{algorithm_id}"))
       calculation_uri, algorithm_guid = mapping.first
 
-#      File.delete("/tmp/#{algorithm_id}") if File.exist?("/tmp/#{algorithm_id}")
+      #      File.delete("/tmp/#{algorithm_id}") if File.exist?("/tmp/#{algorithm_id}")
 
       warn "Retrieved: #{calculation_uri}, #{algorithm_guid}"
-      return calculation_uri
+      calculation_uri
     else
-      # if that temp mapping file doesn't exist, then the data is in the FDP registry, so we can get it from there... 
+      # if that temp mapping file doesn't exist, then the data is in the FDP registry, so we can get it from there...
       query = <<EOQ
       PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
       PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -250,69 +291,68 @@ class Algorithm
           ftr:scoringFunction ?scoringfunction .
           FILTER(CONTAINS(str(?identifier), "/champion/"))
           FILTER(CONTAINS(str(?identifier), "#{algorithm_id}"))
-      } 
+      }#{' '}
 EOQ
 
-warn "query is #{query}"
+      warn "query is #{query}"
       endpoint = SPARQL::Client.new(FDPSPARQL)
 
       begin
         # Execute the query
         results = endpoint.query(query)
         warn "results:   #{results.inspect}"
-        if results.first
-          solution = results.first
-          warn "solution:   #{solution.inspect}"
+        return false unless results.first
 
-          return solution[:scoringfunction].to_s  # this is the calculation_uri requried to initialize the object
-        else
-          return false
-        end
+        solution = results.first
+        warn "solution:   #{solution.inspect}"
+
+        solution[:scoringfunction].to_s # this is the calculation_uri requried to initialize the object
       end
     end
   end
 
-
   # Build RDF graph for semantic representation
   # not sure this is useful....??
-  def build_rdf_graph
-    algo = RDF::URI.new(@calculation_uri)
-    @graph << [algo, RDF.type, RDF::URI.new('https://w3id.org/ftr#Algorithm')]
-    @metadata.each do |key, value|
-      @graph << [algo, RDF::URI.new("http://example.org/#{key}"), value]
-    end
+  # def build_rdf_graph
+  #   algo = RDF::URI.new(@calculation_uri)
+  #   graph << [algo, RDF.type, RDF::URI.new('https://w3id.org/ftr#Algorithm')]
+  #   metadata.each do |key, value|
+  #     graph << [algo, RDF::URI.new("http://example.org/#{key}"), value]
+  #   end
 
-    @tests.each do |test|
-      # reference: row['Test Reference'],
-      # name: row['Test GUID'],
-      # testid: row['Test GUID'],
-      # endpoint: get_test_endpoint_for_testid(testid: row['Test GUID'])
-      # pass_weight: row['Pass Weight'].to_f,
-      # fail_weight: row['Fail Weight'].to_f,
-      # indeterminate_weight: row['Indeterminate Weight'].to_f
+  #   tests.each do |test|
+  #     # reference: row['Test Reference'],
+  #     # name: row['Test GUID'],
+  #     # testid: row['Test GUID'],
+  #     # endpoint: get_test_endpoint_for_testid(testid: row['Test GUID'])
+  #     # pass_weight: row['Pass Weight'].to_f,
+  #     # fail_weight: row['Fail Weight'].to_f,
+  #     # indeterminate_weight: row['Indeterminate Weight'].to_f
 
-      test_uri = RDF::URI.new(test[:testid])
-      @graph << [test_uri, RDF.type, RDF::URI.new('http://example.org/Test')]
-      @graph << [test_uri, RDF::URI.new('http://example.org/reference'), test[:reference]]
-      @graph << [test_uri, RDF::URI.new('http://example.org/identifier'), test[:name]]
-      @graph << [test_uri, RDF::URI.new('http://example.org/endpoint'), test[:endpoint]]
-      @graph << [test_uri, RDF::URI.new('http://example.org/passWeight'), test[:pass_weight]]
-      @graph << [test_uri, RDF::URI.new('http://example.org/failWeight'), test[:fail_weight]]
-      @graph << [test_uri, RDF::URI.new('http://example.org/indeterminateWeight'), test[:indeterminate_weight]]
-      @graph << [algo, RDF::URI.new('http://example.org/hasTest'), test_uri]
-    end
-  end
+  #     test_uri = RDF::URI.new(test[:testid])
+  #     graph << [test_uri, RDF.type, RDF::URI.new('http://example.org/Test')]
+  #     graph << [test_uri, RDF::URI.new('http://example.org/reference'), test[:reference]]
+  #     graph << [test_uri, RDF::URI.new('http://example.org/identifier'), test[:name]]
+  #     graph << [test_uri, RDF::URI.new('http://example.org/endpoint'), test[:endpoint]]
+  #     graph << [test_uri, RDF::URI.new('http://example.org/passWeight'), test[:pass_weight]]
+  #     graph << [test_uri, RDF::URI.new('http://example.org/failWeight'), test[:fail_weight]]
+  #     graph << [test_uri, RDF::URI.new('http://example.org/indeterminateWeight'), test[:indeterminate_weight]]
+  #     graph << [algo, RDF::URI.new('http://example.org/hasTest'), test_uri]
+  #   end
+  # end
 
   # Run tests and collect results
   def run_tests
     endpoints = @tests.map { |test| test[:endpoint] }
     c = Champion::Core.new
-    result_set = c.execute_on_endpoints(subject: @guid, endpoints: endpoints, bmid: @metadata['Benchmark GUID']) # ResultSet is the shared datastructure in the IF
+    # resultset is an instance attribute, so set it here
+    @resultset = c.execute_on_endpoints(subject: guid, endpoints: endpoints, bmid: benchmarkguid) # ResultSet is the shared datastructure in the IF
+    # resultset is jsonld
 
     # warn "RESULT SET", result_set, "\n\n"
     results = {}
     @tests.each do |test|
-      passfail = parse_single_test_response(result_set: result_set, testid: test[:name]) # extract result for THAT test from the restul-set
+      passfail = parse_single_test_response(result_set: @resultset, testid: test[:name]) # extract result for THAT test from the restul-set
       results[test[:reference]] = {
         result: passfail,
         weight: case passfail
@@ -406,7 +446,6 @@ warn "query is #{query}"
     narratives
   end
 
-
   def self.list
     query = <<EOQ
       PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -423,7 +462,7 @@ warn "query is #{query}"
           dct:title ?title ;
           ftr:scoringFunction ?scoringfunction .
           FILTER(CONTAINS(str(?identifier), "/champion/"))
-      } 
+      }#{' '}
 EOQ
 
     # warn "query is #{query}"
@@ -434,14 +473,149 @@ EOQ
       results = endpoint.query(query)
       warn "results:   #{results.inspect}"
 
-      results.each  do |solution|
-        function = solution[:scoringfunction].to_s  # this is the calculation_uri requried to initialize the object
-        title = solution[:title].to_s  # this is the calculation_uri requried to initialize the object
-        identifier =  solution[:identifier].to_s  # this is the calculation_uri requried to initialize the object
+      results.each do |solution|
+        function = solution[:scoringfunction].to_s # this is the calculation_uri requried to initialize the object
+        title = solution[:title].to_s # this is the calculation_uri requried to initialize the object
+        identifier = solution[:identifier].to_s # this is the calculation_uri requried to initialize the object
         list[identifier] = [title, function]
       end
     end
     list
   end
 
+  # Function to generate OpenAPI spec for the assess algorithm endpoint
+  def self.generate_assess_algorithm_openapi(algorithmid:)
+    {
+      openapi: '3.0.3',
+      info: {
+        title: 'Champion Benchmark Algorithm Execution API',
+        description: 'API specification for assessing a specific benchmark over a digital object',
+        version: '1.0.0'
+      },
+      servers: [
+        {
+          url: 'http://{host}/champion',
+          variables: {
+            host: {
+              default: 'tools.ostrails.eu'
+            }
+          }
+        }
+      ],
+      paths: {
+        "/assess/algorithm/#{algorithmid}": {
+          post: {
+            summary: 'Execute algorithm assessment',
+            parameters: [
+              {
+                name: 'algorithmid',
+                in: 'path',
+                required: true,
+                schema: {
+                  type: 'string'
+                },
+                description: 'The ID of the algorithm, embedded in the URL path (e.g., /assess/algorithm/my_algo_id).'
+              }
+            ],
+            requestBody: {
+              required: true,
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      guid: {
+                        type: 'string',
+                        description: 'GUID for the assessment (optional if resultset is provided).'
+                      },
+                      resultset: {
+                        type: 'string',
+                        description: 'Result set data for the assessment (optional if guid is provided).'
+                      }
+                    },
+                    description: "At least one of 'guid' or 'resultset' must be provided."
+                  }
+                },
+                'multipart/form-data': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      file: {
+                        type: 'string',
+                        format: 'binary',
+                        description: 'Uploaded file containing the result set.'
+                      }
+                    },
+                    description: 'A file containing the result set data.'
+                  }
+                }
+              }
+            },
+            responses: {
+              '200': {
+                description: 'Returns algorithm execution result',
+                content: {
+                  'text/html': {
+                    schema: {
+                      type: 'string'
+                    }
+                  },
+                  'application/json': {
+                    schema: {
+                      type: 'object'
+                    }
+                  },
+                  'application/ld+json': {
+                    schema: {
+                      type: 'object'
+                    }
+                  }
+                }
+              },
+              '400': {
+                description: 'Missing required input (GUID, ResultSet, or file)',
+                content: {
+                  'text/html': {
+                    schema: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              '404': {
+                description: 'Invalid algorithm ID',
+                content: {
+                  'text/html': {
+                    schema: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              '406': {
+                description: 'Invalid data provided',
+                content: {
+                  'text/html': {
+                    schema: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              '500': {
+                description: 'Server error during processing',
+                content: {
+                  'text/html': {
+                    schema: {
+                      type: 'string'
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  end
 end

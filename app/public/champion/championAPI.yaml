@@ -1,0 +1,259 @@
+openapi: 3.0.3
+info:
+  title: Champion API
+  description: API for managing tests and algorithms in the Champion application
+  version: 1.0.0
+servers:
+  - url: https://tools.ostrails.eu/champion
+    variables:
+      host:
+        default: 0.0.0.0
+paths:
+  /:
+    get:
+      summary: Get the homepage
+      responses:
+        '200':
+          description: Renders the homepage
+          content:
+            text/html:
+              schema:
+                type: string
+  /tests:
+    get:
+      summary: Redirect to /tests/
+      responses:
+        '307':
+          description: Temporary redirect to /tests/
+  /tests/:
+    get:
+      summary: List all tests
+      responses:
+        '200':
+          description: Returns a list of tests
+          content:
+            text/html:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+            application/ld+json:
+              schema:
+                type: array
+                items:
+                  type: object
+  /tests/{testid}:
+    get:
+      summary: Get details of a specific test
+      parameters:
+        - name: testid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Returns details of a specific test
+          content:
+            text/html:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: object
+            application/ld+json:
+              schema:
+                type: object
+  /algorithms/new:
+    get:
+      summary: Display algorithm registration form
+      responses:
+        '200':
+          description: Renders the algorithm registration form
+          content:
+            text/html:
+              schema:
+                type: string
+    post:
+      summary: Register a new algorithm
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                calculation_uri:
+                  type: string
+              required:
+                - calculation_uri
+      responses:
+        '302':
+          description: Redirects to algorithm display page
+  /algorithms/:
+    get:
+      summary: List all algorithms
+      responses:
+        '200':
+          description: Returns a list of algorithms
+          content:
+            text/html:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    identifier:
+                      type: string
+                    title:
+                      type: string
+                    function:
+                      type: string
+            application/ld+json:
+              schema:
+                type: array
+                items:
+                  type: object
+  /algorithms/{algorithmid}/display:
+    get:
+      summary: Display algorithm details
+      parameters:
+        - name: algorithmid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Renders algorithm details
+          content:
+            text/html:
+              schema:
+                type: string
+        '406':
+          description: Algorithm not found
+          content:
+            text/html:
+              schema:
+                type: string
+  /algorithms/{algorithmid}:
+    get:
+      summary: Get algorithm metadata
+      parameters:
+        - name: algorithmid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Returns algorithm metadata
+          content:
+            text/html:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: object
+            application/ld+json:
+              schema:
+                type: object
+            text/turtle:
+              schema:
+                type: string
+        '406':
+          description: Algorithm not found
+          content:
+            text/html:
+              schema:
+                type: string
+  /assess/algorithms/new:
+    get:
+      summary: Display algorithm assessment form
+      responses:
+        '200':
+          description: Renders the algorithm assessment form
+          content:
+            text/html:
+              schema:
+                type: string
+  /assess/algorithm/:
+    post:
+      summary: Initiate algorithm assessment
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                calculation_uri:
+                  type: string
+              required:
+                - calculation_uri
+      responses:
+        '200':
+          description: Processes the algorithm assessment
+  /assess/algorithm/{algorithmid}:
+    post:
+      summary: Execute algorithm assessment
+      parameters:
+        - name: algorithmid
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                guid:
+                  type: string
+                resultset:
+                  type: string
+              required:
+                - guid
+                - resultset
+      responses:
+        '200':
+          description: Returns algorithm execution result
+          content:
+            text/html:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: object
+            application/ld+json:
+              schema:
+                type: object
+        '400':
+          description: Missing GUID or ResultSet
+          content:
+            text/html:
+              schema:
+                type: string
+        '404':
+          description: Invalid algorithm ID
+          content:
+            text/html:
+              schema:
+                type: string
+        '406':
+          description: Invalid data provided
+          content:
+            text/html:
+              schema:
+                type: string
+        '500':
+          description: Server error during processing
+          content:
+            text/html:
+              schema:
+                type: string

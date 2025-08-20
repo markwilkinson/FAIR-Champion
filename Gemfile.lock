@@ -459,6 +459,7 @@ DEPENDENCIES
   fileutils (~> 1.5.0)
   json (~> 2.7.1)
   json-canonicalization (~> 1.0.0)
+  json-ld (~> 3.3)
   linkeddata (~> 3.2.0)
   linkheaders-processor (~> 0.1.20)
   metainspector (~> 5.pre.11.pre.2)

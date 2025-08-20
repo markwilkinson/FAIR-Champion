@@ -36,7 +36,7 @@ module Champion
       end
       # warn "RESULTS #{results}"
       output = Champion::Output.new(setid: "#{CHAMP_HOST}/sets/#{setid}", subject: subject)
-      output.build_output(results: results)
+      output.build_output(results: results)  # returns jsonld
     end
 
     # we get the GUID of tghe benchmark.  We need to extract the GUIDs of the Metrics first
@@ -128,7 +128,7 @@ module Champion
       end
       # warn "RESULTS #{results}"
       output = Champion::Output.new(setid: bmid, subject: subject)
-      output.build_output(results: results)
+      output.build_output(results: results)  # returns jsonld
     end
 
     def run_test(testapi:, guid:)

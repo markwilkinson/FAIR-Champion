@@ -14,6 +14,10 @@ def set_routes
     json: []
   }
 
+  get %r{/champion/api/?} do
+    redirect '/champion/championAPI.yaml', 307
+  end
+
   get %r{/champion/?} do
     halt erb :homepage
   end
@@ -121,7 +125,7 @@ def set_routes
     case content_type
     when %r{text/html}
       halt erb :algorithm_display, layout: :algorithm_layout
-    when %r{application/json'} || %r{application/ld+json}
+    when %r{application/json} || %r{application/ld+json}
       halt @dcat.dump(:jsonld)
     when %r{text/turtle}
       halt @dcat.dump(:turtle)
@@ -133,7 +137,7 @@ def set_routes
     halt erb :algorithm_initiate, layout: :algorithm_initiate_layout
   end
 
-  post %r{/champion/assess/algorithm/?} do
+  post '/champion/assess/algorithm' do
     calculation_uri = params['calculation_uri']
     abort 'no calc uri' unless calculation_uri
     algoid = calculation_uri.match(%r{/\w/([^/]+)})[1]
@@ -141,51 +145,148 @@ def set_routes
     call(new_env)
   end
 
+  get '/champion/assess/algorithm/:algorithmid', provides: [:json] do
+    content_type :json
+    openapi_spec = Algorithm.generate_assess_algorithm_openapi(algorithmid: params[:algorithmid])
+    halt openapi_spec.to_json
+  end
+  get '/champion/assess/algorithm/:algorithmid/' do
+    redirect "/champion/assess/algorithm/#{params[:algorithmid]}", 301
+  end
+
   post '/champion/assess/algorithm/:algorithmid', provides: [:html, :json, 'application/ld+json'] do
     scoringfunction = Algorithm.retrieve_by_id(algorithm_id: params[:algorithmid])
 
     unless scoringfunction
       halt 404,
-           erb(:error,
-               locals: { message: 'need valid algorithm id (in the URL, and already registered in the OSTrails Index) is required' })
+          erb(:error,
+              locals: { message: 'need valid algorithm id (in the URL, and already registered in the OSTrails Index) is required' })
     end
     calculation_uri = scoringfunction
-    guid = params[:guid]
-    resultset = params[:resultset]
+    guid = nil
+    resultset = nil
+    if request.content_type == 'application/json'
+      begin
+        body = JSON.parse(request.body.read)
+        # Check if the JSON body contains guid or resultset keys
+        if body.is_a?(Hash) && (body['guid'] || body['resultset'])
+          guid = body['guid']
+          resultset = body['resultset']
+        else
+          # Treat the entire JSON body as the resultset
+          resultset = body
+        end
+      rescue JSON::ParserError => e
+        halt 400, erb(:error, locals: { message: "Invalid JSON: #{e.message}" })
+      end
+    else
+      # Handle form data (urlencoded or multipart)
+      guid = params[:guid]
+      resultset = params[:resultset]
+      if params[:file] && params[:file][:tempfile]
+        begin
+          # Assume the uploaded file is JSON and parse it as the resultset
+          resultset ||= JSON.parse(params[:file][:tempfile].read)
+        rescue JSON::ParserError => e
+          halt 400, erb(:error, locals: { message: "Invalid JSON in uploaded file: #{e.message}" })
+        end
+      end
+    end
 
     unless resultset || guid
       halt 400,
-           erb(:error,
-               locals: { message: 'GUID or ResultSet are required in the JSON post body' })
+          erb(:error,
+              locals: { message: 'GUID or ResultSet (or file upload) are required' })
     end
+
     if guid
-      begin
+#      begin
         algorithm = Algorithm.new(calculation_uri: calculation_uri, guid: guid)
         unless algorithm.valid
           halt 406,
-               erb(:error,
-                   locals: { message: 'The data provided were invalid. Check that you are using a registered algorithm' })
+              erb(:error,
+                  locals: { message: 'The data provided were invalid. Check that you are using a registered algorithm' })
         end
         @result = algorithm.process
-        halt erb :algorithm_execution_output, layout: :algorithm_execution_layout
-      rescue StandardError => e
-        halt 500, erb(:error, locals: { message: "Error processing algorithm: #{e.message}" })
-      end
+        @rdfgraph = algorithm.generate_execution_output_rdf(output: @result, algorithmid: params[:algorithmid])
+#      rescue StandardError => e
+#        halt 500, erb(:error, locals: { message: "Error processing algorithm: #{e.message}" })
+#      end
     else
-      begin
+#      begin
         algorithm = Algorithm.new(calculation_uri: calculation_uri, resultset: resultset)
         unless algorithm.valid
           halt 406,
-               erb(:error,
-                   locals: { message: 'The data provided were invalid. Check that you are using a registered algorithm' })
+              erb(:error,
+                  locals: { message: 'The data provided were invalid. Check that you are using a registered algorithm' })
         end
         @result = algorithm.process
-        halt erb :algorithm_execution_output, layout: :algorithm_execution_layout
-      rescue StandardError => e
-        halt 500, erb(:error, locals: { message: "Error processing algorithm: #{e.message}" })
-      end
+        @rdfgraph = algorithm.generate_execution_output_rdf(output: @result, algorithmid: params[:algorithmid])
+#      rescue StandardError => e
+#        halt 500, erb(:error, locals: { message: "Error processing algorithm: #{e.message}" })
+#      end
     end
+    warn "trying to match #{content_type}"
+
+    case content_type
+    when %r{text/html}
+      halt erb :algorithm_execution_output, layout: :algorithm_execution_layout
+    when %r{application/json} || %r{application/ld+json}
+      halt @rdfgraph.dump(:jsonld)
+    when %r{text/turtle}
+      halt @rdfgraph.dump(:turtle)
+    end
+    halt 406
+
+
+    
   end
+
+  # post '/champion/assess/algorithm/:algorithmid', provides: [:html, :json, 'application/ld+json'] do
+  #   scoringfunction = Algorithm.retrieve_by_id(algorithm_id: params[:algorithmid])
+
+  #   unless scoringfunction
+  #     halt 404,
+  #          erb(:error,
+  #              locals: { message: 'need valid algorithm id (in the URL, and already registered in the OSTrails Index) is required' })
+  #   end
+  #   calculation_uri = scoringfunction
+  #   guid = params[:guid]
+  #   resultset = params[:resultset]
+
+  #   unless resultset || guid
+  #     halt 400,
+  #          erb(:error,
+  #              locals: { message: 'GUID or ResultSet are required in the JSON post body' })
+  #   end
+  #   if guid
+  #     begin
+  #       algorithm = Algorithm.new(calculation_uri: calculation_uri, guid: guid)
+  #       unless algorithm.valid
+  #         halt 406,
+  #              erb(:error,
+  #                  locals: { message: 'The data provided were invalid. Check that you are using a registered algorithm' })
+  #       end
+  #       @result = algorithm.process
+  #       halt erb :algorithm_execution_output, layout: :algorithm_execution_layout
+  #     rescue StandardError => e
+  #       halt 500, erb(:error, locals: { message: "Error processing algorithm: #{e.message}" })
+  #     end
+  #   else
+  #     begin
+  #       algorithm = Algorithm.new(calculation_uri: calculation_uri, resultset: resultset)
+  #       unless algorithm.valid
+  #         halt 406,
+  #              erb(:error,
+  #                  locals: { message: 'The data provided were invalid. Check that you are using a registered algorithm' })
+  #       end
+  #       @result = algorithm.process
+  #       halt erb :algorithm_execution_output, layout: :algorithm_execution_layout
+  #     rescue StandardError => e
+  #       halt 500, erb(:error, locals: { message: "Error processing algorithm: #{e.message}" })
+  #     end
+  #   end
+  # end
 
   before do
     # warn 'woohoo'
@@ -376,7 +477,7 @@ end
 #     @graph = data['@graph']
 #     # Render the ERB template
 #     halt erb :evaluation_response
-#   when %r{application/json'}
+#   when %r{application/json}
 #     halt @result
 #   when %r{application/ld+json}
 #     halt @result
@@ -412,7 +513,7 @@ end
 #   case content_type
 #   when %r{text/html}
 #     halt body
-#   when  %r{application/json'}
+#   when  %r{application/json}
 #     halt body
 #   when %r{application/ld+json}
 #     halt body
