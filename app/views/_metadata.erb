@@ -1,13 +1,64 @@
-<h2 class="mb-3">Metadata</h2>
-<ul class="list-group p-2">
-  <li class="list-group-item p-2">
-    <strong>Assesssed GUID</strong>: <%= metadata["Assessed GUID"] %>
-  </li>
-  <% metadata.delete("Assessed GUID") %>
+<details class="mb-3">
+  <h2 class="mb-3">Metadata</h2>
+  <ul class="list-group p-2">
+    <% 
+    reverse_predicates = Algorithm::PREDICATES.invert
+    data = {}
+    main_subject = nil
+    assessed_guid = nil
+    contact_emails = []
 
-  <% metadata.sort_by { |k, _| k }.each do |key, value| %>
+    # Find main subject in metadata graph (using DC.identifier where subject == object)
+    metadata.each_statement do |stmt|
+      if stmt.predicate == RDF::URI.new("http://purl.org/dc/terms/identifier") && stmt.subject == stmt.object
+        main_subject = stmt.subject
+      end
+    end
+
+    # Collect data from metadata graph
+    metadata.each_statement do |stmt|
+      next unless stmt.subject == main_subject
+
+      pred = stmt.predicate
+      next if pred == RDF.type # Skip types
+      next if pred == RDF::URI.new("http://purl.org/dc/terms/identifier") # Already handled
+
+      if pred == RDF::URI.new("http://www.w3.org/ns/dcat#contactPoint")
+        contact_node = stmt.object
+        metadata.each_statement do |stmt2|
+          if stmt2.subject == contact_node && stmt2.predicate == RDF::URI.new("http://www.w3.org/2006/vcard/ns#hasEmail")
+            contact_emails << stmt2.object.to_s
+          end
+        end
+        next # Don't add the node itself to data
+      end
+
+      key = reverse_predicates[pred]
+      if key
+        key = key.to_s.capitalize
+        value = stmt.object.to_s
+        data[key] = value
+      elsif pred.to_s.start_with?("urn:unknown_property:")
+        key = pred.to_s.sub("urn:unknown_property:", "").capitalize
+        value = stmt.object.to_s
+        data[key] = value
+      end
+    end
+
+    # Handle contactPoint display
+    if contact_emails.any?
+      data["Contactpoint"] = contact_emails.join(", ")
+    end
+    %>
+
     <li class="list-group-item p-2">
-      <strong><%= key %>:</strong> <%= value %>
+      <strong>Assessed GUID</strong>: <%= testedguid %>
     </li>
-  <% end %>
-</ul>
+
+    <% data.sort_by { |k, _| k }.each do |key, value| %>
+      <li class="list-group-item p-2">
+        <strong><%= key %>:</strong> <%= value %>
+      </li>
+    <% end %>
+  </ul>
+</details>

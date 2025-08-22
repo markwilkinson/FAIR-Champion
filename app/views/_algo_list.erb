@@ -1,39 +1,87 @@
-<% @list.each do |identifier, data| %>
-
+<% @list.each do |data| %>
 <div class="form-card">
   <h2 class="mb-3">
-    <a href="<%= identifier %>" class="submit-link"><%= data[0] %></a>
+    <a href="<%= data[:identifier] %>" class="submit-link"><%= data[:title] %></a>
   </h2>
-  <% if data[1] %>
-    <h3 class="mb-3">
-      <p class="mb-3">
-        <a href="<%= data[1] %>" class="submit-link">Function Definition</a>
-      </p>
-    </h3>
-  <% end %>
+  <p class="mb-3"><%= data[:description] %></p>
 
   <details class="mb-3">
     <summary>Additional Details</summary>
     <table class="table" style="width: 100%;">
       <tr>
         <th class="bg-gray-200 text-left">Identifier</th>
-        <td><a href="<%= identifier %>"><%= identifier %></a></td>
+        <td><a href="<%= data[:identifier] %>"><%= data[:identifier] %></a></td>
       </tr>
-      <% if data[1] %>
+      <% if data[:endpoint] %>
         <tr>
-          <th class="bg-gray-200 text-left">Function</th>
-          <td><a href="<%= data[1] %>"><%= data[1] %></a></td>
+          <th class="bg-gray-200 text-left">Endpoint (POST)</th>
+          <td><a href="<%= data[:endpoint] %>"><%= data[:endpoint] %></a></td>
+        </tr>
+      <% end %>
+      <% if data[:openapi] %>
+        <tr>
+          <th class="bg-gray-200 text-left">OpenAPI (GET)</th>
+          <td><a href="<%= data[:openapi] %>"><%= data[:openapi] %></a></td>
+        </tr>
+      <% end %>
+      <% if data[:objects] && !data[:objects].empty? %>
+        <tr>
+          <th class="bg-gray-200 text-left">Applicable Objects</th>
+          <td>
+            <ul class="list-disc pl-5">
+              <% data[:objects].split(", ").each do |obj| %>
+                <% label = obj.match(%r{.*[/#](\S+)})[1]  %>
+                <li><a href="<%= obj %>"><%= label %></a></li>
+              <% end %>
+            </ul>
+          </td>
+        </tr>
+      <% end %>
+      <% if data[:domains] && !data[:domains].empty? %>
+        <tr>
+          <th class="bg-gray-200 text-left">Application Domains</th>
+          <td>
+            <ul class="list-disc pl-5">
+              <% data[:domains].split(", ").each do |dom| %>
+                <% label = dom.match(%r{.*[/#](\S+)})[1]  %>
+                <li><a href="<%= dom %>"><%= label %></a></li>
+              <% end %>
+            </ul>
+          </td>
+        </tr>
+      <% end %>
+      <% if data[:benchmark] %>
+        <tr>
+          <th class="bg-gray-200 text-left">Benchmark</th>
+          <td><a href="<%= data[:benchmark] %>"><%= data[:benchmark] %></a></td>
+        </tr>
+      <% end %>
+      <% if data[:benchmark] %>
+        <tr>
+          <th class="bg-gray-200 text-left">Scoring Algorithm Google Sheet</th>
+          <td><a href="<%= data[:calculation_uri] %>"><%= data[:calculation_uri] %></a></td>
         </tr>
       <% end %>
       <tr>
-        <th class="bg-gray-200 text-left">Execute</th>
-        <td>
-          <% id = identifier.match(/.*\/(\w+)/)[1] %>
-          <form method="post" action="/champion/assess/algorithm/<%= id %>">
-            GUID to Test: <input type="text" name="guid"/>
-            <input type="submit" value="Execute Algorithm" class="submit-link">
-          </form>
-        </td>
+<th class="bg-gray-200 text-left">Execute</th>
+<td>
+  <% id = data[:identifier].match(/.*\/(\w+)/)[1] %>
+  <div><h2 class="header">You may now apply the selected algorithm to a new Digital Object, or an existing Test Result Set</h2></div>
+
+  <form method="post" action="/champion/assess/algorithm/<%= id %>" enctype="multipart/form-data">
+    <div class="mb-3">
+      <label for="guid" class="block text-sm font-medium mb-1">GUID to Test:</label>
+      <input type="text" id="guid" name="guid" class="form-control w-full" placeholder="e.g., https://w3id.org/duchenne-fdp">
+    </div>
+    <div><h2 class="header">OR</h2></div>
+
+    <div class="mb-3">
+      <label for="assessment_file" class="block text-sm font-medium mb-1">Upload Prior Assessment (JSON-LD):</label>
+      <input type="file" id="assessment_file" name="file" class="form-control w-full" accept="application/json,.jsonld">
+    </div>
+    <input type="submit" value="Execute Benchmark Quality Assessment" class="submit-link btn btn-primary">
+  </form>
+</td>
       </tr>
     </table>
   </details>

@@ -43,7 +43,7 @@ class Algorithm
                  contactPoint: DCAT.contactPoint }.freeze
 
   attr_accessor :calculation_uri, :baseURI, :csv, :algorithm_id, :algorithm_guid, 
-                :guid, :resultset,
+                :guid, :resultset, :resultsetgraph,
                 :valid, :metadata, :graph, :tests,
                 :benchmarkguid, :conditions
 
@@ -52,6 +52,7 @@ class Algorithm
     @baseURI = baseURI
     @guid = guid
     @resultset = resultset
+    @resultsetgraph = RDF::Graph.new
     @graph = RDF::Graph.new
     @metadata = RDF::Graph.new
     @tests = []
@@ -90,13 +91,23 @@ class Algorithm
   # Prepare output data
   def process
     load_configuration
-    test_results = resultset || run_tests
+    warn "\n\n\nABOUT TO RUN TESTS\n\n\n" unless resultset
+    run_tests unless resultset  # from-scratch or using the input resultset?
+    # at this point, @resultset variable definitely exists, so now make it a graph to reduce future parsing time
+    format = :jsonld
+    resultsetgraph << RDF::Reader.for(format).new(resultset)
+
+    # this is a special case where we need the target GUID as an independent piece of metadata
+    testedguid = extract_target_from_resultset
+
+    test_results = process_resultset
     narratives = evaluate_conditions(test_results)
     {
       metadata: metadata,
       test_results: test_results,
       narratives: narratives,
-      resultset: resultset
+      resultset: resultset,
+      testedguid: testedguid
     }
   end
 
@@ -111,10 +122,6 @@ class Algorithm
     benchmarkscore << RDF::Statement.new(subject, PROV.value, RDF::Literal.new(0.99))
     benchmarkscore << RDF::Statement.new(subject, FTR.log, RDF::Literal.new(output))
     benchmarkscore << RDF::Statement.new(subject, FTR.outputFromAlgorithm, RDF::URI.new(algorithm_guid))
-
-    resultsetgraph = RDF::Graph.new
-    # data = StringIO.new(resultset)
-    resultsetgraph << RDF::Reader.for(:jsonld).new(resultset)
     
     # need the id of the resultset object
     test_result_set_uri = nil
@@ -201,7 +208,6 @@ class Algorithm
       if row['DCAT Property'].strip == "isImplementationOf"
         @benchmarkguid = row["Value"]
       end
-
 
       # Process COntactPoint separately
       if row['DCAT Property'].strip == 'contactPoint'
@@ -311,36 +317,6 @@ EOQ
     end
   end
 
-  # Build RDF graph for semantic representation
-  # not sure this is useful....??
-  # def build_rdf_graph
-  #   algo = RDF::URI.new(@calculation_uri)
-  #   graph << [algo, RDF.type, RDF::URI.new('https://w3id.org/ftr#Algorithm')]
-  #   metadata.each do |key, value|
-  #     graph << [algo, RDF::URI.new("http://example.org/#{key}"), value]
-  #   end
-
-  #   tests.each do |test|
-  #     # reference: row['Test Reference'],
-  #     # name: row['Test GUID'],
-  #     # testid: row['Test GUID'],
-  #     # endpoint: get_test_endpoint_for_testid(testid: row['Test GUID'])
-  #     # pass_weight: row['Pass Weight'].to_f,
-  #     # fail_weight: row['Fail Weight'].to_f,
-  #     # indeterminate_weight: row['Indeterminate Weight'].to_f
-
-  #     test_uri = RDF::URI.new(test[:testid])
-  #     graph << [test_uri, RDF.type, RDF::URI.new('http://example.org/Test')]
-  #     graph << [test_uri, RDF::URI.new('http://example.org/reference'), test[:reference]]
-  #     graph << [test_uri, RDF::URI.new('http://example.org/identifier'), test[:name]]
-  #     graph << [test_uri, RDF::URI.new('http://example.org/endpoint'), test[:endpoint]]
-  #     graph << [test_uri, RDF::URI.new('http://example.org/passWeight'), test[:pass_weight]]
-  #     graph << [test_uri, RDF::URI.new('http://example.org/failWeight'), test[:fail_weight]]
-  #     graph << [test_uri, RDF::URI.new('http://example.org/indeterminateWeight'), test[:indeterminate_weight]]
-  #     graph << [algo, RDF::URI.new('http://example.org/hasTest'), test_uri]
-  #   end
-  # end
-
   # Run tests and collect results
   def run_tests
     endpoints = @tests.map { |test| test[:endpoint] }
@@ -348,30 +324,45 @@ EOQ
     # resultset is an instance attribute, so set it here
     @resultset = c.execute_on_endpoints(subject: guid, endpoints: endpoints, bmid: benchmarkguid) # ResultSet is the shared datastructure in the IF
     # resultset is jsonld
+  end
 
+  def process_resultset
     # warn "RESULT SET", result_set, "\n\n"
+    # Result Set is a  JSON LD String
+
+    # two possibilities - the resultset is created by us, and all tests match the tests in the load_configuration
+    # or it was passed to us from another app
+    # either way, extract the test IDs from the resultset object
+    # ....no.... this isn't necessary... if they aren't in the algorithm, then we cant deal with them anyway!
+    # @resultset_testids = extract_tests_from_resultset
+
     results = {}
-    @tests.each do |test|
-      passfail = parse_single_test_response(result_set: @resultset, testid: test[:name]) # extract result for THAT test from the restul-set
-      results[test[:reference]] = {
-        result: passfail,
-        weight: case passfail
-                when 'pass' then test[:pass_weight]
-                when 'fail' then test[:fail_weight]
-                when 'indeterminate' then test[:indeterminate_weight]
-                else 0.0
-                end
-      }
+    @tests.each do |test|  # the tests defined in the algorithm
+      passfail = parse_single_test_response(resultset: @resultset, testid: test[:name]) # extract result for THAT test from the restul-set
+      if passfail  # if there's a value, then the test existed
+        results[test[:reference]] = {
+          result: passfail,
+          weight: case passfail
+                  when 'pass' then test[:pass_weight]
+                  when 'fail' then test[:fail_weight]
+                  when 'indeterminate' then test[:indeterminate_weight]
+                  else 0.0
+                  end
+        }
+      else  # the resultset didn't contain that test... so we will give it an "indeterminate"
+        results[test[:reference]] = {
+          result: "indeterminate (result data not found)",
+          weight: test[:indeterminate_weight]
+          }
+        end
     end
     results
   end
 
-  # Stub for test response parsing (to be implemented in your existing codebase)
-  def parse_single_test_response(result_set:, testid:)
-    format = :jsonld
-    graph = RDF::Graph.new
-    graph << RDF::Reader.for(format).new(result_set)
-    warn 'GRAPH:', graph.dump(:turtle), "\n\n"
+    # Stub for test response parsing (to be implemented in your existing codebase)
+  def parse_single_test_response(resultset:, testid:)
+
+    # warn 'GRAPH:', graph.dump(:turtle), "\n\n"
     # <urn:ostrails:testexecutionactivity:42c79dfe-fc9a-40db-84b6-6a3e69b8afab> a <https://w3id.org/ftr#TestExecutionActivity>;
     #   prov:generated <urn:fairtestoutput:2152d30f-516c-43da-b647-4f4726c33fbb>;
     #   prov:used <https://w3id.org/duchenne-fdp>;
@@ -382,7 +373,7 @@ EOQ
     ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
     warn 'PROV: ', prov.inspect, "\n\n"
     warn 'FTR: ', ftr.inspect, "\n\n"
-    solutions = RDF::Query.execute(graph) do
+    solutions = RDF::Query.execute(resultsetgraph) do
       pattern [:execution, RDF.type, ftr.TestExecutionActivity]
       pattern [:execution, prov.generated, :result]
       pattern [:result, RDF.type, ftr.TestResult]
@@ -392,12 +383,58 @@ EOQ
 
     passfail = solutions.map { |solution| solution[:value].to_s }.uniq
     if passfail.empty?
-      raise "no score found for test #{testid}"
+      warn "no score found for test #{testid}"  # this hapens when the user has passed a resultset that doesn't align with the algorithm
+      return false
     elsif passfail.size > 1
-      warn 'Warning: Multiple scores found.  Returning onlkh the first one.'
+      warn 'Warning: Multiple scores found.  Returning only the first one.'
     end
 
     passfail.first
+  end
+
+  def extract_tests_from_resultset
+    format = :jsonld
+    graph = RDF::Graph.new
+    graph << RDF::Reader.for(format).new(resultset)
+    prov = RDF::Vocab::PROV
+    ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
+    # warn 'PROV: ', prov.inspect, "\n\n"
+    # warn 'FTR: ', ftr.inspect, "\n\n"
+    solutions = RDF::Query.execute(graph) do
+      pattern [:result, RDF.type, ftr.TestResult]
+      pattern [:result, ftr.outputFromTest, :test]
+      pattern [:test, RDF.type, ftr.Test]
+      pattern [:test, RDF::Vocab::DC.identifier, :testid]
+    end
+    warn "SOLUTIONS to find the tests in a resultset ", solutions.inspect, "\n"
+
+    testids = solutions.map { |solution| solution[:testid].to_s }.uniq
+    if passfail.empty?
+      raise "no tests found in the resultset... which is very odd!"
+    end
+    testids
+  end
+
+  def extract_target_from_resultset
+    format = :jsonld
+    graph = RDF::Graph.new
+    graph << RDF::Reader.for(format).new(resultset)
+    prov = RDF::Vocab::PROV
+    ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
+
+    solutions = RDF::Query.execute(graph) do
+      pattern [:result, RDF.type, ftr.TestResultSet]
+      pattern [:result, ftr.assessmentTarget, :target]
+      # pattern [:target, RDF.type, prov.Entity]
+      pattern [:target, RDF::Vocab::DC.identifier, :testedguid]
+    end
+    warn "SOLUTIONS to find the tests in a resultset ", solutions.inspect, "\n"
+
+    guids = solutions.map { |solution| solution[:testedguid].to_s }.uniq  # should return a list of one... hopefully!
+    if guids.empty?
+      raise "no tested guid found in the resultset #{guids.inspect}... which is very odd!"
+    end
+    guids.first  # can be only one
   end
 
   # Evaluate conditions and generate narratives
@@ -446,8 +483,12 @@ EOQ
     narratives
   end
 
+  # get all algorithms
   def self.list
-    query = <<EOQ
+    client = SPARQL::Client.new(FDPSPARQL)
+    list = {}
+
+    algossquery = <<EOQ
       PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
       PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
       PREFIX dqv: <http://www.w3.org/ns/dqv#>
@@ -456,31 +497,29 @@ EOQ
       PREFIX sio: <http://semanticscience.org/resource/>
       PREFIX dpv: <http://www.w3.org/ns/dpv#>
       PREFIX ftr: <https://w3id.org/ftr#>
-      SELECT distinct ?identifier ?title ?scoringfunction WHERE {
+      SELECT ?identifier ?title ?description ?endpoint ?calculation_uri ?openapi (GROUP_CONCAT(?objects; separator=", ") AS ?objects) (GROUP_CONCAT(?domain; separator=", ") AS ?domains) ?benchmark
+      WHERE {
         ?subject a <https://w3id.org/ftr#ScoringAlgorithm> ;
-          dct:identifier ?identifier ;
-          dct:title ?title ;
-          ftr:scoringFunction ?scoringfunction .
-          FILTER(CONTAINS(str(?identifier), "/champion/"))
-      }#{' '}
+            dct:title ?title ;
+            dct:description ?description ;
+            dct:identifier ?identifier ;
+            dcat:endpointDescription ?openapi ;
+            dcat:endpointURL ?endpoint .
+        OPTIONAL { ?subject ftr:isApplicableFor ?objects }
+        OPTIONAL { ?subject ftr:applicationArea ?domain }
+        OPTIONAL { ?subject sio:SIO_000233 ?benchmark }
+        OPTIONAL { ?subject ftr:scoringFunction ?calculation_uri}
+      }
+      GROUP BY ?identifier ?title ?description ?endpoint ?openapi ?benchmark ?calculation_uri
 EOQ
 
-    # warn "query is #{query}"
-    endpoint = SPARQL::Client.new(FDPSPARQL)
-    list = {}
-    begin
-      # Execute the query
-      results = endpoint.query(query)
-      warn "results:   #{results.inspect}"
-
-      results.each do |solution|
-        function = solution[:scoringfunction].to_s # this is the calculation_uri requried to initialize the object
-        title = solution[:title].to_s # this is the calculation_uri requried to initialize the object
-        identifier = solution[:identifier].to_s # this is the calculation_uri requried to initialize the object
-        list[identifier] = [title, function]
+      results = client.query(algossquery)
+      
+      allalgos = results.map do |solution|
+        solution.bindings.transform_values(&:to_s)
       end
-    end
-    list
+      # warn alltests.to_json
+      allalgos
   end
 
   # Function to generate OpenAPI spec for the assess algorithm endpoint
@@ -619,3 +658,37 @@ EOQ
     }
   end
 end
+
+
+
+
+
+  # Build RDF graph for semantic representation
+  # not sure this is useful....??
+  # def build_rdf_graph
+  #   algo = RDF::URI.new(@calculation_uri)
+  #   graph << [algo, RDF.type, RDF::URI.new('https://w3id.org/ftr#Algorithm')]
+  #   metadata.each do |key, value|
+  #     graph << [algo, RDF::URI.new("http://example.org/#{key}"), value]
+  #   end
+
+  #   tests.each do |test|
+  #     # reference: row['Test Reference'],
+  #     # name: row['Test GUID'],
+  #     # testid: row['Test GUID'],
+  #     # endpoint: get_test_endpoint_for_testid(testid: row['Test GUID'])
+  #     # pass_weight: row['Pass Weight'].to_f,
+  #     # fail_weight: row['Fail Weight'].to_f,
+  #     # indeterminate_weight: row['Indeterminate Weight'].to_f
+
+  #     test_uri = RDF::URI.new(test[:testid])
+  #     graph << [test_uri, RDF.type, RDF::URI.new('http://example.org/Test')]
+  #     graph << [test_uri, RDF::URI.new('http://example.org/reference'), test[:reference]]
+  #     graph << [test_uri, RDF::URI.new('http://example.org/identifier'), test[:name]]
+  #     graph << [test_uri, RDF::URI.new('http://example.org/endpoint'), test[:endpoint]]
+  #     graph << [test_uri, RDF::URI.new('http://example.org/passWeight'), test[:pass_weight]]
+  #     graph << [test_uri, RDF::URI.new('http://example.org/failWeight'), test[:fail_weight]]
+  #     graph << [test_uri, RDF::URI.new('http://example.org/indeterminateWeight'), test[:indeterminate_weight]]
+  #     graph << [algo, RDF::URI.new('http://example.org/hasTest'), test_uri]
+  #   end
+  # end

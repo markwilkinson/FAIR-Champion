@@ -31,15 +31,40 @@ curl -X POST -H "Accept: application/json" -H "Content-type: application/json"
     <form action="/champion/assess/algorithm" method="post" class="">
       <div class="form-group mb-3">
         <label for="calculation_uri" class="block text-sm font-medium mb-1">Benchmark Configuration Spreadsheet URI: (<a href="https://docs.google.com/spreadsheets/d/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w/edit?gid=0#gid=0">Example</a>)</label><br/>
-        <input type="text" id="calculation_uri" name="calculation_uri" class="form-control w-full" placeholder="e.g., https://docs.google.com/spreadsheets/d/..." required>
+        <input type="text" id="calculation_uri" name="calculation_uri" class="form-control w-100" list="calculation_uris" placeholder="Enter or select a configuration spreadsheet URI" autocomplete="off" required>
+        <datalist id="calculation_uris">
+          <% @list.each do |item| %>
+            <option value="<%= item[:calculation_uri] %>" label="<%= item[:title] %> - <%= item[:description] %>"></option>
+          <% end %>
+        </datalist>
+        <style>
+          #calculation_uri {
+            min-width: 900px;
+            width: 100%;
+          }
+          #calculation_uris {
+            min-width: 900px;
+          }
+          #calculation_uris option {
+            white-space: normal;
+            width: 900px;
+            display: block;
+          }
+        </style>
       </div>
+      <div><h2 class="header">You may now apply the selected algorithm to a new Digital Object, or an existing Test Result Set</h2></div>
       <div class="form-group mb-3">
-        <label for="guid" class="block text-sm font-medium mb-1">GUID:</label><br/>
-        <input type="text" id="guid" name="guid" class="form-control w-full" placeholder="https://w3id.org/duchenne-fdp" required>
+        <label for="guid" class="block text-sm font-medium mb-1">GUID:</label>
+        <input type="text" id="guid" name="guid" class="form-control w-full" placeholder="e.g., https://w3id.org/duchenne-fdp" required>
+      </div>
+      <div><h2 class="header">OR</h2></div>
+      <div class="form-group mb-3">
+        <label for="assessment_file" class="block text-sm font-medium mb-1">Apply Algorith to Existing Test Result Set (JSON-LD):</label>
+        <input type="file" id="assessment_file" name="file" class="form-control w-full" accept="application/json,.jsonld">
       </div>
       <div class="text-center">
-        <button type="submit" class="btn btn-primary">Run Benchmark Quality Assessment</button>
+        <button type="submit" class="submit-link btn btn-primary">Run Benchmark Quality Assessment</button>
       </div>
-    </form>
+    </form>  
   </div>
 </div>

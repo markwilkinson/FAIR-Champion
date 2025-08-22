@@ -1,0 +1,244 @@
+{
+  "@context": {
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "prov": "http://www.w3.org/ns/prov#",
+    "dct": "http://purl.org/dc/terms/",
+    "dcat": "http://www.w3.org/ns/dcat#",
+    "ftr": "https://w3id.org/ftr#",
+    "sio": "http://semanticscience.org/resource/",
+    "schema": "http://schema.org/"
+  },
+  "@graph": [
+    {
+      "@id": "urn:fairchampionoutput:a49740a9-02b8-41e2-bde7-0f99507fb0ec",
+      "@type": [
+        "ftr:TestResultSet",
+        "prov:Collection"
+      ],
+      "dct:identifier": {
+        "@id": "urn:fairchampionoutput:a49740a9-02b8-41e2-bde7-0f99507fb0ec"
+      },
+      "dct:title": {
+        "@language": "en",
+        "@value": "FAIR Champion output"
+      },
+      "dct:description": {
+        "@language": "en",
+        "@value": "Results of the execution of test set"
+      },
+      "dct:license": {
+        "@id": "https://creativecommons.org/licenses/by/4.0/"
+      },
+      "prov:wasGeneratedBy": {
+        "@id": "urn:fairchampionexecution:7ab925c5-647f-4535-8734-f57fe37ed306"
+      },
+      "prov:hadMember": [
+        {
+          "@id": "urn:fairtestoutput:f92be7e5-d10a-4da9-9a04-5f240e2ca102"
+        },
+        {
+          "@id": "urn:fairtestoutput:5b968907-143f-48c8-8716-f4018b412164"
+        }
+      ],
+      "ftr:assessmentTarget": {
+        "@id": "https://w3id.org/duchenne-fdp"
+      }
+    },
+    {
+      "@id": "urn:fairchampionexecution:7ab925c5-647f-4535-8734-f57fe37ed306",
+      "@type": "ftr:TestExecutionActivity",
+      "prov:used": {
+        "@id": "https://w3id.org/duchenne-fdp"
+      },
+      "schema:softwareVersion": {
+        "@type": "xsd:float",
+        "@value": "1.1.0"
+      }
+    },
+    {
+      "@id": "urn:fairtestoutput:f92be7e5-d10a-4da9-9a04-5f240e2ca102",
+      "@type": "ftr:TestResult",
+      "dct:identifier": {
+        "@id": "urn:fairtestoutput:f92be7e5-d10a-4da9-9a04-5f240e2ca102"
+      },
+      "dct:title": {
+        "@language": "en",
+        "@value": "FAIR Champion: Metadata Authorization OUTPUT"
+      },
+      "dct:description": {
+        "@language": "en",
+        "@value": "OUTPUT OF Tests metadata GUID for the ability to implement authentication and authorization in its resolution protocol.  Currently passes InChI Keys, DOIs, Handles, and URLs.  Recognition of other identifiers will be added upon request by the community."
+      },
+      "dct:license": {
+        "@id": "https://creativecommons.org/publicdomain/zero/1.0/"
+      },
+      "prov:value": {
+        "@language": "en",
+        "@value": "pass"
+      },
+      "ftr:summary": {
+        "@language": "en",
+        "@value": ""
+      },
+      "prov:generatedAtTime": {
+        "@type": "xsd:date",
+        "@value": "2025-08-22T08:33:08+00:00"
+      },
+      "ftr:log": {
+        "@language": "en",
+        "@value": "INFO: TEST VERSION 'Hvst-1.4.3:Tst-2.0.0'\nPASS:  The GUID of the metadata is a uri, which is known to be allow authentication/authorization."
+      },
+      "ftr:completion": {
+        "@type": "xsd:int",
+        "@value": "100"
+      },
+      "ftr:outputFromTest": {
+        "@id": "https://tests.ostrails.eu/tests/fc_metadata_authorization"
+      },
+      "ftr:assessmentTarget": {
+        "@id": "https://w3id.org/duchenne-fdp"
+      }
+    },
+    {
+      "@id": "urn:fairtestoutput:5b968907-143f-48c8-8716-f4018b412164",
+      "@type": "ftr:TestResult",
+      "dct:identifier": {
+        "@id": "urn:fairtestoutput:5b968907-143f-48c8-8716-f4018b412164"
+      },
+      "dct:title": {
+        "@language": "en",
+        "@value": "FAIR Champion: Metadata Includes License (strong) OUTPUT"
+      },
+      "dct:description": {
+        "@language": "en",
+        "@value": "OUTPUT OF Maturity Indicator to test if the linked data metadata contains an explicit pointer to the license.  Tests: xhtml, dvia, dcterms, cc, data.gov.au, and Schema license predicates in linked data, and validates the value of those properties."
+      },
+      "dct:license": {
+        "@id": "https://creativecommons.org/publicdomain/zero/1.0/"
+      },
+      "prov:value": {
+        "@language": "en",
+        "@value": "pass"
+      },
+      "ftr:summary": {
+        "@language": "en",
+        "@value": ""
+      },
+      "prov:generatedAtTime": {
+        "@type": "xsd:date",
+        "@value": "2025-08-22T08:33:08+00:00"
+      },
+      "ftr:log": {
+        "@language": "en",
+        "@value": "INFO: TEST VERSION 'Hvst-1.4.3:Tst-2.0.0'\nINFO: Found a URI.\nINFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.\nINFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...\nINFO: Link Header and Meta Link parsing complete.  Back in main thread.\nINFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.\nINFO: parsing as linked data. \nINFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers text/xhtml,text/xml.\nINFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...\nINFO: Link Header and Meta Link parsing complete.  Back in main thread.\nINFO: Found xml text/xml type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.\nINFO: parsing as XML. \nINFO: The XML is being converted into a simple hash structure.\nINFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers application/json.\nWARN: Unable to resolve https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"application/json\"}.\nINFO:  Attempting to resolve https://w3id.org/duchenne-fdp using HTTP Headers 'Accept: */*'.\nINFO: following redirection using this header led to the following URL: https://dpp.worldduchenne.org/.  Using the output from this URL for the next few tests...\nINFO: Link Header and Meta Link parsing complete.  Back in main thread.\nINFO: Found turtle text/turtle type of content when resolving https://w3id.org/duchenne-fdp using HTTP Accept header {\"Accept\"=>\"*/*\"}.\nINFO: parsing as linked data. \nINFO: END OF HARVESTING\nINFO: Linked data found.  Testing for one of the following predicates: [\"http://www.w3.org/1999/xhtml/vocab#license\", \"https://www.w3.org/1999/xhtml/vocab#license\", \"http://purl.org/ontology/dvia#hasLicense\", \"https://purl.org/ontology/dvia#hasLicense\", \"http://purl.org/dc/terms/license\", \"https://purl.org/dc/terms/license\", \"http://creativecommons.org/ns#license\", \"https://creativecommons.org/ns#license\", \"http://reference.data.gov.au/def/ont/dataset#hasLicense\", \"https://reference.data.gov.au/def/ont/dataset#hasLicense\"].\nSUCCESS: Found the http://purl.org/dc/terms/license predicate with a Resource as its value.\nINFO:  Testing for <https://schema.org/license>.\nINFO:  Testing for <http://schema.org/license>."
+      },
+      "ftr:completion": {
+        "@type": "xsd:int",
+        "@value": "100"
+      },
+      "ftr:outputFromTest": {
+        "@id": "https://tests.ostrails.eu/tests/fc_metadata_includes_license"
+      },
+      "ftr:assessmentTarget": {
+        "@id": "https://w3id.org/duchenne-fdp"
+      }
+    },
+    {
+      "@id": "https://w3id.org/duchenne-fdp",
+      "@type": "prov:Entity"
+    },
+    {
+      "@id": "urn:ostrails:testexecutionactivity:a3935de0-488c-416b-8c75-24ed5c3c665c",
+      "@type": "ftr:TestExecutionActivity",
+      "prov:wasAssociatedWith": {
+        "@id": "https://tests.ostrails.eu/tests/fc_metadata_authorization"
+      },
+      "prov:generated": {
+        "@id": "urn:fairtestoutput:f92be7e5-d10a-4da9-9a04-5f240e2ca102"
+      },
+      "prov:used": {
+        "@id": "https://w3id.org/duchenne-fdp"
+      }
+    },
+    {
+      "@id": "https://tests.ostrails.eu/tests/fc_metadata_authorization",
+      "@type": [
+        "ftr:Test",
+        "schema:SoftwareApplication",
+        "dcat:DataService"
+      ],
+      "dct:identifier": "https://tests.ostrails.eu/tests/fc_metadata_authorization",
+      "dct:title": {
+        "@language": "en",
+        "@value": "FAIR Champion: Metadata Authorization"
+      },
+      "dct:description": {
+        "@language": "en",
+        "@value": "Tests metadata GUID for the ability to implement authentication and authorization in its resolution protocol.  Currently passes InChI Keys, DOIs, Handles, and URLs.  Recognition of other identifiers will be added upon request by the community."
+      },
+      "dcat:endpointDescription": {
+        "@id": "https://tests.ostrails.eu/tests/fc_metadata_authorization"
+      },
+      "dcat:endpointURL": {
+        "@id": "https://tests.ostrails.eu/tests/fc_metadata_authorization"
+      },
+      "dcat:version": {
+        "@language": "en",
+        "@value": "Hvst-1.4.3:Tst-2.0.0 OutputVersion:1.1.0"
+      },
+      "dct:license": {
+        "@id": "https://github.com/wilkinsonlab/FAIR-Core-Tests/blob/main/LICENSE"
+      },
+      "sio:SIO_000233": {
+        "@id": "https://doi.org/10.25504/FAIRsharing.VrP6sm"
+      }
+    },
+    {
+      "@id": "urn:ostrails:testexecutionactivity:64e77e9d-4429-43eb-b789-78ee0c6eb3cb",
+      "@type": "ftr:TestExecutionActivity",
+      "prov:wasAssociatedWith": {
+        "@id": "https://tests.ostrails.eu/tests/fc_metadata_includes_license"
+      },
+      "prov:generated": {
+        "@id": "urn:fairtestoutput:5b968907-143f-48c8-8716-f4018b412164"
+      },
+      "prov:used": {
+        "@id": "https://w3id.org/duchenne-fdp"
+      }
+    },
+    {
+      "@id": "https://tests.ostrails.eu/tests/fc_metadata_includes_license",
+      "@type": [
+        "ftr:Test",
+        "schema:SoftwareApplication",
+        "dcat:DataService"
+      ],
+      "dct:identifier": "https://tests.ostrails.eu/tests/fc_metadata_includes_license",
+      "dct:title": {
+        "@language": "en",
+        "@value": "FAIR Champion: Metadata Includes License (strong)"
+      },
+      "dct:description": {
+        "@language": "en",
+        "@value": "Maturity Indicator to test if the linked data metadata contains an explicit pointer to the license.  Tests: xhtml, dvia, dcterms, cc, data.gov.au, and Schema license predicates in linked data, and validates the value of those properties."
+      },
+      "dcat:endpointDescription": {
+        "@id": "https://tests.ostrails.eu/tests/fc_metadata_includes_license"
+      },
+      "dcat:endpointURL": {
+        "@id": "https://tests.ostrails.eu/tests/fc_metadata_includes_license"
+      },
+      "dcat:version": {
+        "@language": "en",
+        "@value": "Hvst-1.4.3:Tst-2.0.0 OutputVersion:1.1.0"
+      },
+      "dct:license": {
+        "@id": "https://github.com/wilkinsonlab/FAIR-Core-Tests/blob/main/LICENSE"
+      },
+      "sio:SIO_000233": {
+        "@id": "https://doi.org/10.25504/FAIRsharing.VrP6sm"
+      }
+    }
+  ]
+}
+

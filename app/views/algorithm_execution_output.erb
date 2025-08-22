@@ -3,7 +3,7 @@
     <div class="custom-container" style="max-width: 108rem; width: 100%; margin-left: auto; margin-right: auto; padding: 20px;">
       <div style="display: block; margin-left: auto; margin-right: auto; padding: 20px;">
         <div>
-          <%= erb :_metadata, locals: { metadata: @result[:metadata] } %>
+          <%= erb :_metadata, locals: { metadata: @result[:metadata], testedguid: @result[:testedguid] } %>
         </div>
         <br/><br/>
         <div>
@@ -12,6 +12,10 @@
         <br/><br/>
         <div>
           <%= erb :_narratives, locals: { narratives: @result[:narratives] } %>
+        </div>
+        <br/><br/>
+        <div>
+          <%= erb :_json_download, locals: { json_ld: @result[:resultset] } %>
         </div>
       </div>
     </div>

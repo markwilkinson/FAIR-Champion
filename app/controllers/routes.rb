@@ -134,6 +134,10 @@ def set_routes
   end
 
   get '/champion/assess/algorithms/new' do
+    @list = Algorithm.list
+    # list[identifier] = [title, function]
+    # get a list of all known champion algos from FDP Index
+
     halt erb :algorithm_initiate, layout: :algorithm_initiate_layout
   end
 
@@ -185,8 +189,10 @@ def set_routes
       resultset = params[:resultset]
       if params[:file] && params[:file][:tempfile]
         begin
-          # Assume the uploaded file is JSON and parse it as the resultset
-          resultset ||= JSON.parse(params[:file][:tempfile].read)
+          # Read the uploaded file as a string
+          resultset ||= params[:file][:tempfile].read
+          # Optionally validate that it's valid JSON-LD
+          JSON.parse(resultset) # This raises an error if invalid, but doesn't store the parsed result
         rescue JSON::ParserError => e
           halt 400, erb(:error, locals: { message: "Invalid JSON in uploaded file: #{e.message}" })
         end
@@ -199,32 +205,32 @@ def set_routes
               locals: { message: 'GUID or ResultSet (or file upload) are required' })
     end
 
-    if guid
-#      begin
-        algorithm = Algorithm.new(calculation_uri: calculation_uri, guid: guid)
-        unless algorithm.valid
-          halt 406,
-              erb(:error,
-                  locals: { message: 'The data provided were invalid. Check that you are using a registered algorithm' })
-        end
-        @result = algorithm.process
-        @rdfgraph = algorithm.generate_execution_output_rdf(output: @result, algorithmid: params[:algorithmid])
-#      rescue StandardError => e
-#        halt 500, erb(:error, locals: { message: "Error processing algorithm: #{e.message}" })
-#      end
-    else
-#      begin
+    if resultset
+    #  begin
         algorithm = Algorithm.new(calculation_uri: calculation_uri, resultset: resultset)
         unless algorithm.valid
           halt 406,
               erb(:error,
                   locals: { message: 'The data provided were invalid. Check that you are using a registered algorithm' })
         end
-        @result = algorithm.process
-        @rdfgraph = algorithm.generate_execution_output_rdf(output: @result, algorithmid: params[:algorithmid])
-#      rescue StandardError => e
-#        halt 500, erb(:error, locals: { message: "Error processing algorithm: #{e.message}" })
-#      end
+        @result = algorithm.process # result has 5 components, including resultset as jsonld string
+        # @rdfgraph = algorithm.generate_execution_output_rdf(output: @result, algorithmid: params[:algorithmid])
+    #  rescue StandardError => e
+    #    halt 500, erb(:error, locals: { message: "Error processing algorithm: #{e.message}" })
+    #  end
+    else guid
+    #  begin
+        algorithm = Algorithm.new(calculation_uri: calculation_uri, guid: guid)
+        unless algorithm.valid
+          halt 406,
+              erb(:error,
+                  locals: { message: 'The data provided were invalid. Check that you are using a registered algorithm' })
+        end
+        @result = algorithm.process  # result has 5 components, including resultset as jsonld string
+        # @rdfgraph = algorithm.generate_execution_output_rdf(output: @result, algorithmid: params[:algorithmid])
+    #  rescue StandardError => e
+    #    halt 500, erb(:error, locals: { message: "Error processing algorithm: #{e.message}" })
+    #  end
     end
     warn "trying to match #{content_type}"
 
@@ -237,10 +243,14 @@ def set_routes
       halt @rdfgraph.dump(:turtle)
     end
     halt 406
-
-
-    
   end
+
+  before do
+    # warn 'woohoo'
+  end
+end
+
+
 
   # post '/champion/assess/algorithm/:algorithmid', provides: [:html, :json, 'application/ld+json'] do
   #   scoringfunction = Algorithm.retrieve_by_id(algorithm_id: params[:algorithmid])
@@ -288,10 +298,6 @@ def set_routes
   #   end
   # end
 
-  before do
-    # warn 'woohoo'
-  end
-end
 
 # ###########################################  SETS
 # ###########################################  SETS
