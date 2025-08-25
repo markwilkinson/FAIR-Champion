@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.2'
+        bundler-cache: true
+    - name: Install dependencies
+      run: bundle install
+    - name: Run tests
+      env:
+        DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+        FDPINDEXPROXY: https://tools.ostrails.eu/fdp-index-proxy/proxy
+        FDPSPARQL: https://tools.ostrails.eu/repositories/fdpindex-fdp
+        CHAMPION_HOST: https://tools.ostrails.eu/champion
+      run: bundle exec rspec
+    - name: Upload coverage
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage
+        path: coverage/

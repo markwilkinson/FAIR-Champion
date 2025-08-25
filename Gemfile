@@ -20,7 +20,6 @@ gem 'rake', '~> 13.0'
 gem 'rdf-raptor', '~> 3.1.0'
 gem 'require_all', '~> 3.0.0'
 gem 'rest-client', '~>2.1.0'
-gem 'rspec', '~> 3.11.0'
 gem 'rubocop', '~> 1.72'
 gem 'ruby-debug-ide'
 gem 'securerandom'
@@ -36,19 +35,17 @@ gem 'xml-simple', '~>1.1.8'
 gem "openapi_parser", "~> 2.1"
 
 
-# group :development, :test do
-
-
-  gem "safe_yaml", "~> 1.0"
-
-  gem "rack-test", "~> 0.6.3"
-
-  gem "rspec-openapi", "~> 0.18.4"
-
+group :development, :test do
+  gem 'rspec', '~> 3.13'
+  gem 'rack-test', '~> 2.1'
+  gem 'webmock', '~> 3.23'
+  gem 'vcr', '~> 6.3'
+  gem 'simplecov', '~> 0.22', require: false
   gem "pry", "~> 0.15.2"
+end
 
-# end
-
+gem "rspec-openapi", "~> 0.18.4"
+gem "safe_yaml", "~> 1.0"
 
 gem "sparql-client", "~> 3.3"
 
