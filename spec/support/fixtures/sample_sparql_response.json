@@ -1,0 +1,17 @@
+{
+  "head": {
+    "vars": [
+      "endpoint"
+    ]
+  },
+  "results": {
+    "bindings": [
+      {
+        "endpoint": {
+          "type": "uri",
+          "value": "https://tests.ostrails.eu/assess/test/fc_metadata_includes_license"
+        }
+      }
+    ]
+  }
+}

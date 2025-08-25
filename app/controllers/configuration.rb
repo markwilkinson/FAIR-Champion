@@ -37,7 +37,7 @@ module Configuration
   end
 #   GRAPHDB_REPONAME = ''.freeze
   def self.graphdb_reponame
-    ENV['GRAPHDB_REPONAME']
+    ENV['GRAPHDB_REPONAME'] || 'champion'
   end
 #  FDPINDEX_SPARQL = 
   def self.fdpindex_sparql

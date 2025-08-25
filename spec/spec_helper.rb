@@ -16,7 +16,7 @@ require_relative '../lib/champion_core'
 VCR.configure do |config|
   config.cassette_library_dir = 'spec/support/fixtures/vcr_cassettes'
   config.hook_into :webmock
-  config.filter_sensitive_data('<DATABASE_PASSWORD>') { Configuration.database_password }
+  config.filter_sensitive_data('<DATABASE_PASSWORD>') { Configuration.graphdb_pass }
   config.configure_rspec_metadata!
 end
 

@@ -12,20 +12,20 @@ RSpec.describe Champion::Core do
       stub_request(:get, 'https://tools.ostrails.eu/repositories/fdpindex-fdp')
         .to_return(
           status: 200,
-          body: File.read('spec/support/fixtures/sample_sparql_response.rdf'),
-          'SPARQL-Results': 'application/sparql-results+json'
+          body: File.read('spec/support/fixtures/sample_sparql_response.json'),
+          headers: {content_type: 'application/sparql-results+json'}
         )
-      endpoint = core.get_test_endpoint_for_testid(testid: 'https://tests.ostrails.eu/tests/test1')
-      expect(endpoint).to eq('https://tests.ostrails.eu/assess/test/test1')
+      endpoint = core.get_test_endpoint_for_testid(testid: 'https://tests.ostrails.eu/tests/fc_metadata_includes_license')
+      expect(endpoint).to eq('https://tests.ostrails.eu/assess/test/fc_metadata_includes_license')
     end
   end
 
   describe '#run_test' do
     it 'executes a test and returns JSON result', :vcr do
-      stub_request(:post, 'https://tests.ostrails.eu/assess/test/test1')
+      stub_request(:post, 'https://tests.ostrails.eu/assess/test/fc_metadata_includes_license')
         .with(body: { 'resource_identifier' => subject }.to_json)
         .to_return(status: 200, body: { result: 'pass' }.to_json, headers: { 'Content-Type' => 'application/json' })
-      result = core.run_test(testapi: 'https://tests.ostrails.eu/assess/test/test1', guid: subject)
+      result = core.run_test(testapi: 'https://tests.ostrails.eu/assess/test/fc_metadata_includes_license', guid: subject)
       expect(result).to eq('result' => 'pass')
     end
   end

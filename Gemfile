@@ -42,9 +42,11 @@ group :development, :test do
   gem 'vcr', '~> 6.3'
   gem 'simplecov', '~> 0.22', require: false
   gem "pry", "~> 0.15.2"
+  gem "rspec-core", "~> 3.13"
+  gem "rspec-openapi", "~> 0.18.4"
+
 end
 
-gem "rspec-openapi", "~> 0.18.4"
 gem "safe_yaml", "~> 1.0"
 
 gem "sparql-client", "~> 3.3"
@@ -56,3 +58,4 @@ gem "erb_lint", "~> 0.9.0"
 gem "json-ld", "~> 3.3"
 
 gem "dotenv", "~> 3.1"
+

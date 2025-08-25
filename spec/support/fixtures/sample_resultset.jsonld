@@ -93,7 +93,7 @@
         "@value": "100"
       },
       "ftr:outputFromTest": {
-        "@id": "https://tests.ostrails.eu/tests/fc_metadata_authorization"
+        "@id": "https://tests.ostrails.eu/tests/fc_metadata_authorization_mock"
       },
       "ftr:assessmentTarget": {
         "@id": "https://w3id.org/duchenne-fdp"
@@ -151,7 +151,7 @@
       "@id": "urn:ostrails:testexecutionactivity:a3935de0-488c-416b-8c75-24ed5c3c665c",
       "@type": "ftr:TestExecutionActivity",
       "prov:wasAssociatedWith": {
-        "@id": "https://tests.ostrails.eu/tests/fc_metadata_authorization"
+        "@id": "https://tests.ostrails.eu/tests/fc_metadata_authorization_mock"
       },
       "prov:generated": {
         "@id": "urn:fairtestoutput:f92be7e5-d10a-4da9-9a04-5f240e2ca102"
@@ -161,13 +161,13 @@
       }
     },
     {
-      "@id": "https://tests.ostrails.eu/tests/fc_metadata_authorization",
+      "@id": "https://tests.ostrails.eu/tests/fc_metadata_authorization_mock",
       "@type": [
         "ftr:Test",
         "schema:SoftwareApplication",
         "dcat:DataService"
       ],
-      "dct:identifier": "https://tests.ostrails.eu/tests/fc_metadata_authorization",
+      "dct:identifier": "https://tests.ostrails.eu/tests/fc_metadata_authorization_mock",
       "dct:title": {
         "@language": "en",
         "@value": "FAIR Champion: Metadata Authorization"
@@ -177,10 +177,10 @@
         "@value": "Tests metadata GUID for the ability to implement authentication and authorization in its resolution protocol.  Currently passes InChI Keys, DOIs, Handles, and URLs.  Recognition of other identifiers will be added upon request by the community."
       },
       "dcat:endpointDescription": {
-        "@id": "https://tests.ostrails.eu/tests/fc_metadata_authorization"
+        "@id": "https://tests.ostrails.eu/tests/fc_metadata_authorization_mock"
       },
       "dcat:endpointURL": {
-        "@id": "https://tests.ostrails.eu/tests/fc_metadata_authorization"
+        "@id": "https://tests.ostrails.eu/tests/fc_metadata_authorization_mock"
       },
       "dcat:version": {
         "@language": "en",

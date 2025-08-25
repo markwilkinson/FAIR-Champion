@@ -1,0 +1,145 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://tools.ostrails.eu/repositories/fdpindex-fdp
+    body:
+      encoding: US-ASCII
+      string: query=++++++++PREFIX+rdf%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23%3E%0A++++++++PREFIX+rdfs%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23%3E%0A++++++++SELECT+distinct+%3Fendpoint+WHERE+%7B%0A++++++++++%3Chttps%3A%2F%2Ftests.ostrails.eu%2Ftests%2Ffc_metadata_authorization%3E+%3Chttp%3A%2F%2Fwww.w3.org%2Fns%2Fdcat%23endpointURL%3E+%3Fendpoint+.%0A++++++++%7D%0A
+    headers:
+      Accept:
+      - application/sparql-results+json, application/sparql-results+xml, text/boolean,
+        text/tab-separated-values;q=0.8, text/csv;q=0.2, */*;q=0.1
+      User-Agent:
+      - Ruby SPARQL::Client/3.3.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Connection:
+      - keep-alive
+      Keep-Alive:
+      - '120'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx/1.18.0 (Ubuntu)
+      Date:
+      - Mon, 25 Aug 2025 11:22:38 GMT
+      Content-Type:
+      - application/sparql-results+json;charset=UTF-8
+      Content-Length:
+      - '265'
+      Connection:
+      - keep-alive
+      Vary:
+      - Accept
+      Cache-Control:
+      - no-store
+      Content-Disposition:
+      - attachment; filename=query-result.srj
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Content-Type-Options:
+      - nosniff
+      - nosniff
+      Content-Language:
+      - en-US
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "head" : {
+            "vars" : [
+              "endpoint"
+            ]
+          },
+          "results" : {
+            "bindings" : [
+              {
+                "endpoint" : {
+                  "type" : "uri",
+                  "value" : "https://tests.ostrails.eu/assess/test/fc_metadata_authorization"
+                }
+              }
+            ]
+          }
+        }
+  recorded_at: Mon, 25 Aug 2025 11:22:38 GMT
+- request:
+    method: post
+    uri: https://tools.ostrails.eu/repositories/fdpindex-fdp
+    body:
+      encoding: US-ASCII
+      string: query=++++++++PREFIX+rdf%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23%3E%0A++++++++PREFIX+rdfs%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23%3E%0A++++++++SELECT+distinct+%3Fendpoint+WHERE+%7B%0A++++++++++%3Chttps%3A%2F%2Ftests.ostrails.eu%2Ftests%2Ffc_metadata_includes_license%3E+%3Chttp%3A%2F%2Fwww.w3.org%2Fns%2Fdcat%23endpointURL%3E+%3Fendpoint+.%0A++++++++%7D%0A
+    headers:
+      Accept:
+      - application/sparql-results+json, application/sparql-results+xml, text/boolean,
+        text/tab-separated-values;q=0.8, text/csv;q=0.2, */*;q=0.1
+      User-Agent:
+      - Ruby SPARQL::Client/3.3.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Connection:
+      - keep-alive
+      Keep-Alive:
+      - '120'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx/1.18.0 (Ubuntu)
+      Date:
+      - Mon, 25 Aug 2025 11:22:39 GMT
+      Content-Type:
+      - application/sparql-results+json;charset=UTF-8
+      Content-Length:
+      - '268'
+      Connection:
+      - keep-alive
+      Vary:
+      - Accept
+      Cache-Control:
+      - no-store
+      Content-Disposition:
+      - attachment; filename=query-result.srj
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Content-Type-Options:
+      - nosniff
+      - nosniff
+      Content-Language:
+      - en-US
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "head" : {
+            "vars" : [
+              "endpoint"
+            ]
+          },
+          "results" : {
+            "bindings" : [
+              {
+                "endpoint" : {
+                  "type" : "uri",
+                  "value" : "https://tests.ostrails.eu/assess/test/fc_metadata_includes_license"
+                }
+              }
+            ]
+          }
+        }
+  recorded_at: Mon, 25 Aug 2025 11:22:39 GMT
+recorded_with: VCR 6.3.1

@@ -34,11 +34,12 @@ RSpec.describe Algorithm do
     it 'parses CSV into tests and conditions', :vcr do
       algo.load_configuration
       expect(algo.tests).to include(
-        hash_including(reference: 'T1', testid: 'https://tests.ostrails.eu/tests/test1', pass_weight: 1.0),
-        hash_including(reference: 'T2', testid: 'https://tests.ostrails.eu/tests/test2', pass_weight: 2.0)
+        hash_including(reference: 'T1', testid: 'https://tests.ostrails.eu/tests/fc_metadata_authorization', pass_weight: 5),
+        hash_including(reference: 'T2', testid: 'https://tests.ostrails.eu/tests/fc_metadata_includes_license', fail_weight: -1)
       )
       expect(algo.conditions).to include(
-        hash_including(condition: 'C1', formula: 'T1 + T2 > 1.0')
+        hash_including(condition: 'C1', formula: 'T1 > 0'),
+        hash_including(condition: 'C2', formula: 'T1 + T2 == 10'),
       )
     end
   end
@@ -49,8 +50,8 @@ RSpec.describe Algorithm do
     it 'builds RDF metadata graph', :vcr do
       algo.gather_metadata
       expect(algo.metadata).to be_an(RDF::Graph)
-      expect(algo.metadata.query([nil, RDF::Vocab::DC.title, RDF::Literal.new('Sample Algorithm')]).count).to eq(1)
-      expect(algo.benchmarkguid).to eq('https://example.org/benchmark/123')
+      expect(algo.metadata.query([nil, RDF::Vocab::DC.title, RDF::Literal.new('Demonstration Algorithm')]).count).to eq(1)
+      expect(algo.benchmarkguid).to eq('https://ostrails.github.io/sandbox/mockbenchmark1.ttl')
     end
   end
 
@@ -59,14 +60,14 @@ RSpec.describe Algorithm do
 
     before do
       algo.load_configuration
-      allow(algo).to receive(:parse_single_test_response).with(resultset: resultset, testid: 'https://tests.ostrails.eu	tests/test1').and_return('pass')
-      allow(algo).to receive(:parse_single_test_response).with(resultset: resultset, testid: 'https://tests.ostrails.eu/tests/test2').and_return(nil)
+      allow(algo).to receive(:parse_single_test_response).with(resultset: resultset, testid: 'https://tests.ostrails.eu/tests/fc_metadata_includes_license').and_return('pass')
+      allow(algo).to receive(:parse_single_test_response).with(resultset: resultset, testid: 'https://tests.ostrails.eu/tests/fc_metadata_authorization').and_return(nil) # removed and replaxced with mock output to fail this lookup
     end
 
     it 'processes test results with weights', :vcr do
       results = algo.process_resultset
-      expect(results['T1']).to include(result: 'pass', weight: 1.0)
-      expect(results['T2']).to include(result: 'indeterminate (result data not found)', weight: 0.0)
+      expect(results['T2']).to include(result: 'pass', weight: 5.0)
+      expect(results['T1']).to include(result: 'indeterminate (result data not found)', weight: 0.0)
     end
   end
 
@@ -83,7 +84,7 @@ RSpec.describe Algorithm do
 
     it 'evaluates conditions and generates narratives', :vcr do
       narratives = algo.evaluate_conditions(test_results)
-      expect(narratives).to include('All tests passed;')
+      expect(narratives).to include('Acceptable: metadata passes authorization test;')
     end
   end
 end
