@@ -187,7 +187,9 @@ def set_routes
       # Handle form data (urlencoded or multipart)
       guid = params[:guid]
       resultset = params[:resultset]
-      if params[:file] && params[:file][:tempfile]
+
+      warn "incoming params: #{params.inspect}\n\n\n"
+      if params[:file] && !params[:file].empty? && params[:file][:tempfile]
         begin
           # Read the uploaded file as a string
           resultset ||= params[:file][:tempfile].read

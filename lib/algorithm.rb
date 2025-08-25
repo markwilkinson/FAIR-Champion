@@ -23,8 +23,7 @@ class Algorithm
   # curl -v -L -H "content-type: application/json"
   # -d '{"clientUrl": "https://my.domain.org/path/to/DCAT/record.ttl"}'
   # https://tools.ostrails.eu/fdp-index-proxy/proxy
-  FDPINDEXPROXY = ENV['FDPINDEXPROXY'] || 'https://tools.ostrails.eu/fdp-index-proxy/proxy'
-  FDPSPARQL = ENV['FDPSPARQL'] || 'https://tools.ostrails.eu/repositories/fdpindex-fdp'
+
 
   PREDICATES = { title: DC.title,
                  version: DCAT.version,
@@ -253,13 +252,13 @@ class Algorithm
     # curl -v -L -H "content-type: application/json"
     # -d '{"clientUrl": "https://my.domain.org/path/to/DCAT/record.ttl"}'
     # https://tools.ostrails.eu/fdp-index-proxy/proxy
-    # FDPINDEXPROXY = ENV['FDPINDEXPROXY'] || "https://tools.ostrails.eu/fdp-index-proxy/proxy"
+    # Configuration.fdp_index_proxy = ENV['Configuration.fdp_index_proxy'] || "https://tools.ostrails.eu/fdp-index-proxy/proxy"
     # get '/champion/algorithms/:algorithm'
 
     warn "client url is #{algorithm_guid}"
     RestClient::Request.execute(
       method: :post,
-      url: FDPINDEXPROXY,
+      url: Configuration.fdp_index_proxy,
       payload: { 'clientUrl' => algorithm_guid }.to_json, # this needs to respond with DCAT, so I need to have access to the calculation_uri to generate that
       headers: { accept: 'application/json', content_type: 'application/json' },
       max_redirects: 10
@@ -301,7 +300,7 @@ class Algorithm
 EOQ
 
       warn "query is #{query}"
-      endpoint = SPARQL::Client.new(FDPSPARQL)
+      endpoint = SPARQL::Client.new(Configuration.fdp_sparql)
 
       begin
         # Execute the query
@@ -485,7 +484,7 @@ EOQ
 
   # get all algorithms
   def self.list
-    client = SPARQL::Client.new(FDPSPARQL)
+    client = SPARQL::Client.new(Configuration.fdpindex_sparql)
     list = {}
 
     algossquery = <<EOQ

@@ -170,7 +170,7 @@ module Champion
       _dc = RDF::Vocab::DC
       ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
 
-      sparqlurl = ENV['FDPINDEX_SPARQL'] || FDPINDEX_SPARQL
+      sparqlurl = Configuration.fdpindex_sparql
       # sparqlurl = CHAMPION_REPO
 
       client = SPARQL::Client.new(sparqlurl)
@@ -188,10 +188,10 @@ module Champion
         ?sub a <https://w3id.org/ftr#Test> ;
             dct:title ?title ;
             dct:description ?description ;
-            dct:identifier ?identifier ;
-            dcat:endpointDescription ?openapi ;
-            dcat:endpointURL ?endpoint ;
-            dqv:inDimension ?dimension .
+            dct:identifier ?identifier .
+            OPTIONAL {?sub dcat:endpointDescription ?openapi }
+            OPTIONAL {?sub dcat:endpointURL ?endpoint }
+            OPTIONAL {?sub dqv:inDimension ?dimension }
             OPTIONAL {?sub dpv:isApplicableFor ?objects }
             OPTIONAL {?sub ftr:applicationArea ?domain  }
             OPTIONAL {?sub sio:SIO_000233 ?benchmark_or_metric  }  # implementation of

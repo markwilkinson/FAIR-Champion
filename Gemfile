@@ -57,3 +57,5 @@ gem "rdf-vocab", "~> 3.3"
 gem "erb_lint", "~> 0.9.0"
 
 gem "json-ld", "~> 3.3"
+
+gem "dotenv", "~> 3.1"
