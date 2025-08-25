@@ -2,7 +2,7 @@
 # FAIR-Champion
 
 
-[![CI Tests](https://github.com/markwilkinson/FAIR-Champion/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/your-username/your-repo/actions/workflows/ci.yml)
+[![CI Tests](https://github.com/markwilkinson/FAIR-Champion/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/markwilkinson/FAIR-Champion/actions/workflows/ci.yml)
 
 An evolution of the FAIR Evaluator, being designed in alignment with the <a href="https://ostrails.eu/">OS Trails project</a>.
 
