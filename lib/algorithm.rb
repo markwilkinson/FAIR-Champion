@@ -9,22 +9,43 @@ require 'json'
 require 'linkeddata'
 require_relative 'dcat_extractor'
 
+# The Algorithm class processes scoring algorithms defined in Google Spreadsheets,
+# integrating with RDF data and external services to execute tests, process results,
+# and generate semantic outputs.
 class Algorithm
   include RDF
 
-  DCAT = RDF::Vocabulary.new('http://www.w3.org/ns/dcat#') # for some reason the built-in DCAT vocab doesnt recognize "version"
+  # RDF Vocabulary for DCAT, as the built-in DCAT vocab does not recognize "version".
+  DCAT = RDF::Vocabulary.new('http://www.w3.org/ns/dcat#')
+
+  # RDF Vocabulary for FTR (FAIR Test Registry).
   FTR = RDF::Vocabulary.new('https://w3id.org/ftr#')
+
+  # RDF Vocabulary for VIVO ontology.
   VIVO = RDF::Vocabulary.new('http://vivoweb.org/ontology/core#')
+
+  # RDF Vocabulary for SIO (Semanticscience Integrated Ontology).
   SIO = RDF::Vocabulary.new('http://semanticscience.org/resource/')
+
+  # RDF Vocabulary for DOAP (Description of a Project).
   DOAP = RDF::Vocab::DOAP
+
+  # RDF Vocabulary for VCARD (vCard Ontology).
   VCARD = RDF::Vocab::VCARD
+
+  # RDF Vocabulary for Dublin Core Terms.
   DC = RDF::Vocab::DC
+
+  # RDF Vocabulary for PROV-O (Provenance Ontology).
   PROV = RDF::Vocab::PROV
+
   # curl -v -L -H "content-type: application/json"
   # -d '{"clientUrl": "https://my.domain.org/path/to/DCAT/record.ttl"}'
   # https://tools.ostrails.eu/fdp-index-proxy/proxy
 
 
+  # Mapping of DCAT properties to RDF predicates for metadata extraction.
+  # @return [Hash<Symbol, RDF::URI>] A frozen hash mapping property names to RDF predicates.
   PREDICATES = { title: DC.title,
                  version: DCAT.version,
                  description: DC.description,
@@ -41,11 +62,52 @@ class Algorithm
                  scoringFunction: FTR.scoringFunction, # points to google sheet
                  contactPoint: DCAT.contactPoint }.freeze
 
+  # @!attribute calculation_uri
+  #   @return [String] The URI of the Google Spreadsheet defining the algorithm.
+  # @!attribute baseURI
+  #   @return [String] The base URI for the application (default: 'https://tools.ostrails.eu/champion').
+  # @!attribute csv
+  #   @return [Array<String>] Lines of the CSV data fetched from the Google Spreadsheet.
+  # @!attribute algorithm_id
+  #   @return [String] The unique identifier extracted from the Google Spreadsheet URI.
+  # @!attribute algorithm_guid
+  #   @return [String] The globally unique identifier for the algorithm (e.g., "#{baseURI}/algorithms/#{algorithm_id}").
+  # @!attribute guid
+  #   @return [String, nil] The GUID of the digital object to assess (optional if resultset is provided).
+  # @!attribute resultset
+  #   @return [String, nil] The JSON-LD result set from a previous test execution (optional if guid is provided).
+  # @!attribute resultsetgraph
+  #   @return [RDF::Graph] The RDF graph representation of the resultset.
+  # @!attribute valid
+  #   @return [Boolean] Indicates if the algorithm is valid (requires a Google Spreadsheet URI and either guid or resultset).
+  # @!attribute metadata
+  #   @return [RDF::Graph] The RDF graph containing metadata about the algorithm.
+  # @!attribute graph
+  #   @return [RDF::Graph] A general-purpose RDF graph for the algorithm (currently unused).
+  # @!attribute tests
+  #   @return [Array<Hash>] List of test configurations parsed from the CSV.
+  # @!attribute benchmarkguid
+  #   @return [String] The GUID of the benchmark the algorithm implements.
+  # @!attribute conditions
+  #   @return [Array<Hash>] List of conditions parsed from the CSV for evaluating test results.
   attr_accessor :calculation_uri, :baseURI, :csv, :algorithm_id, :algorithm_guid, 
                 :guid, :resultset, :resultsetgraph,
                 :valid, :metadata, :graph, :tests,
                 :benchmarkguid, :conditions
 
+  # Initializes a new Algorithm instance by fetching configuration from a Google Spreadsheet.
+  #
+  # @param calculation_uri [String] The URI of the Google Spreadsheet containing algorithm configuration.
+  # @param baseURI [String] The base URI for the application (default: 'https://tools.ostrails.eu/champion').
+  # @param guid [String, nil] The GUID of the digital object to assess (optional if resultset is provided).
+  # @param resultset [String, nil] The JSON-LD result set from a previous test execution (optional if guid is provided).
+  # @return [Algorithm] A new instance of the Algorithm class.
+  # @raise [RestClient::Exception] If the HTTP request to fetch the CSV fails.
+  # @example
+  #   algo = Algorithm.new(
+  #     calculation_uri: 'https://docs.google.com/spreadsheets/d/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w',
+  #     guid: 'https://example.org/target/456'
+  #   )
   def initialize(calculation_uri:, baseURI: 'https://tools.ostrails.eu/champion', guid: nil, resultset: nil)
     @calculation_uri = calculation_uri
     @baseURI = baseURI
@@ -87,7 +149,13 @@ class Algorithm
     @csv = response.body.lines
   end
 
-  # Prepare output data
+  # Processes the algorithm by loading configuration, running tests (if needed), and evaluating results.
+  #
+  # @return [Hash] A hash containing metadata, test results, narratives, resultset, and tested GUID.
+  # @example
+  #   algo = Algorithm.new(calculation_uri: 'https://docs.google.com/spreadsheets/d/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w', guid: 'https://example.org/target/456')
+  #   result = algo.process
+  #   puts result[:narratives]
   def process
     load_configuration
     warn "\n\n\nABOUT TO RUN TESTS\n\n\n" unless resultset
@@ -110,6 +178,16 @@ class Algorithm
     }
   end
 
+  # Generates an RDF graph representing the benchmark score for the algorithm execution.
+  #
+  # @param output [Hash] The output from the #process method, containing metadata, test results, narratives, and resultset.
+  # @param algorithmid [String] The unique identifier of the algorithm.
+  # @return [RDF::Graph] An RDF graph containing the benchmark score and associated metadata.
+  # @raise [RuntimeError] If no TestResultSet URI is found in the resultset graph.
+  # @example
+  #   algo = Algorithm.new(calculation_uri: 'https://docs.google.com/spreadsheets/d/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w', guid: 'https://example.org/target/456')
+  #   output = algo.process
+  #   rdf_graph = algo.generate_execution_output_rdf(output: output, algorithmid: algo.algorithm_id)
   def generate_execution_output_rdf(output:, algorithmid:) # output is the object above here... with metadata, test results, narratives, and resultset
     benchmarkscore = RDF::Graph.new
     uniqid = Time.now.to_i
@@ -143,7 +221,15 @@ class Algorithm
     benchmarkscore # send back as RDF::Graph object
   end
 
-  # Parse the Google Spreadsheet configuration
+  # Parses the Google Spreadsheet CSV into metadata, tests, and conditions.
+  #
+  # @return [void]
+  # @raise [RuntimeError] If the CSV does not contain at least two empty lines to separate metadata, tests, and conditions.
+  # @example
+  #   algo = Algorithm.new(calculation_uri: 'https://docs.google.com/spreadsheets/d/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w', guid: 'https://example.org/target/456')
+  #   algo.load_configuration
+  #   puts algo.tests
+  #   puts algo.conditions
   def load_configuration
     gather_metadata # sets value for @metadata
 
@@ -187,6 +273,14 @@ class Algorithm
     # build_rdf_graph
   end
 
+  # Gathers metadata from the CSV and constructs an RDF graph.
+  #
+  # @return [RDF::Graph] The RDF graph containing the algorithm's metadata.
+  # @raise [RuntimeError] If the CSV does not contain at least two empty lines.
+  # @example
+  #   algo = Algorithm.new(calculation_uri: 'https://docs.google.com/spreadsheets/d/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w', guid: 'https://example.org/target/456')
+  #   metadata = algo.gather_metadata
+  #   puts metadata.dump(:turtle)
   def gather_metadata
     # Find separator lines (containing only commas, whitespace, or empty after strip)
     empty_line_indices = csv.each_with_index.select { |line, _| line.strip.gsub(/,+/, '').empty? }.map(&:last)

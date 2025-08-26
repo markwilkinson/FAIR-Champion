@@ -4,14 +4,36 @@ require 'rdf/json'
 require 'rest-client'
 require 'rdf/vocab'
 
+# The DCATEndpointExtractor class retrieves and parses RDF data from a given URL
+# to extract the DCAT endpoint URL for a data service.
 class DCATEndpointExtractor
   include RDF
 
+  # @!attribute [r] url
+  #   @return [String] The URL of the RDF resource to parse.
+  # @!attribute [r] graph
+  #   @return [RDF::Graph] The RDF graph containing the parsed data.
+  attr_reader :url, :graph
+
+  # Initializes a new DCATEndpointExtractor instance with the given URL.
+  #
+  # @param url [String] The URL of the RDF resource (e.g., DCAT dataset or service description).
+  # @return [DCATEndpointExtractor] A new instance of the DCATEndpointExtractor class.
+  # @example
+  #   extractor = DCATEndpointExtractor.new(url: 'https://example.org/dcat/service')
   def initialize(url:)
     @url = url
     @graph = RDF::Graph.new
   end
 
+  # Extracts the DCAT endpoint URL from the RDF data.
+  #
+  # @return [String] The endpoint URL for the DCAT DataService.
+  # @raise [RuntimeError] If the RDF data cannot be fetched, parsed, or if no endpoint URL is found.
+  # @example
+  #   extractor = DCATEndpointExtractor.new(url: 'https://example.org/dcat/service')
+  #   endpoint = extractor.extract_endpoint_url
+  #   puts endpoint # e.g., "https://api.example.org/data"
   def extract_endpoint_url
     load_rdf_data
     query_endpoint_url
@@ -19,6 +41,14 @@ class DCATEndpointExtractor
 
   private
 
+  # Loads RDF data from the specified URL into an RDF graph.
+  #
+  # @return [void]
+  # @raise [RuntimeError] If the HTTP request fails or the RDF data cannot be parsed.
+  # @example
+  #   extractor = DCATEndpointExtractor.new(url: 'https://example.org/dcat/service')
+  #   extractor.send(:load_rdf_data)
+  #   puts extractor.graph.dump(:turtle)
   def load_rdf_data
     begin
       # Fetch RDF data with RestClient, following redirects
@@ -47,6 +77,15 @@ class DCATEndpointExtractor
     end
   end
 
+    # Queries the RDF graph to extract the DCAT endpoint URL.
+  #
+  # @return [String] The first unique endpoint URL found.
+  # @raise [RuntimeError] If no dcat:endpointURL is found for a dcat:DataService.
+  # @example
+  #   extractor = DCATEndpointExtractor.new(url: 'https://example.org/dcat/service')
+  #   extractor.send(:load_rdf_data)
+  #   endpoint = extractor.send(:query_endpoint_url)
+  #   puts endpoint # e.g., "https://api.example.org/data"
   def query_endpoint_url
     dcat = RDF::Vocab::DCAT
     solutions = RDF::Query.execute(@graph) do
