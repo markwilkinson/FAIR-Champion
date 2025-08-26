@@ -17,6 +17,7 @@ gem 'metainspector', '~> 5-11-2'
 gem 'openapi3_parser', '~> 0.9.2'
 gem 'parseconfig', '~>1.1.2'
 gem 'rake', '~> 13.0'
+gem 'rbs', '~>3.8.1'
 gem 'rdf-raptor', '~> 3.1.0'
 gem 'require_all', '~> 3.0.0'
 gem 'rest-client', '~>2.1.0'
@@ -29,33 +30,29 @@ gem 'swagger-blocks', '~> 3.0.0'
 gem 'tempfile'
 gem 'thin'
 gem 'tux'
-gem 'rbs', '~>3.8.1'
 # gem 'uri'
+gem 'openapi_parser', '~> 2.1'
 gem 'xml-simple', '~>1.1.8'
-gem "openapi_parser", "~> 2.1"
-
 
 group :development, :test do
-  gem 'rspec', '~> 3.13'
+  gem 'pry', '~> 0.15.2'
   gem 'rack-test', '~> 2.1'
-  gem 'webmock', '~> 3.23'
-  gem 'vcr', '~> 6.3'
+  gem 'rspec', '~> 3.13'
+  gem 'rspec-core', '~> 3.13'
+  gem 'rspec-openapi', '~> 0.18.4'
   gem 'simplecov', '~> 0.22', require: false
-  gem "pry", "~> 0.15.2"
-  gem "rspec-core", "~> 3.13"
-  gem "rspec-openapi", "~> 0.18.4"
-
+  gem 'vcr', '~> 6.3'
+  gem 'webmock', '~> 3.23'
 end
 
-gem "safe_yaml", "~> 1.0"
+gem 'safe_yaml', '~> 1.0'
 
-gem "sparql-client", "~> 3.3"
+gem 'sparql-client', '~> 3.3'
 
-gem "rdf-vocab", "~> 3.3"
+gem 'rdf-vocab', '~> 3.3'
 
-gem "erb_lint", "~> 0.9.0"
+gem 'erb_lint', '~> 0.9.0'
 
-gem "json-ld", "~> 3.3"
+gem 'json-ld', '~> 3.3'
 
-gem "dotenv", "~> 3.1"
-
+gem 'dotenv', '~> 3.1'

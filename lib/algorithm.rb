@@ -394,7 +394,7 @@ class Algorithm
 EOQ
 
       warn "query is #{query}"
-      endpoint = SPARQL::Client.new(Configuration.fdp_sparql)
+      endpoint = SPARQL::Client.new(Configuration.fdpindex_sparql)
 
       begin
         # Execute the query

@@ -4,14 +4,19 @@ SimpleCov.start do
   add_filter '/spec/'
 end
 
+ENV['RACK_ENV'] = 'test'
 require 'rspec'
 require 'rack/test'
 require 'webmock/rspec'
-require 'vcr'
 require_relative '../app/controllers/configuration'
 require_relative '../app/controllers/application_controller'
 require_relative '../lib/algorithm'
 require_relative '../lib/champion_core'
+require_relative '../app/controllers/routes'
+
+puts "ChampionApp routes after spec_helper: #{Champion::ChampionApp.routes['GET']&.map { |r| r[0].to_s }&.inspect || 'No GET routes'}"
+
+require 'vcr'
 
 VCR.configure do |config|
   config.cassette_library_dir = 'spec/support/fixtures/vcr_cassettes'
@@ -21,8 +26,10 @@ VCR.configure do |config|
 end
 
 RSpec.configure do |config|
+  config.include Rack::Test::Methods
   config.expect_with :rspec do |expectations|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
+    expectations.syntax = :expect
   end
   config.mock_with :rspec do |mocks|
     mocks.verify_partial_doubles = true
@@ -35,4 +42,8 @@ RSpec.configure do |config|
   config.profile_examples = 10
   config.order = :random
   Kernel.srand config.seed
+
+  config.define_derived_metadata do |meta|
+    meta[:aggregate_failures] = true
+  end
 end
