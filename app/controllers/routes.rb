@@ -1,33 +1,31 @@
 require 'erb'
 require_relative 'algorithm_routes'
 
-  module Champion
-    class ChampionApp < Sinatra::Base
-      # Configures Sinatra routes and settings for the Champion application, handling
-      # test listings, algorithm registration, display, and assessment execution.
-      # @note This file assumes a Sinatra application context and depends on Algorithm and Champion::Core classes.
-      def self.set_routes
-        puts "Calling set_routes at #{Time.now}"
-        # Sets the server timeout to 180 seconds.
-        set :server_settings, timeout: 180
-        # Sets the public folder for static assets.
-        set :public_folder, File.join(__dir__, '../public')
+module Champion
+  class ChampionApp < Sinatra::Base
+    # Configures Sinatra routes and settings for the Champion application, handling
+    # test listings, algorithm registration, display, and assessment execution.
+    # @note This file assumes a Sinatra application context and depends on Algorithm and Champion::Core classes.
+    def self.set_routes
+      puts "Calling set_routes at #{Time.now}"
+      # Sets the server timeout to 180 seconds.
+      set :server_settings, timeout: 180
+      # Sets the public folder for static assets.
+      set :public_folder, File.join(__dir__, '../public')
 
-        # Allows binding to all network interfaces.
-        set :bind, '0.0.0.0'
-        # Sets the views directory for ERB templates.
-        set :views, File.join(File.dirname(__FILE__), '..', 'views')
+      # Allows binding to all network interfaces.
+      set :bind, '0.0.0.0'
+      # Sets the views directory for ERB templates.
+      set :views, File.join(File.dirname(__FILE__), '..', 'views')
 
-        # Configures template engines for different content types.
-        set :template_engines, {
-          html: [:erb],
-          all: [:erb],
-          json: []
-        }
+      # Configures template engines for different content types.
+      set :template_engines, {
+        html: [:erb],
+        all: [:erb],
+        json: []
+      }
 
-      get '/test' do
-        'Test route works'
-      end
+
       # Redirects requests to the Champion API specification.
       # @return [void] Redirects to '/champion/championAPI.yaml' with a 307 status.
       # @example
@@ -87,7 +85,7 @@ require_relative 'algorithm_routes'
 
         case content_type
         when %r{text/html}
-          halt erb :showtest
+          halt erb :listtests_output, layout: :listtests_layout
         else
           halt @tests.first.to_json
         end
