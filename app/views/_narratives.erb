@@ -1,6 +1,17 @@
 <h2 class="mb-3">Conclusions:</h2>
-<ul class="list-group p-2">
+<table><tr><th>Condition</th><th>Discussion</th><th>Guidance</th></tr>
+  <% warn "GUIDANCES: " + guidances.inspect %>
   <% narratives.each_with_index do |narrative, index| %>
-    <li class="list-group-item p-2"><%= index + 1 %>. <%= narrative %></li>
+    <% guidance = guidances[index] %>
+    <tr><td class="list-group-item p-2"><%= index + 1 %></td>
+    <td class="list-group-item p-2"><%= narrative %></td>
+    <% if guidance %> <!-- guidance might not exist if all tests passed -->
+      <td class="list-group-item p-2">
+        <% guidance.each do |g| %>
+          <%= g[1] %>. <a href="<%= g[0] %>">More Information</a><br/><br> 
+        <% end %>
+      </td>
+    </tr>
+    <% end %>
   <% end %>
-</ul>
+</table>

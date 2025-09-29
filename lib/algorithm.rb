@@ -1,12 +1,13 @@
 require 'rdf'
 require 'rdf/ntriples'
 require 'rdf/vocab'
-require 'json/ld'  # For JSON-LD parsing support
+require 'json/ld' # For JSON-LD parsing support
 require 'csv'
 require 'rest-client'
 require 'sparql/client'
 require 'json'
 require 'linkeddata'
+require 'uri'
 require_relative 'dcat_extractor'
 
 # The Algorithm class processes scoring algorithms defined in Google Spreadsheets,
@@ -42,7 +43,6 @@ class Algorithm
   # curl -v -L -H "content-type: application/json"
   # -d '{"clientUrl": "https://my.domain.org/path/to/DCAT/record.ttl"}'
   # https://tools.ostrails.eu/fdp-index-proxy/proxy
-
 
   # Mapping of DCAT properties to RDF predicates for metadata extraction.
   # @return [Hash<Symbol, RDF::URI>] A frozen hash mapping property names to RDF predicates.
@@ -90,7 +90,7 @@ class Algorithm
   #   @return [String] The GUID of the benchmark the algorithm implements.
   # @!attribute conditions
   #   @return [Array<Hash>] List of conditions parsed from the CSV for evaluating test results.
-  attr_accessor :calculation_uri, :baseURI, :csv, :algorithm_id, :algorithm_guid, 
+  attr_accessor :calculation_uri, :baseURI, :csv, :algorithm_id, :algorithm_guid,
                 :guid, :resultset, :resultsetgraph,
                 :valid, :metadata, :graph, :tests,
                 :benchmarkguid, :conditions
@@ -119,8 +119,8 @@ class Algorithm
     @tests = []
     @conditions = []
     @valid = false
-    @benchmarkguid = "" 
-    # Must be a google docs template ands either a guid to test or the inut from another tools resultset
+    @benchmarkguid = ''
+    # Must be a google docs template and either a guid to test or the inut from another tools resultset
     @valid = true if @calculation_uri =~ %r{docs\.google\.com/spreadsheets} && (guid || resultset)
     # spreadsheets/d/  --> 16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w
     @algorithm_id = @calculation_uri.match(%r{/spreadsheets/\w/([^/]+)})[1]
@@ -159,7 +159,7 @@ class Algorithm
   def process
     load_configuration
     warn "\n\n\nABOUT TO RUN TESTS\n\n\n" unless resultset
-    run_tests unless resultset  # from-scratch or using the input resultset?
+    run_tests unless resultset # from-scratch or using the input resultset?
     # at this point, @resultset variable definitely exists, so now make it a graph to reduce future parsing time
     format = :jsonld
     resultsetgraph << RDF::Reader.for(format).new(resultset)
@@ -168,58 +168,18 @@ class Algorithm
     testedguid = extract_target_from_resultset
 
     test_results = process_resultset
-    narratives = evaluate_conditions(test_results)
+    narratives, guidances = evaluate_conditions(test_results)
     {
       metadata: metadata,
       test_results: test_results,
       narratives: narratives,
       resultset: resultset,
-      testedguid: testedguid
+      testedguid: testedguid,
+      guidances: guidances
     }
   end
 
-  # Generates an RDF graph representing the benchmark score for the algorithm execution.
-  #
-  # @param output [Hash] The output from the #process method, containing metadata, test results, narratives, and resultset.
-  # @param algorithmid [String] The unique identifier of the algorithm.
-  # @return [RDF::Graph] An RDF graph containing the benchmark score and associated metadata.
-  # @raise [RuntimeError] If no TestResultSet URI is found in the resultset graph.
-  # @example
-  #   algo = Algorithm.new(calculation_uri: 'https://docs.google.com/spreadsheets/d/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w', guid: 'https://example.org/target/456')
-  #   output = algo.process
-  #   rdf_graph = algo.generate_execution_output_rdf(output: output, algorithmid: algo.algorithm_id)
-  def generate_execution_output_rdf(output:, algorithmid:) # output is the object above here... with metadata, test results, narratives, and resultset
-    benchmarkscore = RDF::Graph.new
-    uniqid = Time.now.to_i
-    subject = RDF::URI.new("https://tools.ostrails.eu/champion/assess/algorithm/#{algorithmid}/result_#{uniqid}")
-    activity = RDF::URI.new("https://tools.ostrails.eu/champion/assess/algorithm/#{algorithmid}/result_#{uniqid}/activity")
-    benchmarkscore << RDF::Statement.new(subject, RDF.type, FTR.BenchmarkScore)
-    benchmarkscore << RDF::Statement.new(subject, PROV.wasGeneratedBy, activity)
-    benchmarkscore << RDF::Statement.new(activity, RDF.type, FTR.ScoringAlgorithmActivity)
-    benchmarkscore << RDF::Statement.new(subject, PROV.value, RDF::Literal.new(0.99))
-    benchmarkscore << RDF::Statement.new(subject, FTR.log, RDF::Literal.new(output))
-    benchmarkscore << RDF::Statement.new(subject, FTR.outputFromAlgorithm, RDF::URI.new(algorithm_guid))
-    
-    # need the id of the resultset object
-    test_result_set_uri = nil
-    type_predicate = RDF::URI('http://www.w3.org/1999/02/22-rdf-syntax-ns#type')
-    test_result_set_type = RDF::URI('https://w3id.org/ftr#TestResultSet')
 
-    resultsetgraph.query([nil, type_predicate, test_result_set_type]) do |statement|
-      test_result_set_uri = statement.subject
-      break # Assuming only one such URI
-    end
-
-    if test_result_set_uri
-      warn "Found TestResultSet URI: #{test_result_set_uri}"
-    else
-      abort 'No TestResultSet URI found in the graph.'
-    end
-
-    benchmarkscore << RDF::Statement.new(subject, FTR.scoredTestResults, test_result_set_uri)
-    benchmarkscore << resultsetgraph # add the resultset to the benchmarkscore graph object
-    benchmarkscore # send back as RDF::Graph object
-  end
 
   # Parses the Google Spreadsheet CSV into metadata, tests, and conditions.
   #
@@ -241,7 +201,7 @@ class Algorithm
 
     c = Champion::Core.new
 
-    test_csv = csv[(empty_line_indices[0] + 1)...empty_line_indices[1]].join
+    test_csv = csv[(empty_line_indices[1] + 1)...empty_line_indices[2]].join
     csv_data = CSV.parse(test_csv, headers: true)
     @tests = csv_data.map do |row|
       {
@@ -257,7 +217,7 @@ class Algorithm
 
     # Parse conditions (remaining rows after empty row)
     # Parse conditions block (rows after second separator, with header)
-    condition_csv = csv[(empty_line_indices[1] + 1)..-1].join
+    condition_csv = csv[(empty_line_indices[2] + 1)..-1].join
     csv_data = CSV.parse(condition_csv, headers: true)
     @conditions = csv_data.map do |row|
       {
@@ -265,7 +225,8 @@ class Algorithm
         description: row['Description'],
         formula: row['Formula'],
         success: row['Success Message'],
-        failure: row['Fail Message']
+        failure: row['Fail Message'],
+        guidance: row['Guidance'] # strucdture is [[URL, "desc"], [URL, "desc"]]
       }
     end
 
@@ -289,18 +250,18 @@ class Algorithm
     if empty_line_indices.size < 2
       raise 'Invalid CSV structure: Expected at least two empty lines to separate three blocks'
     end
+
     # Parse metadata block (rows 0 to first empty line, with header)
-    metadata_csv = csv[0...empty_line_indices[0]].join
+    metadata_csv = csv[2...empty_line_indices[1]].join # the first empty line is below the template  version, so we ignore it
     csv_data = CSV.parse(metadata_csv, headers: true)
     subject = RDF::URI.new(algorithm_guid)
 
     # metadata is an RDF__Graph
     csv_data.each do |row|
-      # warn row.inspect
-      # warn row["DCAT Property"]
-      if row['DCAT Property'].strip == "isImplementationOf"
-        @benchmarkguid = row["Value"]
-      end
+      warn row.inspect
+      warn row["DCAT Property"]
+      next unless 
+      @benchmarkguid = row['Value'] if row['DCAT Property'].strip == 'isImplementationOf'
 
       # Process COntactPoint separately
       if row['DCAT Property'].strip == 'contactPoint'
@@ -335,6 +296,50 @@ class Algorithm
     metadata << RDF::Statement.new(subject, FTR.scoringFunction, RDF::URI.new(calculation_uri))
     metadata
   end
+
+    # Generates an RDF graph representing the benchmark score for the algorithm execution.
+  #
+  # @param output [Hash] The output from the #process method, containing metadata, test results, narratives, and resultset.
+  # @param algorithmid [String] The unique identifier of the algorithm.
+  # @return [RDF::Graph] An RDF graph containing the benchmark score and associated metadata.
+  # @raise [RuntimeError] If no TestResultSet URI is found in the resultset graph.
+  # @example
+  #   algo = Algorithm.new(calculation_uri: 'https://docs.google.com/spreadsheets/d/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w', guid: 'https://example.org/target/456')
+  #   output = algo.process
+  #   rdf_graph = algo.generate_execution_output_rdf(output: output, algorithmid: algo.algorithm_id)
+  def generate_execution_output_rdf(output:, algorithmid:) # output is the object above here... with metadata, test results, narratives, and resultset
+    benchmarkscore = RDF::Graph.new
+    uniqid = Time.now.to_i
+    subject = RDF::URI.new("https://tools.ostrails.eu/champion/assess/algorithm/#{algorithmid}/result_#{uniqid}")
+    activity = RDF::URI.new("https://tools.ostrails.eu/champion/assess/algorithm/#{algorithmid}/result_#{uniqid}/activity")
+    benchmarkscore << RDF::Statement.new(subject, RDF.type, FTR.BenchmarkScore)
+    benchmarkscore << RDF::Statement.new(subject, PROV.wasGeneratedBy, activity)
+    benchmarkscore << RDF::Statement.new(activity, RDF.type, FTR.ScoringAlgorithmActivity)
+    benchmarkscore << RDF::Statement.new(subject, PROV.value, RDF::Literal.new(0.99))
+    benchmarkscore << RDF::Statement.new(subject, FTR.log, RDF::Literal.new(output))
+    benchmarkscore << RDF::Statement.new(subject, FTR.outputFromAlgorithm, RDF::URI.new(algorithm_guid))
+
+    # need the id of the resultset object
+    test_result_set_uri = nil
+    type_predicate = RDF::URI('http://www.w3.org/1999/02/22-rdf-syntax-ns#type')
+    test_result_set_type = RDF::URI('https://w3id.org/ftr#TestResultSet')
+
+    resultsetgraph.query([nil, type_predicate, test_result_set_type]) do |statement|
+      test_result_set_uri = statement.subject
+      break # Assuming only one such URI
+    end
+
+    if test_result_set_uri
+      warn "Found TestResultSet URI: #{test_result_set_uri}"
+    else
+      abort 'No TestResultSet URI found in the graph.'
+    end
+
+    benchmarkscore << RDF::Statement.new(subject, FTR.scoredTestResults, test_result_set_uri)
+    benchmarkscore << resultsetgraph # add the resultset to the benchmarkscore graph object
+    benchmarkscore # send back as RDF::Graph object
+  end
+
 
   def register # initialize has already been called so all vars are full
     filename = "/tmp/#{algorithm_id}" # I need to know this exactly one time, to create the metadata when the object is not yet registered!
@@ -430,31 +435,30 @@ EOQ
     # @resultset_testids = extract_tests_from_resultset
 
     results = {}
-    @tests.each do |test|  # the tests defined in the algorithm
+    @tests.each do |test| # the tests defined in the algorithm
       passfail = parse_single_test_response(resultset: @resultset, testid: test[:name]) # extract result for THAT test from the restul-set
-      if passfail  # if there's a value, then the test existed
-        results[test[:reference]] = {
-          result: passfail,
-          weight: case passfail
-                  when 'pass' then test[:pass_weight]
-                  when 'fail' then test[:fail_weight]
-                  when 'indeterminate' then test[:indeterminate_weight]
-                  else 0.0
-                  end
-        }
-      else  # the resultset didn't contain that test... so we will give it an "indeterminate"
-        results[test[:reference]] = {
-          result: "indeterminate (result data not found)",
-          weight: test[:indeterminate_weight]
-          }
-        end
+      results[test[:reference]] = if passfail # if there's a value, then the test existed
+                                    {
+                                      result: passfail,
+                                      weight: case passfail
+                                              when 'pass' then test[:pass_weight]
+                                              when 'fail' then test[:fail_weight]
+                                              when 'indeterminate' then test[:indeterminate_weight]
+                                              else 0.0
+                                              end
+                                    }
+                                  else # the resultset didn't contain that test... so we will give it an "indeterminate"
+                                    {
+                                      result: 'indeterminate (result data not found)',
+                                      weight: test[:indeterminate_weight]
+                                    }
+                                  end
     end
     results
   end
 
-    # Stub for test response parsing (to be implemented in your existing codebase)
+  # Stub for test response parsing (to be implemented in your existing codebase)
   def parse_single_test_response(resultset:, testid:)
-
     # warn 'GRAPH:', graph.dump(:turtle), "\n\n"
     # <urn:ostrails:testexecutionactivity:42c79dfe-fc9a-40db-84b6-6a3e69b8afab> a <https://w3id.org/ftr#TestExecutionActivity>;
     #   prov:generated <urn:fairtestoutput:2152d30f-516c-43da-b647-4f4726c33fbb>;
@@ -476,7 +480,7 @@ EOQ
 
     passfail = solutions.map { |solution| solution[:value].to_s }.uniq
     if passfail.empty?
-      warn "no score found for test #{testid}"  # this hapens when the user has passed a resultset that doesn't align with the algorithm
+      warn "no score found for test #{testid}" # this hapens when the user has passed a resultset that doesn't align with the algorithm
       return false
     elsif passfail.size > 1
       warn 'Warning: Multiple scores found.  Returning only the first one.'
@@ -489,7 +493,6 @@ EOQ
     format = :jsonld
     graph = RDF::Graph.new
     graph << RDF::Reader.for(format).new(resultset)
-    prov = RDF::Vocab::PROV
     ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
     # warn 'PROV: ', prov.inspect, "\n\n"
     # warn 'FTR: ', ftr.inspect, "\n\n"
@@ -499,12 +502,11 @@ EOQ
       pattern [:test, RDF.type, ftr.Test]
       pattern [:test, RDF::Vocab::DC.identifier, :testid]
     end
-    warn "SOLUTIONS to find the tests in a resultset ", solutions.inspect, "\n"
+    warn 'SOLUTIONS to find the tests in a resultset ', solutions.inspect, "\n"
 
     testids = solutions.map { |solution| solution[:testid].to_s }.uniq
-    if passfail.empty?
-      raise "no tests found in the resultset... which is very odd!"
-    end
+    raise 'no tests found in the resultset... which is very odd!' if passfail.empty?
+
     testids
   end
 
@@ -512,7 +514,6 @@ EOQ
     format = :jsonld
     graph = RDF::Graph.new
     graph << RDF::Reader.for(format).new(resultset)
-    prov = RDF::Vocab::PROV
     ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
 
     solutions = RDF::Query.execute(graph) do
@@ -521,16 +522,16 @@ EOQ
       # pattern [:target, RDF.type, prov.Entity]
       pattern [:target, RDF::Vocab::DC.identifier, :testedguid]
     end
-    warn "SOLUTIONS to find the tests in a resultset ", solutions.inspect, "\n"
+    warn 'SOLUTIONS to find the tests in a resultset ', solutions.inspect, "\n"
 
-    guids = solutions.map { |solution| solution[:testedguid].to_s }.uniq  # should return a list of one... hopefully!
-    if guids.empty?
-      raise "no tested guid found in the resultset #{guids.inspect}... which is very odd!"
-    end
-    guids.first  # can be only one
+    guids = solutions.map { |solution| solution[:testedguid].to_s }.uniq # should return a list of one... hopefully!
+    raise "no tested guid found in the resultset #{guids.inspect}... which is very odd!" if guids.empty?
+
+    guids.first # can be only one
   end
 
-  # Evaluate conditions and generate narratives
+
+    # Evaluate conditions and generate narratives
   def evaluate_conditions(test_results)
     # results[T1] = {
     #   result: "pass",
@@ -538,6 +539,7 @@ EOQ
     # } ...
 
     narratives = []
+    guidances = []
     @conditions.each do |condition|
       # {
       #   condition: row['Condition'],
@@ -545,6 +547,7 @@ EOQ
       #   formula: row['Formula'],
       #   success: row['Success Message'],
       #   failure: row['Fail Message'],
+      #   guidance: row['Guidance']
       # }
 
       formula = condition[:formula]
@@ -564,22 +567,61 @@ EOQ
       begin
         # Evaluate the formula (e.g., "A1 + B1 > 1.0")
         is_met = eval(formula)
+        # I DON'T LIKE THIS... it should be a hash to ensure alignment of narrative with guidance
+        # TODO
         narratives << if is_met
-                        (condition[:success] + ';')
+                        (condition[:success])
                       else
-                        (condition[:failure] + ';')
+                        (condition[:failure])
                       end
-      rescue StandardError
-        narratives << "Problem solving for #{formula}; "
+        guidances << if is_met
+                      ([])  # guidance is only necessary on failure
+                    else
+                      parse_input_string(condition[:guidance])  # add guidance block [URL, string] in case of failure
+                    end
+      rescue StandardError => e
+        narratives << "Problem solving for #{formula} #{e}; "
       end
     end
-    narratives
+    [narratives, guidances]
   end
+
+
+  def parse_input_string(input_string)
+    # Remove outer brackets
+    content = input_string.strip[1..-2]
+    
+    # Regex to match [url, "title"] pairs
+    pattern = /\[(https?:\/\/[^,\]]+),\s*"([^"]*)"\]/
+    
+    # Find all matches
+    matches = content.scan(pattern)
+    
+    result = []
+    matches.each do |url, title|
+      # Validate URL
+      if valid_url?(url.strip)
+        result << [url.strip, title.strip]
+      else
+        puts "Skipping invalid URL: #{url}"
+      end
+    end
+    
+    result
+  end
+
+  def valid_url?(url)
+    uri = ::URI.parse(url)
+    uri.is_a?(::URI::HTTP) || uri.is_a?(::URI::HTTPS)
+  rescue ::URI::InvalidURIError
+    false
+  end
+
+  
 
   # get all algorithms
   def self.list
     client = SPARQL::Client.new(Configuration.fdpindex_sparql)
-    list = {}
 
     algossquery = <<EOQ
       PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -606,13 +648,12 @@ EOQ
       GROUP BY ?identifier ?title ?description ?endpoint ?openapi ?benchmark ?calculation_uri
 EOQ
 
-      results = client.query(algossquery)
-      
-      allalgos = results.map do |solution|
-        solution.bindings.transform_values(&:to_s)
-      end
-      # warn alltests.to_json
-      allalgos
+    results = client.query(algossquery)
+
+    results.map do |solution|
+      solution.bindings.transform_values(&:to_s)
+    end
+    # warn alltests.to_json
   end
 
   # Function to generate OpenAPI spec for the assess algorithm endpoint
@@ -752,36 +793,32 @@ EOQ
   end
 end
 
+# Build RDF graph for semantic representation
+# not sure this is useful....??
+# def build_rdf_graph
+#   algo = RDF::URI.new(@calculation_uri)
+#   graph << [algo, RDF.type, RDF::URI.new('https://w3id.org/ftr#Algorithm')]
+#   metadata.each do |key, value|
+#     graph << [algo, RDF::URI.new("http://example.org/#{key}"), value]
+#   end
 
+#   tests.each do |test|
+#     # reference: row['Test Reference'],
+#     # name: row['Test GUID'],
+#     # testid: row['Test GUID'],
+#     # endpoint: get_test_endpoint_for_testid(testid: row['Test GUID'])
+#     # pass_weight: row['Pass Weight'].to_f,
+#     # fail_weight: row['Fail Weight'].to_f,
+#     # indeterminate_weight: row['Indeterminate Weight'].to_f
 
-
-
-  # Build RDF graph for semantic representation
-  # not sure this is useful....??
-  # def build_rdf_graph
-  #   algo = RDF::URI.new(@calculation_uri)
-  #   graph << [algo, RDF.type, RDF::URI.new('https://w3id.org/ftr#Algorithm')]
-  #   metadata.each do |key, value|
-  #     graph << [algo, RDF::URI.new("http://example.org/#{key}"), value]
-  #   end
-
-  #   tests.each do |test|
-  #     # reference: row['Test Reference'],
-  #     # name: row['Test GUID'],
-  #     # testid: row['Test GUID'],
-  #     # endpoint: get_test_endpoint_for_testid(testid: row['Test GUID'])
-  #     # pass_weight: row['Pass Weight'].to_f,
-  #     # fail_weight: row['Fail Weight'].to_f,
-  #     # indeterminate_weight: row['Indeterminate Weight'].to_f
-
-  #     test_uri = RDF::URI.new(test[:testid])
-  #     graph << [test_uri, RDF.type, RDF::URI.new('http://example.org/Test')]
-  #     graph << [test_uri, RDF::URI.new('http://example.org/reference'), test[:reference]]
-  #     graph << [test_uri, RDF::URI.new('http://example.org/identifier'), test[:name]]
-  #     graph << [test_uri, RDF::URI.new('http://example.org/endpoint'), test[:endpoint]]
-  #     graph << [test_uri, RDF::URI.new('http://example.org/passWeight'), test[:pass_weight]]
-  #     graph << [test_uri, RDF::URI.new('http://example.org/failWeight'), test[:fail_weight]]
-  #     graph << [test_uri, RDF::URI.new('http://example.org/indeterminateWeight'), test[:indeterminate_weight]]
-  #     graph << [algo, RDF::URI.new('http://example.org/hasTest'), test_uri]
-  #   end
-  # end
+#     test_uri = RDF::URI.new(test[:testid])
+#     graph << [test_uri, RDF.type, RDF::URI.new('http://example.org/Test')]
+#     graph << [test_uri, RDF::URI.new('http://example.org/reference'), test[:reference]]
+#     graph << [test_uri, RDF::URI.new('http://example.org/identifier'), test[:name]]
+#     graph << [test_uri, RDF::URI.new('http://example.org/endpoint'), test[:endpoint]]
+#     graph << [test_uri, RDF::URI.new('http://example.org/passWeight'), test[:pass_weight]]
+#     graph << [test_uri, RDF::URI.new('http://example.org/failWeight'), test[:fail_weight]]
+#     graph << [test_uri, RDF::URI.new('http://example.org/indeterminateWeight'), test[:indeterminate_weight]]
+#     graph << [algo, RDF::URI.new('http://example.org/hasTest'), test_uri]
+#   end
+# end
