@@ -244,7 +244,7 @@ module Champion
     #   core = Champion::Core.new
     #   tests = core.get_tests(testid: 'test1')
     #   tests.each { |test| puts test[:title] }
-    def get_tests(testid: '')
+    def get_tests(testid: nil)
       warn 'IN GET TESTS'
       testid = testid.to_s.gsub(%r{.*/}, '') # if we are sent the entire URI, then just take the identifier part at the end
 
@@ -276,7 +276,7 @@ EOQ
 
       results = client.query(testsquery)
 
-      results.select! { |res| res[:identifier] =~ /#{testid}/ } if testid
+      results.select! { |res| res[:identifier].to_s =~ /#{testid}/ } if testid
 
       results.map do |solution|
         solution.bindings.transform_values(&:to_s)
