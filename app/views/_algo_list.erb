@@ -65,7 +65,8 @@
       <tr>
 <th class="bg-gray-200 text-left">Execute</th>
 <td>
-  <% id = data[:identifier].match(/.*\/(\w+)/)[1] %>
+  
+  <% id = data[:identifier].match(%r{/(\w/[^/]+)$})[1] %>
   <div><h2 class="header">You may now apply the selected algorithm to a new Digital Object, or an existing Test Result Set</h2></div>
 
   <form method="post" action="/champion/assess/algorithm/<%= id %>" enctype="multipart/form-data">

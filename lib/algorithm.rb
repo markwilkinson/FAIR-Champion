@@ -123,7 +123,11 @@ class Algorithm
     # Must be a google docs template and either a guid to test or the inut from another tools resultset
     @valid = true if @calculation_uri =~ %r{docs\.google\.com/spreadsheets} && (guid || resultset)
     # spreadsheets/d/  --> 16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w
+
+    # NOTA BENE
     @algorithm_id = @calculation_uri.match(%r{/spreadsheets/(\w/[^/]+)})[1] # d/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w  (note the d/ !!)
+    #  NOTA BENE!  This same match apears in _algo_list.erb, so if you change it here, change it there!
+
     @algorithm_guid = "#{@baseURI}/algorithms/#{algorithm_id}"
     # Transform the spreadsheet URL to CSV export format
     # https://docs.google.com/spreadsheets/d/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w/edit?gid=0#gid=0

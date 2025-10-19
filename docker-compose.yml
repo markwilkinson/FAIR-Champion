@@ -14,16 +14,16 @@ services:
     networks:
       - network1
 
-  graphdb:
-    image: ontotext/graphdb:10.4.4
-    restart: always
-    hostname: graphdb
-    ports:
-      - 8484:7200
-    volumes:
-      - champion-graphdb:/opt/graphdb/home
-    networks:
-      - network1
+  # graphdb:
+  #   image: ontotext/graphdb:10.4.4
+  #   restart: always
+  #   hostname: graphdb
+  #   ports:
+  #     - 8484:7200
+  #   volumes:
+  #     - champion-graphdb:/opt/graphdb/home
+  #   networks:
+  #     - network1
 
 networks:
   network1:
