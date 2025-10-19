@@ -123,7 +123,7 @@ class Algorithm
     # Must be a google docs template and either a guid to test or the inut from another tools resultset
     @valid = true if @calculation_uri =~ %r{docs\.google\.com/spreadsheets} && (guid || resultset)
     # spreadsheets/d/  --> 16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w
-    @algorithm_id = @calculation_uri.match(%r{/spreadsheets/\w/([^/]+)})[1]
+    @algorithm_id = @calculation_uri.match(%r{/spreadsheets/(\w/[^/]+)})[1] # d/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w  (note the d/ !!)
     @algorithm_guid = "#{@baseURI}/algorithms/#{algorithm_id}"
     # Transform the spreadsheet URL to CSV export format
     # https://docs.google.com/spreadsheets/d/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w/edit?gid=0#gid=0
@@ -178,8 +178,6 @@ class Algorithm
       guidances: guidances
     }
   end
-
-
 
   # Parses the Google Spreadsheet CSV into metadata, tests, and conditions.
   #
@@ -259,9 +257,8 @@ class Algorithm
     # metadata is an RDF__Graph
     csv_data.each do |row|
       warn row.inspect
-      warn row["DCAT Property"]
-      next unless 
-      @benchmarkguid = row['Value'] if row['DCAT Property'].strip == 'isImplementationOf'
+      warn row['DCAT Property']
+      next if row['DCAT Property'].strip == 'isImplementationOf' && !@benchmarkguid = row['Value']
 
       # Process COntactPoint separately
       if row['DCAT Property'].strip == 'contactPoint'
@@ -297,7 +294,7 @@ class Algorithm
     metadata
   end
 
-    # Generates an RDF graph representing the benchmark score for the algorithm execution.
+  # Generates an RDF graph representing the benchmark score for the algorithm execution.
   #
   # @param output [Hash] The output from the #process method, containing metadata, test results, narratives, and resultset.
   # @param algorithmid [String] The unique identifier of the algorithm.
@@ -340,13 +337,13 @@ class Algorithm
     benchmarkscore # send back as RDF::Graph object
   end
 
-
   def register # initialize has already been called so all vars are full
-    filename = "/tmp/#{algorithm_id}" # I need to know this exactly one time, to create the metadata when the object is not yet registered!
+    # algorithmfilenmae = algorithm_id.gsub("/", "__")
+    # filename = "/cache/#{algorithmfilenmae}" # I need to know this exactly one time, to create the metadata when the object is not yet registered!
 
     # Store the mapping in a file
-    File.write(filename, { calculation_uri => algorithm_guid }.to_json)
-    warn 'Stored mapping'
+    # File.write(filename, { calculation_uri => algorithm_guid }.to_json)
+    # warn 'Stored mapping'
 
     # curl -v -L -H "content-type: application/json"
     # -d '{"clientUrl": "https://my.domain.org/path/to/DCAT/record.ttl"}'
@@ -358,7 +355,7 @@ class Algorithm
     RestClient::Request.execute(
       method: :post,
       url: Configuration.fdp_index_proxy,
-      payload: { 'clientUrl' => algorithm_guid }.to_json, # this needs to respond with DCAT, so I need to have access to the calculation_uri to generate that
+      payload: { 'clientUrl' => algorithm_guid }.to_json, # this needs to respond with DCAT, so I use the proxy at algorithm_guid (set in initialize)
       headers: { accept: 'application/json', content_type: 'application/json' },
       max_redirects: 10
     )
@@ -368,51 +365,53 @@ class Algorithm
     # Check if file exists
     # THE PROBLEM:  we cannot predict the Google Sheets URI, but we need it to create the object
     # so get it from the cache, or get it from the FDP Index
-    if File.exist?("/tmp/#{algorithm_id}") # this is the first time it has been called, so need to get calculation_uri from cache
-      # Read and parse the mapping
-      warn 'RETRIEVING FROM CACHE'
-      mapping = ::JSON.parse(File.read("/tmp/#{algorithm_id}"))
-      calculation_uri, algorithm_guid = mapping.first
+    # if File.exist?("/cache/#{algorithm_id}") # this is the first time it has been called, so need to get calculation_uri from cache
+    #   # Read and parse the mapping
+    #   warn 'RETRIEVING FROM CACHE'
+    #   mapping = ::JSON.parse(File.read("/tmp/#{algorithm_id}"))
+    #   calculation_uri, algorithm_guid = mapping.first
 
-      #      File.delete("/tmp/#{algorithm_id}") if File.exist?("/tmp/#{algorithm_id}")
+    #   #      File.delete("/tmp/#{algorithm_id}") if File.exist?("/tmp/#{algorithm_id}")
 
-      warn "Retrieved: #{calculation_uri}, #{algorithm_guid}"
-      calculation_uri
-    else
-      # if that temp mapping file doesn't exist, then the data is in the FDP registry, so we can get it from there...
-      query = <<EOQ
-      PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-      PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-      PREFIX dqv: <http://www.w3.org/ns/dqv#>
-      PREFIX dct: <http://purl.org/dc/terms/>
-      PREFIX dcat: <http://www.w3.org/ns/dcat#>
-      PREFIX sio: <http://semanticscience.org/resource/>
-      PREFIX dpv: <http://www.w3.org/ns/dpv#>
-      PREFIX ftr: <https://w3id.org/ftr#>
-      SELECT distinct ?identifier ?scoringfunction WHERE {
-        ?subject a <https://w3id.org/ftr#ScoringAlgorithm> ;
-          dct:identifier ?identifier ;
-          ftr:scoringFunction ?scoringfunction .
-          FILTER(CONTAINS(str(?identifier), "/champion/"))
-          FILTER(CONTAINS(str(?identifier), "#{algorithm_id}"))
-      }#{' '}
-EOQ
+    #   warn "Retrieved: #{calculation_uri}, #{algorithm_guid}"
+    #   calculation_uri
+    # else
+    # if that temp mapping file doesn't exist, then the data is in the FDP registry, so we can get it from there...
+    #     query = <<EOQ
+    #       PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    #       PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    #       PREFIX dqv: <http://www.w3.org/ns/dqv#>
+    #       PREFIX dct: <http://purl.org/dc/terms/>
+    #       PREFIX dcat: <http://www.w3.org/ns/dcat#>
+    #       PREFIX sio: <http://semanticscience.org/resource/>
+    #       PREFIX dpv: <http://www.w3.org/ns/dpv#>
+    #       PREFIX ftr: <https://w3id.org/ftr#>
+    #       SELECT distinct ?identifier ?scoringfunction WHERE {
+    #         ?subject a <https://w3id.org/ftr#ScoringAlgorithm> ;
+    #           dct:identifier ?identifier ;
+    #           ftr:scoringFunction ?scoringfunction .
+    #           FILTER(CONTAINS(str(?identifier), "/champion/"))
+    #           FILTER(CONTAINS(str(?identifier), "#{algorithm_id}"))
+    #       }#{' '}
+    # EOQ
 
-      warn "query is #{query}"
-      endpoint = SPARQL::Client.new(Configuration.fdpindex_sparql)
+    #       warn "query is #{query}"
+    #       endpoint = SPARQL::Client.new(Configuration.fdpindex_sparql)
 
-      begin
-        # Execute the query
-        results = endpoint.query(query)
-        warn "results:   #{results.inspect}"
-        return false unless results.first
+    #       begin
+    #         # Execute the query
+    #         results = endpoint.query(query)
+    #         warn "results:   #{results.inspect}"
+    #         return false unless results.first
 
-        solution = results.first
-        warn "solution:   #{solution.inspect}"
+    #         solution = results.first
+    #         warn "solution:   #{solution.inspect}"
 
-        solution[:scoringfunction].to_s # this is the calculation_uri requried to initialize the object
-      end
-    end
+    #         solution[:scoringfunction].to_s # this is the calculation_uri requried to initialize the object
+    #       end
+    # end
+    # inthe end just hard-code the algorithm id as a google id.  We can create a more sophisticated approach alter
+    "https://docs.google.com/spreadsheets/#{algorithm_id}"
   end
 
   # Run tests and collect results
@@ -530,8 +529,7 @@ EOQ
     guids.first # can be only one
   end
 
-
-    # Evaluate conditions and generate narratives
+  # Evaluate conditions and generate narratives
   def evaluate_conditions(test_results)
     # results[T1] = {
     #   result: "pass",
@@ -570,15 +568,15 @@ EOQ
         # I DON'T LIKE THIS... it should be a hash to ensure alignment of narrative with guidance
         # TODO
         narratives << if is_met
-                        (condition[:success])
+                        condition[:success]
                       else
-                        (condition[:failure])
+                        condition[:failure]
                       end
         guidances << if is_met
-                      ([])  # guidance is only necessary on failure
-                    else
-                      parse_input_string(condition[:guidance])  # add guidance block [URL, string] in case of failure
-                    end
+                       [] # guidance is only necessary on failure
+                     else
+                       parse_input_string(condition[:guidance]) # add guidance block [URL, string] in case of failure
+                     end
       rescue StandardError => e
         narratives << "Problem solving for #{formula} #{e}; "
       end
@@ -586,17 +584,16 @@ EOQ
     [narratives, guidances]
   end
 
-
   def parse_input_string(input_string)
     # Remove outer brackets
     content = input_string.strip[1..-2]
-    
+
     # Regex to match [url, "title"] pairs
-    pattern = /\[(https?:\/\/[^,\]]+),\s*"([^"]*)"\]/
-    
+    pattern = %r{\[(https?://[^,\]]+),\s*"([^"]*)"\]}
+
     # Find all matches
     matches = content.scan(pattern)
-    
+
     result = []
     matches.each do |url, title|
       # Validate URL
@@ -606,7 +603,7 @@ EOQ
         puts "Skipping invalid URL: #{url}"
       end
     end
-    
+
     result
   end
 
@@ -616,8 +613,6 @@ EOQ
   rescue ::URI::InvalidURIError
     false
   end
-
-  
 
   # get all algorithms
   def self.list

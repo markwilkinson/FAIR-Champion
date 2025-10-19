@@ -1,5 +1,4 @@
 require 'erb'
-require_relative 'algorithm_routes'
 
 module Champion
   class ChampionApp < Sinatra::Base
@@ -24,7 +23,6 @@ module Champion
         all: [:erb],
         json: []
       }
-
 
       # Redirects requests to the Champion API specification.
       # @return [void] Redirects to '/champion/championAPI.yaml' with a 307 status.
@@ -113,12 +111,30 @@ module Champion
       #   # Form data: calculation_uri=https://docs.google.com/spreadsheets/d/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w
       post '/champion/algorithms/new' do
         calculation_uri = params['calculation_uri']
-        render_error(400, 'Invalid calculation URI; must be a Google Spreadsheet URL') unless calculation_uri =~ %r{docs\.google\.com/spreadsheets}
+        unless calculation_uri =~ %r{docs\.google\.com/spreadsheets}
+          render_error(400,
+                       'Invalid calculation URI; must be a Google Spreadsheet URL')
+        end
         warn "registering #{calculation_uri}"
-        algorithm = Algorithm.new(calculation_uri: calculation_uri, guid: 'http://example.org/mock')
+        algorithm = Algorithm.new(calculation_uri: calculation_uri, guid: 'http://example.org/mock') # mock is replaced when object is finished
         algorithm.register
         sleep 10 # TODO: Replace with retry mechanism to poll FDP index for ingestion
-        redirect to("#{algorithm.algorithm_guid}/display"), 302
+        algorithmpath = URI(algorithm.algorithm_guid).path
+        warn "AlgoPath is #{algorithmpath}"
+        redirect to("#{algorithmpath}/display"), 302
+      end
+
+      # Displays a specific algorithm’s metadata in HTML format.
+      # @param algorithmid [String] The identifier of the algorithm.
+      # @return [String] The rendered ERB template for algorithm display.
+      # @raise [Sinatra::NotFound] If the algorithm ID is not found.
+      # @example
+      #   # GET /champion/algorithms/u/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w/display
+      get '/champion/algorithms/*/display', provides: [:html] do
+        algorithmid = params[:splat].first
+        algorithm = fetch_algorithm(algorithmid)
+        @dcat = algorithm.gather_metadata
+        halt erb :algorithm_display, layout: :algorithm_layout
       end
 
       # Lists all registered algorithms, supporting multiple formats.
@@ -137,28 +153,17 @@ module Champion
         end
       end
 
-      # Displays a specific algorithm’s metadata in HTML format.
-      # @param algorithmid [String] The identifier of the algorithm.
-      # @return [String] The rendered ERB template for algorithm display.
-      # @raise [Sinatra::NotFound] If the algorithm ID is not found.
-      # @example
-      #   # GET /champion/algorithms/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w/display
-      get '/champion/algorithms/:algorithmid/display', provides: [:html] do
-        algorithm = fetch_algorithm(params[:algorithmid])
-        @dcat = algorithm.gather_metadata
-        halt erb :algorithm_display, layout: :algorithm_layout
-      end
-
       # Retrieves a specific algorithm’s metadata, supporting multiple formats.
       # @param algorithmid [String] The identifier of the algorithm.
       # @return [String] HTML, JSON, JSON-LD, or Turtle representation of the algorithm metadata.
       # @raise [Sinatra::NotFound] If the algorithm ID is not found.
       # @note Explicitly sets content type to 'text/turtle' as a workaround for clients requesting JSON but requiring Turtle.
       # @example
-      #   # GET /champion/algorithms/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w
-      get '/champion/algorithms/:algorithmid', provides: [:html, :json, 'text/turtle', 'application/ld+json'] do
-        algorithm = fetch_algorithm(params[:algorithmid])
-        @dcat = algorithm.gather_metadata  # @dcat is an rdf::graph object
+      #   # GET /champion/algorithms/u/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w
+      get '/champion/algorithms/*', provides: [:html, :json, 'text/turtle', 'application/ld+json'] do
+        algorithmid = params[:splat].first
+        algorithm = fetch_algorithm(algorithmid)
+        @dcat = algorithm.gather_metadata # @dcat is an rdf::graph object
         content_type = 'text/turtle'
         case content_type
         when %r{text/html}
@@ -200,9 +205,10 @@ module Champion
       # @return [String] The OpenAPI specification in JSON format.
       # @example
       #   # GET /champion/assess/algorithm/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w
-      get '/champion/assess/algorithm/:algorithmid', provides: [:json] do
+      get '/champion/assess/algorithm/*', provides: [:json] do
+        algorithmid = params[:splat].first
         content_type :json
-        openapi_spec = Algorithm.generate_assess_algorithm_openapi(algorithmid: params[:algorithmid])
+        openapi_spec = Algorithm.generate_assess_algorithm_openapi(algorithmid: algorithmid)
         halt openapi_spec.to_json
       end
 
@@ -211,8 +217,9 @@ module Champion
       # @return [void] Redirects to '/champion/assess/algorithm/:algorithmid' with a 301 status.
       # @example
       #   # GET /champion/assess/algorithm/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w/
-      get '/champion/assess/algorithm/:algorithmid/' do
-        redirect "/champion/assess/algorithm/#{params[:algorithmid]}", 301
+      get '/champion/assess/algorithm/*/' do
+        algorithmid = params[:splat].first
+        redirect "/champion/assess/algorithm/#{algorithmid}", 301
       end
 
       # Executes an algorithm assessment with provided GUID or result set.
@@ -223,9 +230,14 @@ module Champion
       # @example
       #   # POST /champion/assess/algorithm/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w
       #   # Body: {"guid": "https://example.org/target/456"}
-      post '/champion/assess/algorithm/:algorithmid', provides: [:html, :json, 'application/ld+json'] do
-        scoringfunction = Algorithm.retrieve_by_id(algorithm_id: params[:algorithmid])
-        render_error(404, 'Need valid algorithm id (in the URL, and already registered in the OSTrails Index) is required') unless scoringfunction
+      post '/champion/assess/algorithm/*', provides: [:html, :json, 'application/ld+json'] do
+        algorithmid = params[:splat].first
+
+        scoringfunction = Algorithm.retrieve_by_id(algorithm_id: algorithmid)
+        unless scoringfunction
+          render_error(404,
+                       'Need valid algorithm id (in the URL, and already registered in the OSTrails Index) is required')
+        end
 
         guid = nil
         resultset = nil
@@ -257,7 +269,10 @@ module Champion
         render_error(400, 'GUID or ResultSet (or file upload) are required') unless resultset || guid
 
         algorithm = Algorithm.new(calculation_uri: scoringfunction, guid: guid, resultset: resultset)
-        render_error(406, 'The data provided were invalid. Check that you are using a registered algorithm') unless algorithm.valid
+        unless algorithm.valid
+          render_error(406,
+                       'The data provided were invalid. Check that you are using a registered algorithm')
+        end
         @result = algorithm.process
         # @rdfgraph = algorithm.generate_execution_output_rdf(output: @result, algorithmid: params[:algorithmid])
 
@@ -272,13 +287,18 @@ module Champion
         halt 406
       end
     end
+
     # Helper method to fetch and validate an algorithm by ID.
     # @param algorithm_id [String] The identifier of the algorithm.
     # @return [Algorithm] The initialized Algorithm instance.
     # @raise [Sinatra::NotFound] If the algorithm ID is not found.
     def fetch_algorithm(algorithm_id)
       calculation_uri = Algorithm.retrieve_by_id(algorithm_id: algorithm_id)
-      halt 406, erb(:error, locals: { message: 'The server was unable to find that algorithm. This may be a temporary problem' }) if calculation_uri == false
+      if calculation_uri == false
+        halt 406,
+             erb(:error,
+                 locals: { message: 'The server was unable to find that algorithm. This may be a temporary problem' })
+      end
       Algorithm.new(calculation_uri: calculation_uri, guid: 'http://example.org/mock')
     end
 
@@ -291,4 +311,3 @@ module Champion
     end
   end
 end
-
