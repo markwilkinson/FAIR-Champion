@@ -256,12 +256,13 @@ class Algorithm
     # Parse metadata block (rows 0 to first empty line, with header)
     metadata_csv = csv[2...empty_line_indices[1]].join # the first empty line is below the template  version, so we ignore it
     csv_data = CSV.parse(metadata_csv, headers: true)
+    warn "\n\nTHE CSV DATA IS #{csv_data}\n\n"
     subject = RDF::URI.new(algorithm_guid)
 
     # metadata is an RDF__Graph
     csv_data.each do |row|
-      warn row.inspect
-      warn row['DCAT Property']
+      warn "\n\nINSPECTING ROW \n #{row.inspect}\n\n"
+      warn "dcat property #{row['DCAT Property']}"
       next if row['DCAT Property'].strip == 'isImplementationOf' && !@benchmarkguid = row['Value']
 
       # Process COntactPoint separately
