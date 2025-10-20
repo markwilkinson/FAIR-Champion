@@ -195,7 +195,7 @@ module Champion
       post '/champion/assess/algorithm' do
         calculation_uri = params['calculation_uri']
         abort 'no calc uri' unless calculation_uri
-        algoid = calculation_uri.match(%r{/\w/([^/]+)})[1]
+        algoid = calculation_uri.match(%r{/(\w/[^/]+)})[1]
         new_env = request.env.merge('PATH_INFO' => "/champion/assess/algorithm/#{algoid}")
         call(new_env)
       end
