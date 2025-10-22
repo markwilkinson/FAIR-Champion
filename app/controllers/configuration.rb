@@ -17,35 +17,35 @@ module Configuration
     ENV['CHAMP_HOST'] || 'https://tools.ostrails.eu/champion'
   end
 
-  #    GRAPHDB_PROTOCOL = 'https'.freeze
-  def self.graphdb_protocol
-    ENV['GRAPHDB_PROTOCOL'] || 'https'
-  end
+  # #    GRAPHDB_PROTOCOL = 'https'.freeze
+  # def self.graphdb_protocol
+  #   ENV['GRAPHDB_PROTOCOL'] || 'https'
+  # end
 
-  #  GRAPHDB_USER = 'champion'.freeze
-  def self.graphdb_user
-    ENV['GRAPHDB_USER'] || 'champion'
-  end
+  # #  GRAPHDB_USER = 'champion'.freeze
+  # def self.graphdb_user
+  #   ENV['GRAPHDB_USER'] || 'champion'
+  # end
 
-  #   GRAPHDB_HOST = ''.freeze
-  def self.graphdb_host
-    ENV['GRAPHDB_HOST'] || 'tools.ostrails.eu'
-  end
+  # #   GRAPHDB_HOST = ''.freeze
+  # def self.graphdb_host
+  #   ENV['GRAPHDB_HOST'] || 'tools.ostrails.eu'
+  # end
 
-  #   GRAPHDB_PORT = '443'.freeze
-  def self.graphdb_port
-    ENV['GRAPHDB_PORT'] || '443'
-  end
+  # #   GRAPHDB_PORT = '443'.freeze
+  # def self.graphdb_port
+  #   ENV['GRAPHDB_PORT'] || '443'
+  # end
 
-  # GRAPHDB_PASS =
-  def self.graphdb_pass
-    ENV.fetch('GRAPHDB_PASS', nil)
-  end
+  # # GRAPHDB_PASS =
+  # def self.graphdb_pass
+  #   ENV.fetch('GRAPHDB_PASS', nil)
+  # end
 
-  #   GRAPHDB_REPONAME = ''.freeze
-  def self.graphdb_reponame
-    ENV['GRAPHDB_REPONAME'] || 'champion'
-  end
+  # #   GRAPHDB_REPONAME = ''.freeze
+  # def self.graphdb_reponame
+  #   ENV['GRAPHDB_REPONAME'] || 'champion'
+  # end
 
   #  FDPINDEX_SPARQL =
   def self.fdpindex_sparql

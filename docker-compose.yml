@@ -6,24 +6,10 @@ services:
     environment:
       - TESTHOST=http://fairdata.services:8282/tests/
       - CHAMPHOST=http://localhost:8383/
-      - GraphDB_User=${GraphDB_User}
-      - GraphDB_Pass=${GraphDB_Pass}
-      - GRAPHDB_REPONAME=${GRAPHDB_REPONAME}
     ports:
       - "8383:4567"
     networks:
       - network1
-
-  # graphdb:
-  #   image: ontotext/graphdb:10.4.4
-  #   restart: always
-  #   hostname: graphdb
-  #   ports:
-  #     - 8484:7200
-  #   volumes:
-  #     - champion-graphdb:/opt/graphdb/home
-  #   networks:
-  #     - network1
 
 networks:
   network1:
