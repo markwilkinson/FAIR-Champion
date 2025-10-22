@@ -1,21 +1,23 @@
-DCAT Property,Value,Comment,,
-title,Demonstration Algorithm,,,
-version ,1.1,,,
-description,"This algorithm does no useful calculaation but shows how a Google Sheet can be used to configure a ""generic"" algorithm to score a benchmark",,,
-keyword,"demonstration, example, configuration",,,
-abbreviation,MarksDA,,,
-repository,https://docs.google.com/spreadsheets/d/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w/edit?gid=0#gid=0,,,
-type,http://ontology.ethereal.cz/irao/Benchmark,,,
-license,http://creativecommons.org/publicdomain/zero/1.0/,,,
-applicationArea,http://www.fairsharing.org/ontology/subject/SRAO_0000401,Suggest to use terms from :  https://www.ebi.ac.uk/ols4/ontologies/srao,,
-isApplicableFor,https://schema.org/Dataset,Suggest to use terms from: https://fairsharing.gitbook.io/fairsharing/record-sections-and-fields/general-information/object-types,,
-isImplementationOf,https://ostrails.github.io/sandbox/mockbenchmark1.ttl,The GUID of the benchmark that you are implementing,,
-contactPoint,mark.wilkinson@upm.es,,,
-,,,,
-Test Reference,Test GUID,Pass Weight,Fail Weight,Indeterminate Weight
-T1,https://tests.ostrails.eu/tests/fc_metadata_authorization,5,-100,0
-T2,https://tests.ostrails.eu/tests/fc_metadata_includes_license,5,-1,0
-,,,,
-Condition,Description,Formula,Success Message,Fail Message
-C1,Metadata must be available via a http-like system,T1 > 0,Acceptable: metadata passes authorization test,Unacceptable: metadata is not available via a protocol that allows authorization
-C2,Metadata must have a license,T1 + T2 == 10,Acceptable: License is found  HURRAY!,"Marginal: License may exist, but cannot be found"
+Template Version 1.2,"Guidance column added to Condition block. Guidance is a list of lists in the following format:  [[GuidanceElementURL1, ""brief explanation of guidance1""],[GuidanceElementURL2, ""guidance 2 text""]]",,,,
+,,,,,
+DCAT Property,Value,Comment,,,
+title,Demonstration Algorithm,,,,
+version ,1.1,,,,
+description,"This algorithm does no useful calculaation but shows how a Google Sheet can be used to configure a ""generic"" algorithm to score a benchmark",,,,
+keyword,"demonstration, example, configuration",,,,
+abbreviation,MarksDA,,,,
+repository,https://docs.google.com/spreadsheets/d/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w/edit?gid=0#gid=0,,,,
+type,http://ontology.ethereal.cz/irao/Benchmark,,,,
+license,http://creativecommons.org/publicdomain/zero/1.0/,,,,
+applicationArea,http://www.fairsharing.org/ontology/subject/SRAO_0000401,Suggest to use terms from :  https://www.ebi.ac.uk/ols4/ontologies/srao,,,
+isApplicableFor,https://schema.org/Dataset,Suggest to use terms from: https://fairsharing.gitbook.io/fairsharing/record-sections-and-fields/general-information/object-types,,,
+isImplementationOf,https://ostrails.github.io/sandbox/mockbenchmark1.ttl,The GUID of the benchmark that you are implementing,,,
+contactPoint,mark.wilkinson@upm.es,,,,
+,,,,,
+Test Reference,Test GUID,Pass Weight,Fail Weight,Indeterminate Weight,
+T1,https://tests.ostrails.eu/tests/fc_metadata_authorization,5,-100,0,
+T2,https://tests.ostrails.eu/tests/fc_metadata_includes_license,5,-1,0,
+,,,,,
+Condition,Description,Formula,Success Message,Fail Message,Guidance
+C1,Metadata must be available via a http-like system,T1 > 0,Acceptable: metadata passes authorization test,Unacceptable: metadata is not available via a protocol that allows authorization,"[[https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1, ""You wont guess what the advice is""]]"
+C2,Metadata must have a license,T1 + T2 == 10,Acceptable: License is found  HURRAY!,"Marginal: License may exist, but cannot be found","[[https://www.youtube.com/watch?v=VdQY7BusJNU&list=RDdQw4w9WgXcQ&index=2, ""Time after time""]]"
