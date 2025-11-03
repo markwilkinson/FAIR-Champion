@@ -40,26 +40,28 @@ module Champion
     #   core = Champion::Core.new
     #   result = core.run_assessment(subject: 'https://example.org/target/456', setid: 'test_set')
     #   puts result
-    def run_assessment(subject:, setid:)
-      results = []
-      warn "evaluating #{subject} on #{setid}"
-      set = get_sets(setid: setid)
-      warn 'point 1', set.inspect
-      return results if set.empty?
+    #
+    # DEPRECATED??
+    # def run_assessment(subject:, setid:)
+    #   results = []
+    #   warn "evaluating #{subject} on #{setid}"
+    #   set = get_sets(setid: setid)
+    #   warn 'point 1', set.inspect
+    #   return results if set.empty?
 
-      _graphid, setdef = set.first
-      setdef[:tests].each do |testid|
-        test, *_nada = get_tests(testid: testid) # returns an array of 1 element, so just get that into test
-        warn 'point 2', test.inspect
-        _id, testdef = test.first # there is only one, and it is guid => {features...}
-        warn 'point 3', testdef.inspect
+    #   _graphid, setdef = set.first
+    #   setdef[:tests].each do |testid|
+    #     test, *_nada = get_tests(testid: testid) # returns an array of 1 element, so just get that into test
+    #     warn 'point 2', test.inspect
+    #     _id, testdef = test.first # there is only one, and it is guid => {features...}
+    #     warn 'point 3', testdef.inspect
 
-        results << run_test(guid: subject, testapi: testdef['api'])
-      end
-      # warn "RESULTS #{results}"
-      output = Champion::Output.new(setid: "#{CHAMP_HOST}/sets/#{setid}", subject: subject)
-      output.build_output(results: results) # returns jsonld
-    end
+    #     results << run_test(guid: subject, testapi: testdef['api'])
+    #   end
+    #   # warn "RESULTS #{results}"
+    #   output = Champion::Output.new(setid: "#{CHAMP_HOST}/sets/#{setid}", subject: subject)
+    #   output.build_output(results: results) # returns jsonld
+    # end
 
     # Executes a benchmark assessment on a digital object by retrieving associated metrics
     # and their test endpoints, then running tests.
@@ -185,11 +187,11 @@ module Champion
     def execute_on_endpoints(subject:, endpoints:, bmid:)
       results = []
       endpoints.each do |endpoint|
-        warn 'benchmark point 2', endpoint.inspect
+        # warn 'benchmark point 2', endpoint.inspect
         results << run_test(guid: subject, testapi: endpoint)
       end
       # warn "RESULTS #{results}"
-      output = Champion::Output.new(setid: bmid, subject: subject)
+      output = Champion::Output.new(benchmarkid: bmid, subject: subject)
       output.build_output(results: results) # returns jsonld
     end
 

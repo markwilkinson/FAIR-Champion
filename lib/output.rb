@@ -10,20 +10,20 @@ module Champion
     def_delegators Champion::Output, :triplify
     OUTPUT_VERSION = '1.1.0'.freeze
 
-    attr_accessor :subject, :setid, :description, :version, :license, :score, :title, :uniqueid
+    attr_accessor :subject, :benchmarkid, :description, :version, :license, :score, :title, :uniqueid
 
-    def initialize(subject:, setid:, description: 'Results of the execution of test set', title: 'FAIR Champion output', version: '0.0.1', summary: 'Results of the execution of test set',
+    def initialize(subject:, benchmarkid:, description: 'Results of the execution of a Benchmark', title: 'FAIR Champion output', version: '0.0.1', summary: 'Results of the execution of a Benchmark',
                    license: 'https://creativecommons.org/licenses/by/4.0/', score: '')
       @score = score
       @subject = subject
-      @setid = setid
+      @benchmarkid = benchmarkid
       @uniqueid = "urn:fairchampionoutput:#{SecureRandom.uuid}"
       @title = title
       @description = description
       @license = license
       @dt = Time.now.iso8601
       @version = version
-      @summary = "#{summary} #{setid}"
+      @summary = "#{summary} #{benchmarkid}"
     end
 
     def build_output(results:)
