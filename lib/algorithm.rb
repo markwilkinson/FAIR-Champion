@@ -132,7 +132,7 @@ class Algorithm
     # Transform the spreadsheet URL to CSV export format
     # https://docs.google.com/spreadsheets/d/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w/edit?gid=0#gid=0
     calculation_uri = calculation_uri.sub(%r{/edit.*$}, '')
-    calculation_uri = calculation_uri.sub(%r{/.*$}, '') # remove trailing slash also
+    calculation_uri = calculation_uri.sub(%r{/$}, '') # remove trailing slash also
     csv_url = "#{calculation_uri}/export?exportFormat=csv"
     # Use RestClient with follow redirects (default max_redirects is 10)
     warn "executing get on #{csv_url} with good headers"

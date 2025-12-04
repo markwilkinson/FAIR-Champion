@@ -208,14 +208,20 @@ module Champion
     #   puts result
     def run_test(testapi:, guid:)
       warn "web api is to #{testapi}"
-      # MUNGE IT TEMPORARILY!
-      # the asesss/test should really consume the name of the test, not the shortname
-      testname = if testapi.match(%r{.*/(\S+)/api})
-                   testapi.match(%r{.*/(\S+)/api})[1]
-                 else
-                   testapi.match(%r{.*/(\S+)/?$})[1]
-                 end
-      testurl = "https://tests.ostrails.eu/assess/test/#{testname}"
+      # testapi might be an external API!  So... be careful!
+      if testapi.match(%r{tests\.ostrails\.eu})
+        # MUNGE IT TEMPORARILY!
+        # the asesss/test should really consume the name of the test, not the shortname
+        testname = if testapi.match(%r{.*/(\S+)/api})
+                    testapi.match(%r{.*/(\S+)/api})[1]
+                  else
+                    testapi.match(%r{.*/(\S+)/?$})[1]
+                  end
+        testurl = "https://tests.ostrails.eu/assess/test/#{testname}"
+      else
+        testurl = testapi
+      end
+      
       warn "POINT FINAL:  Test URL is #{testurl}"
       RestClient.log = 'stderr' # Enable logging
       result = RestClient::Request.execute(
