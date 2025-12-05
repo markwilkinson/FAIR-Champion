@@ -477,7 +477,7 @@ class Algorithm
     warn 'FTR: ', ftr.inspect, "\n\n"
     solutions = RDF::Query.execute(resultsetgraph) do
       pattern [:execution, RDF.type, ftr.TestExecutionActivity]
-      pattern [:execution, prov.generated, :result]
+      pattern [:result, prov.wasGeneratedBy, :execution]  
       pattern [:result, RDF.type, ftr.TestResult]
       pattern [:result, prov.value, :value]
     end
@@ -494,28 +494,31 @@ class Algorithm
     passfail.first
   end
 
-  def extract_tests_from_resultset
-    format = :jsonld
-    graph = RDF::Graph.new
-    graph << RDF::Reader.for(format).new(resultset)
-    ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
-    # warn 'PROV: ', prov.inspect, "\n\n"
-    # warn 'FTR: ', ftr.inspect, "\n\n"
-    solutions = RDF::Query.execute(graph) do
-      pattern [:result, RDF.type, ftr.TestResult]
-      pattern [:result, ftr.outputFromTest, :test]
-      pattern [:test, RDF.type, ftr.Test]
-      pattern [:test, RDF::Vocab::DC.identifier, :testid]
-    end
-    warn 'SOLUTIONS to find the tests in a resultset ', solutions.inspect, "\n"
+  # def extract_tests_from_resultset
+  #   warn "extract tests from resultset"
 
-    testids = solutions.map { |solution| solution[:testid].to_s }.uniq
-    raise 'no tests found in the resultset... which is very odd!' if passfail.empty?
+  #   format = :jsonld
+  #   graph = RDF::Graph.new
+  #   graph << RDF::Reader.for(format).new(resultset)
+  #   ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
+  #   # warn 'PROV: ', prov.inspect, "\n\n"
+  #   # warn 'FTR: ', ftr.inspect, "\n\n"
+  #   solutions = RDF::Query.execute(graph) do
+  #     pattern [:result, RDF.type, ftr.TestResult]
+  #     pattern [:result, ftr.outputFromTest, :test]
+  #     pattern [:test, RDF.type, ftr.Test]
+  #     pattern [:test, RDF::Vocab::DC.identifier, :testid]
+  #   end
+  #   warn 'SOLUTIONS to find the tests in a TestResult ', solutions.inspect, "\n"
 
-    testids
-  end
+  #   testids = solutions.map { |solution| solution[:testid].to_s }.uniq
+  #   raise 'no tests found in the resultset... which is very odd!' if passfail.empty?
+
+  #   testids
+  # end
 
   def extract_target_from_resultset
+    warn "extract target from resultset"
     format = :jsonld
     graph = RDF::Graph.new
     graph << RDF::Reader.for(format).new(resultset)
@@ -527,7 +530,7 @@ class Algorithm
       # pattern [:target, RDF.type, prov.Entity]
       pattern [:target, RDF::Vocab::DC.identifier, :testedguid]
     end
-    warn 'SOLUTIONS to find the tests in a resultset ', solutions.inspect, "\n"
+    warn 'SOLUTIONS to find the tested target in a TestResultSet ', solutions.inspect, "\n"
 
     guids = solutions.map { |solution| solution[:testedguid].to_s }.uniq # should return a list of one... hopefully!
     raise "no tested guid found in the resultset #{guids.inspect}... which is very odd!" if guids.empty?
