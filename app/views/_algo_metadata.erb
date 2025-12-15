@@ -41,6 +41,14 @@
           <strong>Domains</strong>: <%= domains.join(", ") %>
         </li>
       <% end %>
+      <% tests = @dcat.query([subject, RDF::URI('https://w3id.org/ftr#invokesTest'), nil]).map { |s| s.object.to_s } %>
+      <% if tests.any? %>
+        <% tests.each do |t| %>
+          <li class="list-group-item p-2">
+            <strong>Test</strong>: <a href="<%= t.to_s %>"><%= t.to_s %></a>
+          </li>
+        <% end %>
+      <% end %>
     </ul>
   </div>
 <% end %>

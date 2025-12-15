@@ -114,7 +114,7 @@ class Algorithm
     @guid = guid
     @resultset = resultset
     @resultsetgraph = RDF::Graph.new
-    @graph = RDF::Graph.new
+    @graph = RDF::Graph.new # this seems to only be used for parsing incoming resultsets from other tools
     @metadata = RDF::Graph.new
     @tests = []
     @conditions = []
@@ -184,59 +184,6 @@ class Algorithm
     }
   end
 
-  # Parses the Google Spreadsheet CSV into metadata, tests, and conditions.
-  #
-  # @return [void]
-  # @raise [RuntimeError] If the CSV does not contain at least two empty lines to separate metadata, tests, and conditions.
-  # @example
-  #   algo = Algorithm.new(calculation_uri: 'https://docs.google.com/spreadsheets/d/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w', guid: 'https://example.org/target/456')
-  #   algo.load_configuration
-  #   puts algo.tests
-  #   puts algo.conditions
-  def load_configuration
-    gather_metadata # sets value for @metadata
-
-    empty_line_indices = csv.each_with_index.select { |line, _| line.strip.gsub(/,+/, '').empty? }.map(&:last)
-    # Ensure we have at least two empty lines to separate three blocks
-    if empty_line_indices.size < 2
-      raise 'Invalid CSV structure: Expected at least two empty lines to separate three blocks'
-    end
-
-    c = Champion::Core.new
-
-    test_csv = csv[(empty_line_indices[1] + 1)...empty_line_indices[2]].join
-    csv_data = CSV.parse(test_csv, headers: true)
-    @tests = csv_data.map do |row|
-      {
-        reference: row['Test Reference'],
-        name: row['Test GUID'],
-        testid: row['Test GUID'],
-        endpoint: c.get_test_endpoint_for_testid(testid: row['Test GUID']),
-        pass_weight: row['Pass Weight'].to_f,
-        fail_weight: row['Fail Weight'].to_f,
-        indeterminate_weight: row['Indeterminate Weight'].to_f
-      }
-    end
-
-    # Parse conditions (remaining rows after empty row)
-    # Parse conditions block (rows after second separator, with header)
-    condition_csv = csv[(empty_line_indices[2] + 1)..-1].join
-    csv_data = CSV.parse(condition_csv, headers: true)
-    @conditions = csv_data.map do |row|
-      {
-        condition: row['Condition'],
-        description: row['Description'],
-        formula: row['Formula'],
-        success: row['Success Message'],
-        failure: row['Fail Message'],
-        guidance: row['Guidance'] # strucdture is [[URL, "desc"], [URL, "desc"]]
-      }
-    end
-
-    # Store in RDF graph
-    # build_rdf_graph
-  end
-
   # Gathers metadata from the CSV and constructs an RDF graph.
   #
   # @return [RDF::Graph] The RDF graph containing the algorithm's metadata.
@@ -289,6 +236,26 @@ class Algorithm
       metadata << RDF::Statement.new(subject, predicate, value)
     end
 
+    # Now get the Tests block
+    test_csv = csv[empty_line_indices[1] + 1...empty_line_indices[2]].join # the first empty line is below the template  version, so we ignore it
+    csv_data = CSV.parse(test_csv, headers: true)
+    warn "\n\nTHE TEST DATA IS #{csv_data}\n\n"
+
+    # Test referenes are part of the Algorithm DCAT
+    c = Champion::Core.new # needed for registry lookup
+    @tests = csv_data.map do |row|
+      {
+        reference: row['Test Reference'],
+        name: row['Test GUID'],
+        testid: row['Test GUID'],
+        endpoint: c.get_test_endpoint_for_testid(testid: row['Test GUID']),
+        pass_weight: row['Pass Weight'].to_f,
+        fail_weight: row['Fail Weight'].to_f,
+        indeterminate_weight: row['Indeterminate Weight'].to_f
+      }
+    end
+    warn "TESTS:  #{@tests.inspect}"
+
     metadata << RDF::Statement.new(subject, RDF.type, FTR.ScoringAlgorithm)
     metadata << RDF::Statement.new(subject, RDF.type, DCAT.DataService)
     metadata << RDF::Statement.new(subject, DC.identifier, subject)
@@ -297,7 +264,50 @@ class Algorithm
     metadata << RDF::Statement.new(subject, DCAT.endpointDescription, RDF::URI.new(endpoint))
     metadata << RDF::Statement.new(subject, DCAT.endpointURL, RDF::URI.new(endpoint))
     metadata << RDF::Statement.new(subject, FTR.scoringFunction, RDF::URI.new(calculation_uri))
+
+    # Finally, add the tests
+    @tests.each do |t|
+      metadata << RDF::Statement.new(subject, FTR.invokesTest, RDF::URI.new(t[:testid]))
+    end
+
     metadata
+  end
+
+  # Parses the Google Spreadsheet CSV into metadata, tests, and conditions.
+  #
+  # @return [void]
+  # @raise [RuntimeError] If the CSV does not contain at least two empty lines to separate metadata, tests, and conditions.
+  # @example
+  #   algo = Algorithm.new(calculation_uri: 'https://docs.google.com/spreadsheets/d/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w', guid: 'https://example.org/target/456')
+  #   algo.load_configuration
+  #   puts algo.tests
+  #   puts algo.conditions
+  def load_configuration
+    gather_metadata # sets value for @metadata
+
+    empty_line_indices = csv.each_with_index.select { |line, _| line.strip.gsub(/,+/, '').empty? }.map(&:last)
+    # Ensure we have at least two empty lines to separate three blocks
+    if empty_line_indices.size < 2
+      raise 'Invalid CSV structure: Expected at least two empty lines to separate three blocks'
+    end
+
+    # Parse conditions (remaining rows after empty row)
+    # Parse conditions block (rows after second separator, with header)
+    condition_csv = csv[(empty_line_indices[2] + 1)..-1].join
+    csv_data = CSV.parse(condition_csv, headers: true)
+    @conditions = csv_data.map do |row|
+      {
+        condition: row['Condition'],
+        description: row['Description'],
+        formula: row['Formula'],
+        success: row['Success Message'],
+        failure: row['Fail Message'],
+        guidance: row['Guidance'] # strucdture is [[URL, "desc"], [URL, "desc"]]
+      }
+    end
+
+    # Store in RDF graph
+    # build_rdf_graph
   end
 
   # Generates an RDF graph representing the benchmark score for the algorithm execution.
@@ -477,7 +487,7 @@ class Algorithm
     warn 'FTR: ', ftr.inspect, "\n\n"
     solutions = RDF::Query.execute(resultsetgraph) do
       pattern [:execution, RDF.type, ftr.TestExecutionActivity]
-      pattern [:result, prov.wasGeneratedBy, :execution]  
+      pattern [:result, prov.wasGeneratedBy, :execution]
       pattern [:result, RDF.type, ftr.TestResult]
       pattern [:result, prov.value, :value]
     end
@@ -518,7 +528,7 @@ class Algorithm
   # end
 
   def extract_target_from_resultset
-    warn "extract target from resultset"
+    warn 'extract target from resultset'
     format = :jsonld
     graph = RDF::Graph.new
     graph << RDF::Reader.for(format).new(resultset)

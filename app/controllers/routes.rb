@@ -160,11 +160,13 @@ module Champion
       # @note Explicitly sets content type to 'text/turtle' as a workaround for clients requesting JSON but requiring Turtle.
       # @example
       #   # GET /champion/algorithms/u/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w
-      get '/champion/algorithms/*', provides: [:html, :json, 'text/turtle', 'application/ld+json'] do
+      get '/champion/algorithms/*', provides: ['text/turtle', :html, 'application/ld+json', :json] do
         algorithmid = params[:splat].first
         algorithm = fetch_algorithm(algorithmid)
         @dcat = algorithm.gather_metadata # @dcat is an rdf::graph object
-        content_type = 'text/turtle'
+
+        warn 'content type', content_type
+        # content_type = 'text/turtle'
         case content_type
         when %r{text/html}
           halt erb :algorithm_display, layout: :algorithm_layout
@@ -173,7 +175,7 @@ module Champion
         when %r{text/turtle}
           halt @dcat.dump(:turtle)
         end
-        halt 406
+        halt @dcat.dump(:turtle)
       end
 
       # Renders a form for initiating an algorithm assessment.
