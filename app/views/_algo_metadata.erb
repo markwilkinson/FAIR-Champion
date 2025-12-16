@@ -29,6 +29,14 @@
           <strong>Benchmark</strong>: <%= benchmark %>
         </li>
       <% end %>
+      
+      <% spreadsheet = @dcat.query([subject, RDF::URI('https://w3id.org/ftr#scoringFunction'), nil]).first&.object&.to_s %>
+      <% if spreadsheet %>
+        <li class="list-group-item p-2">
+          <strong>Scoring Function (Spreadsheet)</strong>: <%= spreadsheet %>
+        </li>
+      <% end %>
+
       <% objects = @dcat.query([subject, RDF::URI('https://w3id.org/ftr#isApplicableFor'), nil]).map { |s| s.object.to_s } %>
       <% if objects.any? %>
         <li class="list-group-item p-2">

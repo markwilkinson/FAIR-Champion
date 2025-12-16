@@ -90,6 +90,8 @@ module Champion
 
     def add_members(uniqueid:, testoutputs:, graph:)
       testoutputs.each do |test|
+        warn "THIS DATA \n\n#{test.to_json}\n\n"
+
         g = RDF::Graph.new
         data = StringIO.new(test.to_json)
         RDF::Reader.for(:jsonld).new(data) do |reader|
