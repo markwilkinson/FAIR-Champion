@@ -26,27 +26,35 @@
       <% benchmark = @dcat.query([subject, RDF::URI('http://semanticscience.org/resource/SIO_000233'), nil]).first&.object&.to_s %>
       <% if benchmark %>
         <li class="list-group-item p-2">
-          <strong>Benchmark</strong>: <%= benchmark %>
+          <strong>Benchmark</strong>: <a href="<%= benchmark %>"><%= benchmark %></a>
         </li>
       <% end %>
       
       <% spreadsheet = @dcat.query([subject, RDF::URI('https://w3id.org/ftr#scoringFunction'), nil]).first&.object&.to_s %>
       <% if spreadsheet %>
         <li class="list-group-item p-2">
-          <strong>Scoring Function (Spreadsheet)</strong>: <%= spreadsheet %>
+          <strong>Scoring Function (Spreadsheet)</strong>: <a href="<%= spreadsheet %>"><%= spreadsheet %></a>
         </li>
       <% end %>
 
       <% objects = @dcat.query([subject, RDF::URI('https://w3id.org/ftr#isApplicableFor'), nil]).map { |s| s.object.to_s } %>
-      <% if objects.any? %>
-        <li class="list-group-item p-2">
-          <strong>Objects</strong>: <%= objects.join(", ") %>
-        </li>
-      <% end %>
+<% if objects.any? %>
+  <li class="list-group-item p-2">
+    <strong>Applicable Objects</strong>: <br/>
+    <% objects.each_with_index do |obj, i| %>
+      <% if i > 0 %>, <% end %>
+      <a href="<%= obj %>"><%= obj %></a>
+    <% end %>
+  </li>
+<% end %>
       <% domains = @dcat.query([subject, RDF::URI('https://w3id.org/ftr#applicationArea'), nil]).map { |s| s.object.to_s } %>
       <% if domains.any? %>
         <li class="list-group-item p-2">
-          <strong>Domains</strong>: <%= domains.join(", ") %>
+          <strong>Applicable Domains</strong>:<br/>
+            <% domains.each_with_index do |dom, i| %>
+              <% if i > 0 %>, <% end %>
+              <a href="<%= dom %>"><%= dom %></a>
+            <% end %>
         </li>
       <% end %>
       <% tests = @dcat.query([subject, RDF::URI('https://w3id.org/ftr#invokesTest'), nil]).map { |s| s.object.to_s } %>
