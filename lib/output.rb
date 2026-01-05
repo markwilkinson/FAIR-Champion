@@ -65,7 +65,10 @@ module Champion
       triplify(championexecution, schema.softwareVersion, OUTPUT_VERSION, g)
       # triplify(championexecution, schema.url, 'https://github.com/markwilkinson/FAIR-Champion', g)
 
+      # here is where we add the individual test outputs to the main graph (g),
+      # and the "hadMember" property
       add_members(uniqueid: uniqueid, testoutputs: results, graph: g)
+
 
       # deprecated after release 1.0.0
       # tid = "urn:fairtestsetsubject:" + SecureRandom.uuid
@@ -88,7 +91,7 @@ module Champion
              })
     end
 
-    def add_members(uniqueid:, testoutputs:, graph:)
+    def add_members(uniqueid:, testoutputs:, graph:) # graph is the TestResultSet graph
       testoutputs.each do |test|
         warn "THIS DATA \n\n#{test.to_json}\n\n"
 
