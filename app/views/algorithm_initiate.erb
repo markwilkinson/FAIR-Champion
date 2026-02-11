@@ -9,17 +9,17 @@ curl -X POST -H "Accept: application/json" -H "Content-type: application/json"
            "guid":  "https://my.favorite.digital/object"}' 
            https://tools.ostrails.eu/champion/assess/algorithm
       </pre>
-or, if you know the ID of the algorithm...
+or, if you know the ID of the algorithm...  (note that IDs include the /d/ or /u/ path from Google Sheets!)
       <pre>
 curl -X POST -H "Accept: application/json" -H "Content-type: application/json" 
       -d  '{"guid":  "https://my.favorite.digital/object"}'
-           https://tools.ostrails.eu/champion/assess/algorithm/AJURG8ewy45hIUDH38rhU
+           https://tools.ostrails.eu/champion/assess/algorithm/d/AJURG8ewy45hIUDH38rhU
 
            or
 
 curl -X POST -H "Accept: application/json" -H "Content-type: application/json" 
       -d  @resultsetfile.json   # THIS MUST BE JSON-LD!!!!!!
-           https://tools.ostrails.eu/champion/assess/algorithm/AJURG8ewy45hIUDH38rhU
+           https://tools.ostrails.eu/champion/assess/algorithm/d/AJURG8ewy45hIUDH38rhU
       </pre>
     </div>
 </header>
@@ -55,7 +55,7 @@ curl -X POST -H "Accept: application/json" -H "Content-type: application/json"
       <div><h2 class="header">You may now apply the selected algorithm to a new Digital Object, or an existing Test Result Set</h2></div>
       <div class="form-group mb-3">
         <label for="guid" class="block text-sm font-medium mb-1">GUID:</label>
-        <input type="text" id="guid" name="guid" class="form-control w-full" placeholder="e.g., https://w3id.org/duchenne-fdp" required>
+        <input type="text" id="guid" name="guid" class="form-control w-full" placeholder="e.g., https://w3id.org/duchenne-fdp">
       </div>
       <div><h2 class="header">OR</h2></div>
       <div class="form-group mb-3">
