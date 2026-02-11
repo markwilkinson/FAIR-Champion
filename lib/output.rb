@@ -69,7 +69,6 @@ module Champion
       # and the "hadMember" property
       add_members(uniqueid: uniqueid, testoutputs: results, graph: g)
 
-
       # deprecated after release 1.0.0
       # tid = "urn:fairtestsetsubject:" + SecureRandom.uuid
       # triplify(uniqueid, RDF::Vocab::PROV.wasDerivedFrom, tid, g)
@@ -97,16 +96,28 @@ module Champion
 
         g = RDF::Graph.new
         data = StringIO.new(test.to_json)
-        RDF::Reader.for(:jsonld).new(data) do |reader|
-          reader.each_statement do |statement|
-            # warn statement.inspect
-            g << statement # this is only to query for the root id
-            graph << statement # this is the entire output graph
+        begin
+          RDF::Reader.for(:jsonld).new(data) do |reader|
+            reader.each_statement do |statement|
+              # warn statement.inspect
+              g << statement # this is only to query for the root id
+              graph << statement # this is the entire output graph
+            end
           end
+        rescue StandardError => e
+          warn "Error processing test output from #{uniqueid} : #{e.message}"
+          warn "INVALID CONTENT: \n\n\n#{test.to_json}\n\n\n"
+          next
         end
+
         q = SPARQL.parse('select distinct ?s where {?s a <https://w3id.org/ftr#TestResult>}')
         res = q.execute(g)
-        return nil unless res&.first
+        #        return nil unless res&.first
+        unless res&.first
+          warn "Error processing test output from #{uniqueid}"
+          warn "INVALID CONTENT: \n\n\n#{test.to_json}\n\n\n"
+          next
+        end
 
         testid = res.first[:s].to_s
         triplify(uniqueid, RDF::Vocab::PROV.hadMember, testid, graph)
@@ -145,9 +156,9 @@ module Champion
               RDF::URI.new(o.to_s)
             elsif o.to_s =~ /^\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d/
               RDF::Literal.new(o.to_s, datatype: RDF::XSD.date)
-            elsif o.to_s =~ /^[+-]?\d+\.\d+/ && o.to_s !~ /[^\+\-\d\.]/ # has to only be digits
+            elsif o.to_s =~ /^[+-]?\d+\.\d+/ && o.to_s !~ /[^+\-\d.]/ # has to only be digits
               RDF::Literal.new(o.to_s, datatype: RDF::XSD.float)
-            elsif o.to_s =~ /^[+-]?[0-9]+$/ && o.to_s !~ /[^\+\-\d\.]/ # has to only be digits
+            elsif o.to_s =~ /^[+-]?[0-9]+$/ && o.to_s !~ /[^+\-\d.]/ # has to only be digits
               RDF::Literal.new(o.to_s, datatype: RDF::XSD.int)
             else
               RDF::Literal.new(o.to_s, language: :en)

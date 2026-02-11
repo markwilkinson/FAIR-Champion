@@ -4,13 +4,14 @@ source 'https://rubygems.org'
 
 # Specify your gem's dependencies in apples-tests.gemspec
 gemspec
-ruby '3.3.0'
+ruby '3.2.4'
 gem 'cgi', '~> 0.4.1'
 gem 'csv'
 gem 'erb', '~> 4.0'
 gem 'fileutils', '~>1.5.0'
-gem 'json', '~> 2.7.1'
+gem 'json', '~> 2.6.3'
 gem 'json-canonicalization', '~> 1.0.0'
+gem 'multi_json', '1.15.0'   # 1.15.x is widely used and compatible with json 2.6.x without calling .except on State
 gem 'linkeddata', '~> 3.2.0'
 gem 'linkheaders-processor', '~> 0.1.20'
 gem 'metainspector', '~> 5-11-2'
@@ -57,4 +58,6 @@ gem 'json-ld', '~> 3.3'
 
 gem 'dotenv', '~> 3.1'
 
-gem "uri", "~> 1.0"
+gem 'uri', '~> 1.0'
+
+gem "json_pure", "~> 2.8"

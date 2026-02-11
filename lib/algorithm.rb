@@ -1,14 +1,22 @@
 require 'rdf'
 require 'rdf/ntriples'
 require 'rdf/vocab'
+require 'json'
 require 'json/ld' # For JSON-LD parsing support
 require 'csv'
 require 'rest-client'
-require 'sparql/client'
-require 'json'
+require 'sparql/client' # doesn't exist apparently
 require 'linkeddata'
 require 'uri'
 require_relative 'dcat_extractor'
+
+class JSON::Ext::Generator::State
+  # momnkey patch due to incompatibilities between linkeddata gem and json-ld
+  def except(*keys)
+    # Convert to real Hash, drop keys, then reconstruct (safe since to_h exists)
+    to_h.except(*keys)
+  end
+end
 
 # The Algorithm class processes scoring algorithms defined in Google Spreadsheets,
 # integrating with RDF data and external services to execute tests, process results,
@@ -122,7 +130,7 @@ class Algorithm
     @benchmarkguid = ''
     # Must be a google docs template and either a guid to test or the inut from another tools resultset
     @valid = true if @calculation_uri =~ %r{docs\.google\.com/spreadsheets} && (guid || resultset)
-    # spreadsheets/d/  --> 16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w
+    # spreadsheets  ---> /d/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w
 
     # NOTA BENE
     @algorithm_id = @calculation_uri.match(%r{/spreadsheets/(\w/[^/]+)})[1] # d/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w  (note the d/ !!)
@@ -328,7 +336,7 @@ class Algorithm
     benchmarkscore << RDF::Statement.new(subject, RDF.type, FTR.BenchmarkScore)
     benchmarkscore << RDF::Statement.new(subject, PROV.wasGeneratedBy, activity)
     benchmarkscore << RDF::Statement.new(activity, RDF.type, FTR.ScoringAlgorithmActivity)
-    benchmarkscore << RDF::Statement.new(subject, PROV.value, RDF::Literal.new(0.99))  # I have no idea what a benchmark score should be...
+    benchmarkscore << RDF::Statement.new(subject, PROV.value, RDF::Literal.new(0.99)) # I have no idea what a benchmark score should be...
     benchmarkscore << RDF::Statement.new(subject, FTR.log, RDF::Literal.new(output))
     benchmarkscore << RDF::Statement.new(subject, FTR.outputFromAlgorithm, RDF::URI.new(algorithm_guid))
 
@@ -482,35 +490,35 @@ class Algorithm
     # <urn:fairtestoutput:2152d30f-516c-43da-b647-4f4726c33fbb> a <https://w3id.org/ftr#TestResult>;
     #   prov:value "pass"@en;
     warn "looking for id #{testid}"
-  prov = RDF::Vocab::PROV 
-  ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
-  test_uri = RDF::URI.new(testid)
+    prov = RDF::Vocab::PROV
+    ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
+    test_uri = RDF::URI.new(testid)
 
-  solutions = RDF::Query.execute(resultsetgraph) do
-    pattern [:execution, RDF.type, ftr.TestExecutionActivity]
-    pattern [:execution, prov.wasAssociatedWith, test_uri]  # <-- THIS FILTERS TO THE CORRECT TEST
-    pattern [:result, prov.wasGeneratedBy, :execution]
-    pattern [:result, RDF.type, ftr.TestResult]
-    pattern [:result, prov.value, :value]
-  end
+    solutions = RDF::Query.execute(resultsetgraph) do
+      pattern [:execution, RDF.type, ftr.TestExecutionActivity]
+      pattern [:execution, prov.wasAssociatedWith, test_uri] # <-- THIS FILTERS TO THE CORRECT TEST
+      pattern [:result, prov.wasGeneratedBy, :execution]
+      pattern [:result, RDF.type, ftr.TestResult]
+      pattern [:result, prov.value, :value]
+    end
 
-  warn "SOLUTIONS for <#{testid}>", solutions.inspect, "\n"
+    warn "SOLUTIONS for <#{testid}>", solutions.inspect, "\n"
 
-  # Normalise the value (strips language tag if present, e.g. "pass@en" → "pass")
-  passfail = solutions.map do |solution|
-    lit = solution[:value]
-    value_str = lit.respond_to?(:value) ? lit.value : lit.to_s
-    value_str.downcase.strip
-  end.uniq
+    # Normalise the value (strips language tag if present, e.g. "pass@en" → "pass")
+    passfail = solutions.map do |solution|
+      lit = solution[:value]
+      value_str = lit.respond_to?(:value) ? lit.value : lit.to_s
+      value_str.downcase.strip
+    end.uniq
 
-  if passfail.empty?
-    warn "no score found for test #{testid}"
-    return false
-  elsif passfail.size > 1
-    warn 'Warning: Multiple scores found. Returning only the first one.'
-  end
+    if passfail.empty?
+      warn "no score found for test #{testid}"
+      return false
+    elsif passfail.size > 1
+      warn 'Warning: Multiple scores found. Returning only the first one.'
+    end
 
-  passfail.first
+    passfail.first
   end
 
   # def extract_tests_from_resultset

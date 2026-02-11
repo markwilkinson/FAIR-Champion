@@ -12,5 +12,3 @@ module Champion
     set_routes unless ENV['RACK_ENV'] == 'test' # Avoid in test environment
   end
 end
-
-Champion::ChampionApp.run! if __FILE__ == $0

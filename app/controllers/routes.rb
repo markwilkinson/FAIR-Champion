@@ -290,6 +290,21 @@ module Champion
       end
     end
 
+    ####    HELPERS   ######
+    ####    HELPERS   ######
+    ####    HELPERS   ######
+    ####    HELPERS   ######
+    ####    HELPERS   ######
+    ####    HELPERS   ######
+    ####    HELPERS   ######
+    ####    HELPERS   ######
+    ####    HELPERS   ######
+    ####    HELPERS   ######
+    ####    HELPERS   ######
+    ####    HELPERS   ######
+    ####    HELPERS   ######
+    ####    HELPERS   ######
+
     # Helper method to fetch and validate an algorithm by ID.
     # @param algorithm_id [String] The identifier of the algorithm.
     # @return [Algorithm] The initialized Algorithm instance.
