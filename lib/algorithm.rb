@@ -11,7 +11,7 @@ require 'uri'
 require_relative 'dcat_extractor'
 
 class JSON::Ext::Generator::State
-  # momnkey patch due to incompatibilities between linkeddata gem and json-ld
+  # monkey patch due to incompatibilities between linkeddata gem and json-ld
   def except(*keys)
     # Convert to real Hash, drop keys, then reconstruct (safe since to_h exists)
     to_h.except(*keys)

@@ -154,8 +154,6 @@ module Champion
     #   endpoint = core.get_test_endpoint_for_testid(testid: 'https://tests.ostrails.eu/tests/test1')
     #   puts endpoint
     def get_test_endpoint_for_testid(testid:)
-      # TODO: In principle we can get this directly from the DCAT, right??  Why use the registry?
-
       fdp_url = Configuration.fdpindex_sparql
       # Create a SPARQL client instance
       client = SPARQL::Client.new(fdp_url)
@@ -169,6 +167,7 @@ module Champion
       SPARQL
 
       # Execute the query
+      warn "\n\n\n\nQUerY  is #{query}\n\n\n\n"
       solutions = client.query(query)
       solutions.first[:endpoint].value # can be onlhy one
     end
@@ -188,7 +187,7 @@ module Champion
       results = []
       endpoints.each do |endpoint|
         # warn 'benchmark point 2', endpoint.inspect
-        results << run_test(guid: subject, testapi: endpoint)
+        results << run_test(guid: subject, testapi: endpoint) # this is a parsed JSON docuent returned
       end
       # warn "RESULTS #{results}"
       output = Champion::Output.new(benchmarkid: bmid, subject: subject)
@@ -209,19 +208,19 @@ module Champion
     def run_test(testapi:, guid:)
       warn "web api is to #{testapi}"
       # testapi might be an external API!  So... be careful!
-      if testapi.match(%r{tests\.ostrails\.eu})
+      if testapi.match(/tests\.ostrails\.eu/)
         # MUNGE IT TEMPORARILY!
         # the asesss/test should really consume the name of the test, not the shortname
         testname = if testapi.match(%r{.*/(\S+)/api})
-                    testapi.match(%r{.*/(\S+)/api})[1]
-                  else
-                    testapi.match(%r{.*/(\S+)/?$})[1]
-                  end
+                     testapi.match(%r{.*/(\S+)/api})[1]
+                   else
+                     testapi.match(%r{.*/(\S+)/?$})[1]
+                   end
         testurl = "https://tests.ostrails.eu/assess/test/#{testname}"
       else
         testurl = testapi
       end
-      
+
       warn "POINT FINAL:  Test URL is #{testurl}"
       RestClient.log = 'stderr' # Enable logging
       result = RestClient::Request.execute(

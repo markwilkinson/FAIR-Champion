@@ -10,6 +10,81 @@ module Champion
     def_delegators Champion::Output, :triplify
     OUTPUT_VERSION = '1.1.0'.freeze
 
+    FTR_CONTEXT = {
+      '@context': {
+        dcat: 'http://www.w3.org/ns/dcat#',
+        dcterms: 'http://purl.org/dc/terms/',
+        rdfs: 'http://www.w3.org/2000/01/rdf-schema#',
+        owl: 'http://www.w3.org/2002/07/owl#',
+        prov: 'http://www.w3.org/ns/prov#',
+        ftr: 'https://w3id.org/ftr#',
+        dqv: 'http://www.w3.org/ns/dqv#',
+        vivo: 'http://vivoweb.org/ontology/core#',
+        dpv: 'https://w3id.org/dpv#',
+        doap: 'http://usefulinc.com/ns/doap#',
+
+        assessmentTarget: { '@id': 'ftr:assessmentTarget' },
+        contactPoint: { '@id': 'dcat:contactPoint' },
+        endpointDescription: { '@id': 'dcat:endpointDescription' },
+        endpointURL: { '@id': 'dcat:endpointURL' },
+        hadMember: { '@id': 'prov:hadMember' },
+        hasAssociatedMetric: { '@id': 'ftr:hasAssociatedMetric' },
+        hasBenchmark: { '@id': 'ftr:hasBenchmark' },
+        hasImplementation: { '@id': 'https://semanticscience.org/resource/SIO_000234' },
+        inDimension: { '@id': 'dqv:inDimension' },
+        invokesTest: { '@id': 'ftr:invokesTest' },
+        isApplicableFor: { '@id': 'dpv:isApplicableFor' },
+        isImplementationOf: { '@id': 'https://semanticscience.org/resource/SIO_000233' },
+        landingPage: { '@id': 'dcat:landingPage' },
+        license: { '@id': 'dcterms:license' },
+        outputFromAlgorithm: { '@id': 'ftr:outputFromAlgorithm' },
+        outputFromTest: { '@id': 'ftr:outputFromTest' },
+        repository: { '@id': 'doap:repository' },
+        scoredTestResults: { '@id': 'ftr:scoredTestResults' },
+        scoringFunction: { '@id': 'ftr:scoringFunction' },
+        theme: { '@id': 'dcat:theme' },
+        used: { '@id': 'prov:used' },
+        wasAssociatedWith: { '@id': 'prov:wasAssociatedWith' },
+        wasAttributedTo: { '@id': 'prov:wasAttributedTo' },
+        wasDerivedFrom: { '@id': 'prov:wasDerivedFrom' },
+        wasGeneratedBy: { '@id': 'prov:wasGeneratedBy' },
+        wasStartedBy: { '@id': 'prov:wasStartedBy' },
+
+        abbreviation: { '@id': 'vivo:abbreviation' },
+        affectedElements: { '@id': 'ftr:affectedElements' },
+        applicationArea: { '@id': 'ftr:applicationArea' },
+        completion: { '@id': 'ftr:completion' },
+        description: { '@id': 'dcterms:description' },
+        hasNegativeValidation: { '@id': 'ftr:hasNegativeValidation' },
+        hasPositiveValidation: { '@id': 'ftr:hasPositiveValidation' },
+        identifier: { '@id': 'dcterms:identifier' },
+        keyword: { '@id': 'dcat:keyword' },
+        log: { '@id': 'ftr:log' },
+        generatedAtTime: { '@id': 'prov:generatedAtTime' },
+        status: { '@id': 'ftr:status' },
+        supportedBy: { '@id': 'ftr:supportedBy' },
+        title: { '@id': 'dcterms:title' },
+        value: { '@id': 'prov:value' },
+        version: { '@id': 'dcat:version' },
+
+        Activity: { '@id': 'prov:Activity', '@type': '@id' },
+        Agent: { '@id': 'prov:Agent', '@type': '@id' },
+        Benchmark: { '@id': 'ftr:Benchmark', '@type': '@id' },
+        BenchmarkScore: { '@id': 'ftr:BenchmarkScore', '@type': '@id' },
+        Collection: { '@id': 'prov:Collection', '@type': '@id' },
+        DataService: { '@id': 'dcat:DataService', '@type': '@id' },
+        Dimension: { '@id': 'dqv:Dimension', '@type': '@id' },
+        Entity: { '@id': 'prov:Entity', '@type': '@id' },
+        Metric: { '@id': 'ftr:Metric', '@type': '@id' },
+        QualityMeasurement: { '@id': 'dqv:QualityMeasurement', '@type': '@id' },
+        ScoringAlgorithm: { '@id': 'ftr:ScoringAlgorithm', '@type': '@id' },
+        Test: { '@id': 'ftr:Test', '@type': '@id' },
+        TestExecutionActivity: { '@id': 'ftr:TestExecutionActivity', '@type': '@id' },
+        TestResult: { '@id': 'ftr:TestResult', '@type': '@id' },
+        TestResultSet: { '@id': 'ftr:TestResultSet', '@type': '@id' }
+      }
+    }.freeze
+
     attr_accessor :subject, :benchmarkid, :description, :version, :license, :score, :title, :uniqueid
 
     def initialize(subject:, benchmarkid:, description: 'Results of the execution of a Benchmark', title: 'FAIR Champion output', version: '0.0.1', summary: 'Results of the execution of a Benchmark',
@@ -90,14 +165,19 @@ module Champion
              })
     end
 
-    def add_members(uniqueid:, testoutputs:, graph:) # graph is the TestResultSet graph
+    def add_members(uniqueid:, testoutputs:, graph:)
+      # graph is the TestResultSet graph
+      # # testoutputs are the JSON parsed documents that are the output of the individual tests, which we need to add to the graph and link with hadMember
       testoutputs.each do |test|
+        # need to munge the test because RDF::Reader doesnt like
+        # having a context that needs to be resovled
+        local_context = FTR_CONTEXT['@context'] # Replace the URL with the hash
         warn "THIS DATA \n\n#{test.to_json}\n\n"
 
         g = RDF::Graph.new
         data = StringIO.new(test.to_json)
         begin
-          RDF::Reader.for(:jsonld).new(data) do |reader|
+          RDF::Reader.for(:jsonld).new(data, expandContext: local_context) do |reader|
             reader.each_statement do |statement|
               # warn statement.inspect
               g << statement # this is only to query for the root id
