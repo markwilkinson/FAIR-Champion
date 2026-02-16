@@ -1,4 +1,5 @@
 require 'erb'
+require 'stringio'
 
 module Champion
   class ChampionApp < Sinatra::Base
@@ -57,8 +58,8 @@ module Champion
       #   # Returns HTML list or JSON/JSON-LD data
       get '/champion/tests/', provides: [:html, :json, 'application/ld+json'] do
         c = Champion::Core.new
-        @tests = c.get_tests
-        puts "Tests: #{@tests.inspect}"
+        @tests = c.get_tests # returns array of Champion::Test objects
+        # puts "Tests: #{@tests.inspect}"
         case content_type
         when %r{text/html}
           halt erb :listtests_output, layout: :listtests_layout
@@ -79,7 +80,7 @@ module Champion
 
         c = Champion::Core.new
         @tests = c.get_tests(testid: testid)
-        warn 'got ', @tests.inspect
+        # warn 'got ', @tests.inspect
 
         case content_type
         when %r{text/html}
@@ -87,6 +88,35 @@ module Champion
         else
           halt @tests.first.to_json
         end
+      end
+
+      post '/champion/test-execution-proxy', provides: [:html, :json, 'application/ld+json'] do
+        if params['resource_identifier']
+          resource_identifier = params['resource_identifier']
+          endpoint = params['endpoint']
+        else
+          payload = JSON.parse(request.body.read)
+          resource_identifier = payload['resource_identifier']
+          endpoint = payload['endpoint']
+        end
+
+        c = Champion::Core.new
+        warn "now testing #{resource_identifier} with endpoint #{endpoint}"
+        @result = c.proxy_test(endpoint: endpoint, resource_identifier: resource_identifier)
+        @testresult = Champion::TestResult.test_output_parser(output: @result) # Champion::TestResult object with all fields populated, including @graph with the RDF graph of the test execution result
+        unless @testresult.is_a?(Champion::TestResult)
+          halt erb(:error, locals: { message: "Test execution data not found or invalid #{@testresult.inspect}" })
+        end
+
+        if request.accept?('text/html') || request.accept?('application/xhtml+xml')
+          content_type :html
+          halt erb :testresult
+        else
+          # Assume JSON/LD — most permissive path
+          content_type 'application/ld+json'
+          halt @result
+        end
+        error 406
       end
 
       # ###########################################  ALGORITHMS

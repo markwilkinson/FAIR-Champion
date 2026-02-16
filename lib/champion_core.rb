@@ -184,10 +184,13 @@ module Champion
     #   result = core.execute_on_endpoints(subject: 'https://example.org/target/456', endpoints: endpoints, bmid: 'https://example.org/benchmark/123')
     #   puts result
     def execute_on_endpoints(subject:, endpoints:, bmid:)
+      # endpoints = [{testid: test[:testid], endpoint: test[:endpoint] }...]
       results = []
-      endpoints.each do |endpoint|
+      endpoints.each do |idpair|
+        testid = idpair[:testid]
+        endpoint = idpair[:endpoint]
         # warn 'benchmark point 2', endpoint.inspect
-        results << run_test(guid: subject, testapi: endpoint) # this is a parsed JSON docuent returned
+        results << run_test(guid: subject, testapi: endpoint, testid: testid) # this is a parsed JSON docuent returned
       end
       # warn "RESULTS #{results}"
       output = Champion::Output.new(benchmarkid: bmid, subject: subject)
@@ -205,8 +208,8 @@ module Champion
     #   core = Champion::Core.new
     #   result = core.run_test(testapi: 'https://tests.ostrails.eu/tests/test1/api', guid: 'https://example.org/target/456')
     #   puts result
-    def run_test(testapi:, guid:)
-      warn "web api is to #{testapi}"
+    def run_test(testapi:, guid:, testid:)
+      warn "web api endpoint is at  #{testapi}"
       # testapi might be an external API!  So... be careful!
       if testapi.match(/tests\.ostrails\.eu/)
         # MUNGE IT TEMPORARILY!
@@ -242,7 +245,7 @@ module Champion
     # Retrieves test metadata from the FDP SPARQL endpoint, optionally filtered by test ID.
     #
     # @param testid [String] The identifier of the test to retrieve (optional; full URI or local ID).
-    # @return [Array<Hash>] A list of hashes containing test metadata (identifier, title, description, etc.).
+    # @return [Array<Champion::Test>] A list of Test object containing test metadata (identifier, title, description, etc.).
     # @example
     #   core = Champion::Core.new
     #   tests = core.get_tests(testid: 'test1')
@@ -281,10 +284,52 @@ EOQ
 
       results.select! { |res| res[:identifier].to_s =~ /#{testid}/ } if testid
 
+      tests = []
       results.map do |solution|
-        solution.bindings.transform_values(&:to_s)
+        tests << Champion::Test.new(
+          identifier: solution[:identifier].to_s,
+          title: solution[:title].to_s,
+          description: solution[:description].to_s,
+          endpoint: solution[:endpoint].to_s,
+          openapi: solution[:openapi].to_s,
+          dimension: solution[:dimension].to_s,
+          objects: solution[:objects].to_s,
+          domain: solution[:domain].to_s,
+          benchmark_or_metric: solution[:benchmark_or_metric].to_s
+        )
       end
+      tests
       # warn alltests.to_json
+    end
+
+    def proxy_test(endpoint:, resource_identifier:)
+      payload = {
+        resource_identifier: resource_identifier.strip # or just 'xxxxx'
+        # Add more fields if the API ever requires them in future
+      }
+      headers = {
+        content_type: :json, # shorthand for 'application/json'
+        accept: :json # tells server you'd like JSON back
+        # 'Authorization': 'Bearer your-token'   # uncomment/add if needed
+      }
+
+      begin
+        response = RestClient.post(
+          endpoint,
+          payload.to_json, # explicitly convert to JSON string
+          headers
+        )
+
+        warn "Success! Status: #{response.code}"
+        warn 'Response body:'
+        warn response.body # usually JSON-LD or assessment result
+      rescue RestClient::ExceptionWithResponse => e
+        puts "Test Execution failed with status: #{e.response.code}"
+        puts "Error details: #{e.response.body}"
+      rescue StandardError => e
+        puts "Test Execution Unexpected error: #{e.message}"
+      end
+      response.body # pass JSON back to caller for further processing
     end
   end
 end

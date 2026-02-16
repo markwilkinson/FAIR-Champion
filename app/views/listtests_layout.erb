@@ -9,6 +9,79 @@
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
 </head>
 <body id="default">
+
+  <!-- This script adds JavaScript-based form submission handling to all forms that point to an /assess/test/ endpoint. It prevents the default form submission, gathers the input value, sends it as JSON to the server, and then displays the result inline on the page. -->
+  <!-- at the moment, this is unused.  The form is sent to a proxy in Champion -->
+  <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          // Find ALL forms that point to an /assess/test/ endpoint
+          const assessForms = document.querySelectorAll('form[action^="/assess/test/"], form[action^="https://tests.ostrails.eu/assess/test/"]');
+
+          assessForms.forEach(form => {
+            form.addEventListener('submit', async function(e) {
+              e.preventDefault();  // stop classic submission
+
+              // Grab the value safely (your input is always named "resource_identifier")
+              const input = form.querySelector('input[name="resource_identifier"]');
+              if (!input || !input.value.trim()) {
+                alert('Please enter a resource identifier');
+                return;
+              }
+
+              const payload = {
+                resource_identifier: input.value.trim()
+              };
+
+              try {
+                const response = await fetch(form.action, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                  throw new Error(`Server responded ${response.status}`);
+                }
+
+                const result = await response.json();  // assuming it returns JSON-LD or similar
+
+                // Option A: Show result inline (e.g. in a new div after the form)
+                let resultDiv = form.parentElement.querySelector('.result-div');
+                if (!resultDiv) {
+                  resultDiv = document.createElement('div');
+                  resultDiv.className = 'result-div mt-3 p-3 bg-light border';
+                  form.parentElement.appendChild(resultDiv);
+                }
+                resultDiv.innerHTML = `<pre>${JSON.stringify(result, null, 2)}</pre>`;
+
+                // Option B: Open in new tab (mimics target="_blank" feel)
+                // window.open(URL.createObjectURL(new Blob([JSON.stringify(result, null, 2)], {type: 'application/json'})));
+
+                console.log('Assessment result:', result);
+
+              } catch (err) {
+                console.error('Error submitting assessment:', err);
+                alert('Failed to run the test: ' + err.message);
+              }
+            });
+          });
+        });
+  </script>
+
+
+  <style>
+  .submit-link {
+    font-size: 0.9rem !important;
+    padding: 6px 12px !important;
+    line-height: 1.4 !important;
+  }
+  h2.submit-link {
+    font-size: 1.2rem !important;
+    margin: 0 !important;
+  }
+  </style>
   <div class="container" style="max-width: 80rem; width: 100%; margin-left: auto; margin-right: auto; padding: 20px;">
     <div class="header">
       <a href="/champion"><img src="/champion/champion_whitebgcrop.png" alt="FAIR Champion Logo"/></a>
@@ -23,9 +96,6 @@
           </pre>
         </div>
     </header>
-
-
-
     <%= yield %>
   </div>
 </body>

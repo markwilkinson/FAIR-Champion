@@ -1,40 +1,56 @@
-<style>
-  .submit-link {
-    font-size: 0.9rem !important;
-    padding: 6px 12px !important;
-    line-height: 1.4 !important;
-  }
-  h2.submit-link {
-    font-size: 1.2rem !important;
-    margin: 0 !important;
-  }
-</style>
+
 <div class="wide-container">
   <div class="form-card">
     <h2 class="mb-3">
-      <a href="<%= test[:identifier] %>" class="submit-link"><%= test[:title] %></a>
+      <a href="<%= test.identifier %>" class="submit-link" target="_blank"><%= test.title %></a>
     </h2>
-    <p class="mb-3"><%= test[:description] %></p>
+    <p class="mb-3"><%= test.description %></p>
     <p class="mb-3">
-      <a href="<%= test[:openapi] %>" class="submit-link">API Definition</a>
+      <a href="<%= test.openapi %>" class="submit-link" target="_blank">API Definition</a>
     </p>
 
-    <details class="mb-3">
+    <details >
       <summary>Additional Details</summary>
       <table class="table" style="width: 100%;">
         <tr>
           <th class="bg-gray-200 text-left">Dimension</th>
-          <td><a href="<%= test[:dimension] %>"><%= test[:dimension] %></a></td>
+          <td><a href="<%= test.dimension %>" target="_blank"><%= test.dimension %></a></td>
         </tr>
         <tr>
           <th class="bg-gray-200 text-left">Domain</th>
-          <td><a href="<%= test[:domain] %>"><%= test[:domain] %></a></td>
+          <td><a href="<%= test.domain %>" target="_blank"><%= test.domain %></a></td>
         </tr>
         <tr>
           <th class="bg-gray-200 text-left">Benchmark or Metric</th>
-          <td><a href="<%= test[:benchmark_or_metric] %>"><%= test[:benchmark_or_metric] %></a></td>
+          <td><a href="<%= test.benchmark_or_metric %>" target="_blank"><%= test.benchmark_or_metric %></a></td>
         </tr>
+        <tr>
+          <th class="bg-gray-200 text-left">Endpoint</th>
+          <td><a href="<%= test.endpoint %>" target="_blank"><%= test.endpoint %></a></td>
+        </tr>
+
       </table>
+    </details>
+
+
+    <details>
+      <summary>Execute Test</summary>
+      <!--  :identifier, :title, :description, :endpoint, :openapi, :dimension, :objects, :domain,
+                    :benchmark_or_metric -- 
+                    these are the attributes of the Champion::Test class,. --> 
+      <form action="/champion/test-execution-proxy" method="post">
+        <input type="hidden" name="endpoint" value="<%= test.endpoint %>">
+        <label for="resource_identifier_<%= test.name %>"><%= test.name %></label>
+        <input type="text" name="resource_identifier" id="resource_identifier_<%= test.identifier %>" placeholder="e.g., https://example.org/dataset">
+        <div>
+          
+          <a href="<%= test.openapi %>" target="_blank">Interface YAML</a>  
+          <!-- <a href="/community-tests/<%= test.name %>">DCAT Metadata</a> THIS IS NOT PREDICTABLE OTHER THAN CHAMPION TESTS -->
+        </div>
+        <input type="submit" value="Test it">
+      </form>
+      <br><br>
     </details>
   </div>
 </div>
+

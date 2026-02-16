@@ -1,21 +1,16 @@
-version: "2.0"
 services:
 
   champion: 
-    image: markw/fair-champion:0.0.3
+    image: markw/fair-champion:0.3.0
     environment:
-      - TESTHOST=http://fairdata.services:8282/tests/
+      - TESTHOST=https://tests.ostrails.eu/tests/
       - CHAMPHOST=http://localhost:8383/
     ports:
       - "8383:4567"
-    networks:
-      - network1
 
-networks:
-  network1:
-    name: tests_default
-    external: true
 
-volumes:
-  champion-graphdb:
-    external: true
+  swagger-converter:
+    image: swaggerapi/swagger-converter:latest 
+    container_name: swagger-converter  
+#    ports:
+#      - "8081:8080"  

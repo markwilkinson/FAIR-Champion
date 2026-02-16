@@ -440,7 +440,19 @@ class Algorithm
 
   # Run tests and collect results
   def run_tests
-    endpoints = @tests.map { |test| test[:endpoint] }
+    # incoming data structure
+    # @tests = csv_data.map do |row|
+    # {
+    #   reference: row['Test Reference'],
+    #   name: row['Test GUID'],
+    #   testid: row['Test GUID'],
+    #   endpoint: c.get_test_endpoint_for_testid(testid: row['Test GUID']),
+    #   pass_weight: row['Pass Weight'].to_f,
+    #   fail_weight: row['Fail Weight'].to_f,
+    #   indeterminate_weight: row['Indeterminate Weight'].to_f
+    # }
+    # get the endpoints for the tests
+    endpoints = @tests.map { |test| { testid: test[:testid], endpoint: test[:endpoint] } }
     c = Champion::Core.new
     # resultset is an instance attribute, so set it here
     @resultset = c.execute_on_endpoints(subject: guid, endpoints: endpoints, bmid: benchmarkguid) # ResultSet is the shared datastructure in the IF

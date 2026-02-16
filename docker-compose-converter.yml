@@ -1,0 +1,7 @@
+services:
+
+  swagger-converter:
+    image: swaggerapi/swagger-converter:latest 
+    container_name: swagger-converter  
+#    ports:
+#      - "8081:8080"  
