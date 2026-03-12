@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Test Assessment – Polling Required</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { padding: 40px; max-width: 800px; margin: auto; }
+    pre { background: #f8f9fa; padding: 15px; border-radius: 6px; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <h2 class="mb-4">Assessment Submitted</h2>
+
+  <div class="alert alert-info">
+    <strong>Status:</strong> The test is being processed asynchronously (202 Accepted).
+  </div>
+
+  <p>Your job/ticket has been created. Poll the following URL to check status and retrieve results:</p>
+
+  <div class="input-group mb-3">
+    <input type="text" class="form-control" id="pollingUrl" value="<%= polling_url %>" readonly>
+    <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard()">Copy</button>
+  </div>
+
+  <p><strong>Manual polling commands:</strong></p>
+  <pre>
+# Using curl (recommended)
+curl -s "<%= polling_url %>" | jq   # pretty-print JSON
+
+# Or just open in browser:
+<%= polling_url %>
+  </pre>
+
+  <p>Keep refreshing/polling until you see a final result (usually status "completed" or direct FTR JSON-LD with `@graph`).</p>
+
+  <p><small>Original endpoint: <a href="<%= original_endpoint %>" target="_blank"><%= original_endpoint %></a></small></p>
+
+  <hr>
+
+  <p class="text-muted small mt-4">
+    When the result is ready, it should contain the same structure as synchronous responses
+    (FTR JSON-LD with TestExecutionActivity, TestResult, etc.).
+  </p>
+
+  <script>
+    function copyToClipboard() {
+      const el = document.getElementById('pollingUrl');
+      el.select();
+      document.execCommand('copy');
+      alert('URL copied to clipboard!');
+    }
+  </script>
+</body>
+</html>

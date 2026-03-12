@@ -8,67 +8,151 @@
   <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
 </head>
+
 <body id="default">
 
-  <!-- This script adds JavaScript-based form submission handling to all forms that point to an /assess/test/ endpoint. It prevents the default form submission, gathers the input value, sends it as JSON to the server, and then displays the result inline on the page. -->
-  <!-- at the moment, this is unused.  The form is sent to a proxy in Champion -->
-  <script>
-        document.addEventListener('DOMContentLoaded', () => {
-          // Find ALL forms that point to an /assess/test/ endpoint
-          const assessForms = document.querySelectorAll('form[action^="/assess/test/"], form[action^="https://tests.ostrails.eu/assess/test/"]');
+<!-- This might not be necessary anymore -->
+<script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
 
-          assessForms.forEach(form => {
-            form.addEventListener('submit', async function(e) {
-              e.preventDefault();  // stop classic submission
+<!-- This is to create the execute service form, for either GUID entry or file upload -->
+<script>  
+// Run once DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('details.execute-details').forEach(details => {
+    details.addEventListener('toggle', async function onToggle() {
+      // Only run once — when opening
+      if (!this.open || this.dataset.loaded) return;
 
-              // Grab the value safely (your input is always named "resource_identifier")
-              const input = form.querySelector('input[name="resource_identifier"]');
-              if (!input || !input.value.trim()) {
-                alert('Please enter a resource identifier');
-                return;
-              }
+      this.dataset.loaded = 'true'; // prevent re-fetch on re-open
 
-              const payload = {
-                resource_identifier: input.value.trim()
-              };
+      const openapiUrl   = this.dataset.openapiUrl;
+      const testId       = this.dataset.testId;
+      const endpoint     = this.dataset.endpoint;
 
-              try {
-                const response = await fetch(form.action, {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json'
-                  },
-                  body: JSON.stringify(payload)
-                });
+      const loadingEl    = this.querySelector('.loading-state');
+      const formContainer = this.querySelector('.form-container');
+      const errorEl      = this.querySelector('.error-state');
 
-                if (!response.ok) {
-                  throw new Error(`Server responded ${response.status}`);
-                }
+      loadingEl.style.display = 'block';
+      formContainer.style.display = 'none';
+      errorEl.style.display = 'none';
 
-                const result = await response.json();  // assuming it returns JSON-LD or similar
-
-                // Option A: Show result inline (e.g. in a new div after the form)
-                let resultDiv = form.parentElement.querySelector('.result-div');
-                if (!resultDiv) {
-                  resultDiv = document.createElement('div');
-                  resultDiv.className = 'result-div mt-3 p-3 bg-light border';
-                  form.parentElement.appendChild(resultDiv);
-                }
-                resultDiv.innerHTML = `<pre>${JSON.stringify(result, null, 2)}</pre>`;
-
-                // Option B: Open in new tab (mimics target="_blank" feel)
-                // window.open(URL.createObjectURL(new Blob([JSON.stringify(result, null, 2)], {type: 'application/json'})));
-
-                console.log('Assessment result:', result);
-
-              } catch (err) {
-                console.error('Error submitting assessment:', err);
-                alert('Failed to run the test: ' + err.message);
-              }
-            });
-          });
+      try {
+        const response = await fetch(openapiUrl, {
+          cache: 'no-cache',           // important — frequent changes
+          headers: { Accept: 'application/yaml, application/json' }
         });
-  </script>
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const text = await response.text();
+        let spec;
+
+        try {
+          spec = jsyaml.load(text);           // YAML first
+        } catch (yamlErr) {
+          try {
+            spec = JSON.parse(text);          // fallback to JSON
+          } catch {
+            throw new Error('Invalid OpenAPI format (not valid YAML/JSON)');
+          }
+        }
+
+        // === Minimal detection logic (same heuristics as before) ===
+        let mode = 'guid';          // default
+        let isAsync = false;
+        let uploadField = 'file';
+
+        // Look for relevant POST path (heuristic)
+        const paths = spec.paths || {};
+        let postOp = null;
+        for (const [pathKey, item] of Object.entries(paths)) {
+          if (pathKey.match(/assess|evaluate|test|run|execute|submit|algorithm|metric/i) && item.post) {
+            postOp = item.post;
+            break;
+          }
+        }
+
+        if (postOp) {
+          const responses = postOp.responses || {};
+
+          // Async check
+          const has202 = !!responses['202'] || Object.keys(responses).some(k => Number(k) === 202);
+          if (has202) {
+            const resp202 = responses['202'] || Object.values(responses).find(r => r?.['x-status']?.includes('202')); // fallback
+            if (resp202?.headers?.Location || resp202?.headers?.['location']) {
+              isAsync = true;
+            }
+          }
+
+          // File upload check
+          const reqBody = postOp.requestBody?.content || {};
+          if (reqBody['multipart/form-data']) {
+            const props = reqBody['multipart/form-data'].schema?.properties || {};
+            if (props.file || props.metadata || props.ro_crate) {
+              mode = 'metadata_file';
+              uploadField = props.file ? 'file' : (props.metadata ? 'metadata' : 'file');
+            }
+          }
+        }
+
+        // === Build form HTML ===
+        let formHtml = '';
+
+        if (mode === 'metadata_file') {
+          formHtml = `
+            <p class="text-info mb-2">
+              This test supports direct metadata upload.
+              ${isAsync ? 'Results provided via polling/ticket.' : ''}
+            </p>
+            <form action="/champion/test-execution-proxy" method="post" enctype="multipart/form-data">
+              <input type="hidden" name="endpoint" value="${endpoint}">
+              <input type="hidden" name="submission_mode" value="metadata_file">
+              <input type="hidden" name="test_identifier" value="${testId}">
+
+              <label for="metadata_file_${testId}">Upload metadata (JSON/JSON-LD)</label>
+              <input type="file" name="${uploadField}" id="metadata_file_${testId}" accept=".json,.jsonld" required>
+
+              <small class="form-text text-muted">Typically ro-crate-metadata.json</small>
+
+              <button type="submit" class="btn btn-primary mt-3">Submit Metadata</button>
+            </form>
+
+            ${isAsync ? '<p class="mt-3 small text-muted">After submission, poll the returned ticket URL for results.</p>' : ''}
+          `;
+        } else {
+          formHtml = `
+            <form action="/champion/test-execution-proxy" method="post">
+              <input type="hidden" name="endpoint" value="${endpoint}">
+              <input type="hidden" name="submission_mode" value="guid">
+
+              <label for="resource_identifier_${testId}">Resource Identifier / GUID</label>
+              <input type="text" name="resource_identifier" id="resource_identifier_${testId}"
+                     placeholder="e.g. https://example.org/dataset" required>
+
+              <button type="submit" class="btn btn-primary mt-3">Run Test</button>
+            </form>
+          `;
+        }
+
+        formContainer.innerHTML = formHtml;
+        formContainer.style.display = 'block';
+
+      } catch (err) {
+        console.error('OpenAPI fetch/parse error:', err);
+        errorEl.innerHTML = `Could not load API spec: ${err.message}. Using default GUID mode.`;
+        errorEl.style.display = 'block';
+
+        // Optional: still show fallback form
+        formContainer.innerHTML = `<!-- fallback form here if you want -->`;
+        formContainer.style.display = 'block';
+      } finally {
+        loadingEl.style.display = 'none';
+      }
+    });
+  });
+});
+</script>
 
 
   <style>

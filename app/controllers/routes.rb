@@ -90,34 +90,169 @@ module Champion
         end
       end
 
-      post '/champion/test-execution-proxy', provides: [:html, :json, 'application/ld+json'] do
-        if params['resource_identifier']
-          resource_identifier = params['resource_identifier']
-          endpoint = params['endpoint']
+      post '/champion/test-execution-proxy' do
+        endpoint = params[:endpoint]
+        halt 400, { error: 'Missing endpoint' }.to_json unless endpoint && endpoint.strip != ''
+
+        submission_mode = params[:submission_mode] || 'guid'
+
+        # ────────────────────────────────────────────────
+        # Prepare arguments for Champion::Core#proxy_test
+        # ────────────────────────────────────────────────
+
+        core = Champion::Core.new
+
+        if submission_mode == 'metadata_file'
+          # Multipart file upload path
+
+          file = params[:metadata_file] || params[:file] # Accept either name from your form
+          halt 400, { error: 'No metadata file uploaded' }.to_json unless file && file[:tempfile] && file[:filename]
+
+          # Basic validation: filename should end with .json, content-type json-ish
+          unless file[:filename].to_s.downcase.end_with?('.json') || file[:type] =~ /json/i
+            halt 400, { error: 'File should be a JSON file (e.g. ro-crate-metadata.json)' }.to_json
+          end
+
+          # Optional: read and validate JSON early (prevents sending invalid data upstream)
+          begin
+            metadata_content = file[:tempfile].read
+            JSON.parse(metadata_content)  # raises if not valid JSON
+            file[:tempfile].rewind        # important! rewind so RestClient can read it again
+          rescue JSON::ParserError
+            halt 400, { error: 'Uploaded file is not valid JSON' }.to_json
+          end
+
+          # Forward as multipart/form-data with the exact field name 'file'
+          payload = { file: file } # RestClient handles Tempfile → multipart upload automatically
+
+          headers = {
+            'Accept' => 'application/json, application/ld+json',
+            'User-Agent' => 'Champion-Test-Proxy/1.0'
+          }
+
+          # Forward Authorization if present (as per YAML: optional header for private mode)
+          if env['HTTP_AUTHORIZATION'] && env['HTTP_AUTHORIZATION'].strip != ''
+            headers['Authorization'] = env['HTTP_AUTHORIZATION']
+          end
+
+          begin
+            response = RestClient.post(
+              endpoint,
+              payload,
+              headers.merge(content_type: 'multipart/form-data') # RestClient adds boundary automatically
+            )
+            raw_output = response.body
+            status response.code
+          rescue RestClient::ExceptionWithResponse => e
+            raw_output = e.response.body || '{}'
+            status e.http_code || 502
+            # You can log e.response.headers[:location] here if 202
+          rescue StandardError => e
+            halt 500, { error: "Failed to submit to remote API: #{e.message}" }.to_json
+          end
         else
-          payload = JSON.parse(request.body.read)
-          resource_identifier = payload['resource_identifier']
-          endpoint = payload['endpoint']
+          # ────────────────────────────────────────────────
+          # Classic GUID / resource_identifier path
+          # ────────────────────────────────────────────────
+          resource_identifier = params[:resource_identifier]&.strip
+          unless resource_identifier && resource_identifier != ''
+            halt 400,
+                 { error: 'Missing resource_identifier' }.to_json
+          end
+
+          # Reuse the original method — this is the key part you pointed out
+          raw_output = core.proxy_test(
+            endpoint: endpoint,
+            resource_identifier: resource_identifier
+          )
         end
 
-        c = Champion::Core.new
-        warn "now testing #{resource_identifier} with endpoint #{endpoint}"
-        @result = c.proxy_test(endpoint: endpoint, resource_identifier: resource_identifier)
-        @testresult = Champion::TestResult.test_output_parser(output: @result) # Champion::TestResult object with all fields populated, including @graph with the RDF graph of the test execution result
-        unless @testresult.is_a?(Champion::TestResult)
-          halt erb(:error, locals: { message: "Test execution data not found or invalid #{@testresult.inspect}" })
-        end
+        # At this point we have raw_output (string) — same as original route
 
-        if request.accept?('text/html') || request.accept?('application/xhtml+xml')
-          content_type :html
-          halt erb :testresult
-        else
-          # Assume JSON/LD — most permissive path
-          content_type 'application/ld+json'
-          halt @result
+        # ────────────────────────────────────────────────
+        # Parse & prepare for view (same as original)
+        # ────────────────────────────────────────────────
+
+        begin
+          @result = raw_output
+          @testresult = Champion::TestResult.test_output_parser(output: @result)
+
+          raise 'Test execution data not found or invalid' unless @testresult.is_a?(Champion::TestResult)
+
+          # If we got here → parsing succeeded
+
+          # Decide response format
+          request.accept.each do |type|
+            case type.to_s
+            when %r{text/html} || %r{application/xhtml+xml}
+              content_type :html
+
+              # # Populate instance variables your :testresult ERB expects
+              # # (adjust names if your template uses different ones)
+              # @graph          = @testresult.graph          # assuming it has this
+              # #@test_execution = @testresult.execution # or find via @graph
+              # @test           = @testresult.test
+              # @test_result    = @testresult.result
+              # @result_value   = @testresult.result_value   # or however you access it
+
+              # If you still need the manual find logic as fallback:
+              # data = begin
+              #   JSON.parse(@result)
+              # rescue StandardError
+              #   {}
+              # end
+              # @test_execution ||= data.dig('@graph')&.find { |g| g['@type'] == 'ftr:TestExecutionActivity' }
+              # ... etc.
+
+              halt erb :testresult
+            when %r{application/json} || %r{application/ld+json} || %r{text/json}
+              content_type :json
+              halt @result # raw JSON-LD string
+
+            else
+              # fallback
+            end
+          end
+
+          # No acceptable type
+          error 406
+        rescue JSON::ParserError, StandardError => e
+          # This is where your "undefined method `value' for nil" was probably coming from
+          # → safer handling now
+          status 500
+          content_type :json
+          { error: "Result parsing failed: #{e.message}", raw_output: raw_output[0..500] }.to_json
         end
-        error 406
       end
+
+      # post '/champion/test-execution-proxy', provides: [:html, :json, 'application/ld+json'] do
+      #   if params['resource_identifier']
+      #     resource_identifier = params['resource_identifier']
+      #     endpoint = params['endpoint']
+      #   else
+      #     payload = JSON.parse(request.body.read)
+      #     resource_identifier = payload['resource_identifier']
+      #     endpoint = payload['endpoint']
+      #   end
+
+      #   c = Champion::Core.new
+      #   warn "now testing #{resource_identifier} with endpoint #{endpoint}"
+      #   @result = c.proxy_test(endpoint: endpoint, resource_identifier: resource_identifier)
+      #   @testresult = Champion::TestResult.test_output_parser(output: @result) # Champion::TestResult object with all fields populated, including @graph with the RDF graph of the test execution result
+      #   unless @testresult.is_a?(Champion::TestResult)
+      #     halt erb(:error, locals: { message: "Test execution data not found or invalid #{@testresult.inspect}" })
+      #   end
+
+      #   if request.accept?('text/html') || request.accept?('application/xhtml+xml')
+      #     content_type :html
+      #     halt erb :testresult
+      #   else
+      #     # Assume JSON/LD — most permissive path
+      #     content_type 'application/ld+json'
+      #     halt @result
+      #   end
+      #   error 406
+      # end
 
       # ###########################################  ALGORITHMS
       # ###########################################  ALGORITHMS

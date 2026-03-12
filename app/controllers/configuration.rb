@@ -61,7 +61,7 @@ module Configuration
   end
 
   # deprecated
-  def self.champion_repo
-    "#{GRAPHDB_PROTOCOL}://#{GRAPHDB_HOST}:#{GRAPHDB_PORT}/repositories/#{GRAPHDB_REPONAME}".freeze
-  end
+  # def self.champion_repo
+  #   "#{GRAPHDB_PROTOCOL}://#{GRAPHDB_HOST}:#{GRAPHDB_PORT}/repositories/#{GRAPHDB_REPONAME}".freeze
+  # end
 end

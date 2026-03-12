@@ -25,44 +25,6 @@ module Champion
     #   core = Champion::Core.new
     def initialize; end
 
-    # ################################# ASSESSMENTS
-    # ########################################################################
-
-    # Executes an assessment on a digital object using a specified test set.
-    # Note: The method assumes the setid is either a full URI or local identifier,
-    # and the API call should be verified in the application's routes.
-    #
-    # @param subject [String] The GUID of the digital object to assess.
-    # @param setid [String] The identifier of the test set to use.
-    # @return [String] A JSON-LD string representing the assessment results.
-    # @todo Verify whether setid is a full URI or local identifier and confirm API call in routes.
-    # @example
-    #   core = Champion::Core.new
-    #   result = core.run_assessment(subject: 'https://example.org/target/456', setid: 'test_set')
-    #   puts result
-    #
-    # DEPRECATED??
-    # def run_assessment(subject:, setid:)
-    #   results = []
-    #   warn "evaluating #{subject} on #{setid}"
-    #   set = get_sets(setid: setid)
-    #   warn 'point 1', set.inspect
-    #   return results if set.empty?
-
-    #   _graphid, setdef = set.first
-    #   setdef[:tests].each do |testid|
-    #     test, *_nada = get_tests(testid: testid) # returns an array of 1 element, so just get that into test
-    #     warn 'point 2', test.inspect
-    #     _id, testdef = test.first # there is only one, and it is guid => {features...}
-    #     warn 'point 3', testdef.inspect
-
-    #     results << run_test(guid: subject, testapi: testdef['api'])
-    #   end
-    #   # warn "RESULTS #{results}"
-    #   output = Champion::Output.new(setid: "#{CHAMP_HOST}/sets/#{setid}", subject: subject)
-    #   output.build_output(results: results) # returns jsonld
-    # end
-
     # Executes a benchmark assessment on a digital object by retrieving associated metrics
     # and their test endpoints, then running tests.
     # Note: Future improvements may include using DCAT profiles in Accept headers.
@@ -119,7 +81,7 @@ module Champion
       # metrics contains the Metric DOI from fairsharing.  Now lookip against FDP Index to get the tests
       # <http://semanticscience.org/resource/SIO_000233>
       # Define the remote SPARQL endpoint URL
-      fdp_url = 'https://tools.ostrails.eu/repositories/fdpindex-fdp'
+      fdp_url = Configuration.fdpindex_sparql
       # Create a SPARQL client instance
       client = SPARQL::Client.new(fdp_url)
       endpoints = []
@@ -167,7 +129,7 @@ module Champion
       SPARQL
 
       # Execute the query
-      warn "\n\n\n\nQUerY  is #{query}\n\n\n\n"
+      warn "\n\n\n\nQuery against #{fdp_url}  is \n#{query}\n\n\n\n"
       solutions = client.query(query)
       solutions.first[:endpoint].value # can be onlhy one
     end
@@ -211,30 +173,40 @@ module Champion
     def run_test(testapi:, guid:, testid:)
       warn "web api endpoint is at  #{testapi}"
       # testapi might be an external API!  So... be careful!
-      if testapi.match(/tests\.ostrails\.eu/)
-        # MUNGE IT TEMPORARILY!
-        # the asesss/test should really consume the name of the test, not the shortname
-        testname = if testapi.match(%r{.*/(\S+)/api})
-                     testapi.match(%r{.*/(\S+)/api})[1]
-                   else
-                     testapi.match(%r{.*/(\S+)/?$})[1]
-                   end
-        testurl = "https://tests.ostrails.eu/assess/test/#{testname}"
-      else
-        testurl = testapi
-      end
-
+      # if testapi.match(/tests\.ostrails\.eu/)
+      #   # MUNGE IT TEMPORARILY!
+      #   # the asesss/test should really consume the name of the test, not the shortname
+      #   testname = if testapi.match(%r{.*/(\S+)/api})
+      #                testapi.match(%r{.*/(\S+)/api})[1]
+      #              else
+      #                testapi.match(%r{.*/(\S+)/?$})[1]
+      #              end
+      #   testurl = "https://tests.ostrails.eu/assess/test/#{testname}"
+      # else
+      #   testurl = testapi
+      # end
+      testurl = testapi
       warn "POINT FINAL:  Test URL is #{testurl}"
       RestClient.log = 'stderr' # Enable logging
-      result = RestClient::Request.execute(
-        url: testurl,
-        method: :post,
-        payload: { 'resource_identifier' => guid }.to_json,
-        headers: {
-          'Content-Type' => 'application/json',
-          'Accept' => 'application/json'
-        }
-      )
+      begin
+        result = RestClient::Request.execute(
+          url: testurl,
+          method: :post,
+          payload: { 'resource_identifier' => guid }.to_json,
+          headers: {
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
+          }
+        )
+      rescue RestClient::ExceptionWithResponse => e
+        warn "Test Execution failed with status: #{e.response.code}"
+        warn "Error details: #{e.response.body}"
+        return JSON.parse({ error: "#{testurl} did not respond happily.  Are you sure the test is registered? #{e.message}" })
+      rescue StandardError => e
+        warn "Test Execution Unexpected error: #{e.message}"
+        warn "#{testurl} did not respond happily"
+        return JSON.parse({ error: "#{testurl} did not respond happily. Are you sure the test is registered? #{e.message}" })
+      end
       JSON.parse(result.body)
     end
 
@@ -324,10 +296,10 @@ EOQ
         warn 'Response body:'
         warn response.body # usually JSON-LD or assessment result
       rescue RestClient::ExceptionWithResponse => e
-        puts "Test Execution failed with status: #{e.response.code}"
-        puts "Error details: #{e.response.body}"
+        warn "Test Execution failed with status: #{e.response.code}"
+        warn "Error details: #{e.response.body}"
       rescue StandardError => e
-        puts "Test Execution Unexpected error: #{e.message}"
+        warn "Test Execution Unexpected error: #{e.message}"
       end
       response.body # pass JSON back to caller for further processing
     end
