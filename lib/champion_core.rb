@@ -201,11 +201,11 @@ module Champion
       rescue RestClient::ExceptionWithResponse => e
         warn "Test Execution failed with status: #{e.response.code}"
         warn "Error details: #{e.response.body}"
-        return JSON.parse({ error: "#{testurl} did not respond happily.  Are you sure the test is registered? #{e.message}" })
+        return JSON.parse({ error: "#{testurl} did not respond happily.  Are you sure the test is registered? #{e.message}" }.to_json)
       rescue StandardError => e
         warn "Test Execution Unexpected error: #{e.message}"
         warn "#{testurl} did not respond happily"
-        return JSON.parse({ error: "#{testurl} did not respond happily. Are you sure the test is registered? #{e.message}" })
+        return JSON.parse({ error: "#{testurl} did not respond happily. Are you sure the test is registered? #{e.message}" }.to_json)
       end
       JSON.parse(result.body)
     end
