@@ -57,9 +57,18 @@ module Champion
       #   # GET /champion/tests/
       #   # Returns HTML list or JSON/JSON-LD data
       get '/champion/tests/', provides: [:html, :json, 'application/ld+json'] do
+        keyword = params['keyword'] || nil
+
         c = Champion::Core.new
         @tests = c.get_tests # returns array of Champion::Test objects
-        # puts "Tests: #{@tests.inspect}"
+        if keyword
+          keyword = keyword.downcase
+          @tests = @tests.select do |test|
+            test.title&.downcase&.include?(keyword) ||
+              test.description&.downcase&.include?(keyword)
+          end
+          # puts "Tests: #{@tests.inspect}"
+        end
         case content_type
         when %r{text/html}
           halt erb :listtests_output, layout: :listtests_layout

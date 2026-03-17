@@ -180,6 +180,12 @@ document.addEventListener('DOMContentLoaded', () => {
           </pre>
         </div>
     </header>
+    <div class="code-block">
+      <form action="/champion/tests/" method=GET>
+        <p>Keyword Filter (one word, case-insensitive):<input type="text" name="keyword"/> </p>
+        <input type="submit" value="filter by keyword"/>
+      </form>
+    </div>
     <%= yield %>
   </div>
 </body>
