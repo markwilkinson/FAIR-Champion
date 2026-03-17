@@ -129,14 +129,15 @@ module Champion
       # triplify(contactid, schema.url, 'https://wilkinsonlab.info', g)
       # triplify(contactid, RDF.type, schema.ContactPoint, g)
 
-      triplify(subject, RDF.type, prov.Entity, g)
-      triplify(subject, dct.identifier, subject, g)
+      testedguidnode = 'urn:ostrails:testedidentiernode:' + SecureRandom.uuid
+
+      triplify(testedguidnode, RDF.type, prov.Entity, g)
+      triplify(testedguidnode, dct.identifier, subject, g, datatype: 'xsd:string')
 
       championexecution = "urn:fairchampionexecution:#{SecureRandom.uuid}"
       triplify(uniqueid, RDF::Vocab::PROV.wasGeneratedBy, championexecution, g)
       triplify(championexecution, RDF.type, ftr.TestExecutionActivity, g)
-      triplify(championexecution, prov.used, subject, g)
-      triplify(subject, RDF.type, prov.Entity, g)
+      triplify(championexecution, prov.used, testedguidnode, g)
       triplify(championexecution, schema.softwareVersion, OUTPUT_VERSION, g)
       # triplify(championexecution, schema.url, 'https://github.com/markwilkinson/FAIR-Champion', g)
 

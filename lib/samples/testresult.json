@@ -1,0 +1,111 @@
+{
+    "@context": {
+        "xsd": "http://www.w3.org/2001/XMLSchema#",
+        "prov": "http://www.w3.org/ns/prov#",
+        "dct": "http://purl.org/dc/terms/",
+        "dcat": "http://www.w3.org/ns/dcat#",
+        "ftr": "https://w3id.org/ftr#",
+        "sio": "http://semanticscience.org/resource/",
+        "schema": "http://schema.org/"
+    },
+    "@graph": [
+        {
+            "@id": "urn:ostrails:testexecutionactivity:246e2234-b218-40ca-afa7-db22534cb2aa",
+            "@type": "ftr:TestExecutionActivity",
+            "prov:wasAssociatedWith": {
+                "@id": "https://tests.ostrails.eu/tests/community_funding_information_registered"
+            },
+            "prov:used": {
+                "@id": "urn:ostrails:testexecutionactivity:guidentity:6c158b0e-db42-4e92-a446-ebc5d077358b"
+            }
+        },
+        {
+            "@id": "https://tests.ostrails.eu/tests/community_funding_information_registered",
+            "@type": [
+                "ftr:Test",
+                "schema:SoftwareApplication",
+                "dcat:DataService"
+            ],
+            "dct:identifier": "https://tests.ostrails.eu/tests/community_funding_information_registered",
+            "dct:title": {
+                "@language": "en",
+                "@value": "Funding information registered in DOI metadata"
+            },
+            "dct:description": {
+                "@language": "en",
+                "@value": "Test a DOI to determine if funder information is available in the datacite or crossref metadata"
+            },
+            "dcat:endpointDescription": {
+                "@id": "https://tests.ostrails.eu/tests/community_funding_information_registered"
+            },
+            "dcat:endpointURL": {
+                "@id": "https://tests.ostrails.eu/tests/community_funding_information_registered"
+            },
+            "dcat:version": {
+                "@language": "en",
+                "@value": "Hvst-1.5.0:Tst-0.0.1 OutputVersion:1.1.1"
+            },
+            "dct:license": {
+                "@id": "https://github.com/wilkinsonlab/FAIR-Core-Tests/blob/main/LICENSE"
+            },
+            "sio:SIO_000233": {
+                "@id": "https://w3id.org/fair-metrics/esrf/r1.2.fund.ttl"
+            }
+        },
+        {
+            "@id": "urn:ostrails:testexecutionactivity:guidentity:6c158b0e-db42-4e92-a446-ebc5d077358b",
+            "@type": "prov:Entity",
+            "dct:identifier": {
+                "@type": "xsd:string",
+                "@value": "10.1063/5.0095229"
+            }
+        },
+        {
+            "@id": "urn:fairtestoutput:b30cd9e8-c930-4b96-a6c5-26ea90960b12",
+            "prov:wasGeneratedBy": {
+                "@id": "urn:ostrails:testexecutionactivity:246e2234-b218-40ca-afa7-db22534cb2aa"
+            },
+            "@type": "ftr:TestResult",
+            "dct:identifier": {
+                "@id": "urn:fairtestoutput:b30cd9e8-c930-4b96-a6c5-26ea90960b12"
+            },
+            "dct:title": {
+                "@language": "en",
+                "@value": "Funding information registered in DOI metadata OUTPUT"
+            },
+            "dct:description": {
+                "@language": "en",
+                "@value": "OUTPUT OF Test a DOI to determine if funder information is available in the datacite or crossref metadata"
+            },
+            "dct:license": {
+                "@id": "https://creativecommons.org/publicdomain/zero/1.0/"
+            },
+            "prov:value": {
+                "@language": "en",
+                "@value": "pass"
+            },
+            "ftr:summary": {
+                "@language": "en",
+                "@value": ""
+            },
+            "prov:generatedAtTime": {
+                "@type": "xsd:date",
+                "@value": "2026-03-17T11:46:09+00:00"
+            },
+            "ftr:log": {
+                "@language": "en",
+                "@value": "INFO: TEST VERSION 'Hvst-1.5.0:Tst-0.0.1'\nINFO:  Found a DOI.\nINFO:  Attempting to resolve https://doi.org/10.1063/5.0095229 using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.\nINFO: following redirection using this header led to the following URL: https://api.crossref.org/v1/works/10.1063%2F5.0095229/transform.  Using the output from this URL for the next few tests...\nINFO: Link Header and Meta Link parsing complete.  Back in main thread.\nINFO: Found turtle text/turtle type of content when resolving https://doi.org/10.1063/5.0095229 using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.\nINFO: parsing as linked data. \nCRITICAL: Unable to find an RDF reader type that matches the content that was returned from resolution.  Here is a sample <http://dx.doi.org/10.1063/5.0095229>\n        <http://prismstandard.org/namespaces/basic/2.1/doi>\n     Please send your GUID to the dev team so we can investigate!\nINFO:  Attempting to resolve https://doi.org/10.1063/5.0095229 using HTTP Headers {\"Accept\"=>\"*/*\"}.\nWARN: Unable to resolve https://doi.org/10.1063/5.0095229 using HTTP Accept header {\"Accept\"=>\"*/*\"}.\nINFO:  DOI resolution captures content-negotiation before reaching final data owner.  Now re-attempting the full suite of content negotiation on final redirect URI https://api.crossref.org/v1/works/10.1063%2F5.0095229/transform.\nINFO: Found a URI.\nINFO:  Attempting to resolve https://api.crossref.org/v1/works/10.1063%2F5.0095229/transform using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.\nINFO: following redirection using this header led to the following URL: https://api.crossref.org/v1/works/10.1063%2F5.0095229/transform.  Using the output from this URL for the next few tests...\nINFO: Link Header and Meta Link parsing complete.  Back in main thread.\nINFO: Found turtle text/turtle type of content when resolving https://api.crossref.org/v1/works/10.1063%2F5.0095229/transform using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.\nINFO: parsing as linked data. \nCRITICAL: Unable to find an RDF reader type that matches the content that was returned from resolution.  Here is a sample <http://dx.doi.org/10.1063/5.0095229>\n        <http://prismstandard.org/namespaces/basic/2.1/doi>\n     Please send your GUID to the dev team so we can investigate!\nINFO:  Attempting to resolve https://api.crossref.org/v1/works/10.1063%2F5.0095229/transform using HTTP Headers text/xhtml,text/xml.\nWARN: Unable to resolve https://api.crossref.org/v1/works/10.1063%2F5.0095229/transform using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.\nINFO:  Attempting to resolve https://api.crossref.org/v1/works/10.1063%2F5.0095229/transform using HTTP Headers application/json.\nINFO: following redirection using this header led to the following URL: https://api.crossref.org/v1/works/10.1063%2F5.0095229/transform.  Using the output from this URL for the next few tests...\nINFO: Link Header and Meta Link parsing complete.  Back in main thread.\nINFO: Found json application/json type of content when resolving https://api.crossref.org/v1/works/10.1063%2F5.0095229/transform using HTTP Accept header {\"Accept\"=>\"application/json\"}.\nINFO: parsing as JSON. \nINFO:  Attempting to resolve https://api.crossref.org/v1/works/10.1063%2F5.0095229/transform using HTTP Headers 'Accept: */*'.\nWARN: Unable to resolve https://api.crossref.org/v1/works/10.1063%2F5.0095229/transform using HTTP Accept header {\"Accept\"=>\"*/*\"}.\nINFO: Found a non-DOI Handle.\nINFO:  Attempting to resolve https://doi.org/10.1063/5.0095229 using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.\nINFO: Found a URI.\nINFO:  Attempting to resolve https://doi.org/10.1063/5.0095229 using HTTP Headers {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.\nINFO: following redirection using this header led to the following URL: https://api.crossref.org/v1/works/10.1063%2F5.0095229/transform.  Using the output from this URL for the next few tests...\nINFO: Link Header and Meta Link parsing complete.  Back in main thread.\nINFO: Found turtle text/turtle type of content when resolving https://doi.org/10.1063/5.0095229 using HTTP Accept header {\"Accept\"=>\"text/turtle, application/ld+json, application/rdf+xml, text/xhtml+xml, application/n3, application/rdf+n3, application/turtle, application/x-turtle, text/n3, text/turtle, text/rdf+n3, text/rdf+turtle, application/n-triples\"}.\nINFO: parsing as linked data. \nCRITICAL: Unable to find an RDF reader type that matches the content that was returned from resolution.  Here is a sample <http://dx.doi.org/10.1063/5.0095229>\n        <http://prismstandard.org/namespaces/basic/2.1/doi>\n     Please send your GUID to the dev team so we can investigate!\nINFO:  Attempting to resolve https://doi.org/10.1063/5.0095229 using HTTP Headers text/xhtml,text/xml.\nWARN: Unable to resolve https://doi.org/10.1063/5.0095229 using HTTP Accept header {\"Accept\"=>\"text/xhtml,text/xml\"}.\nINFO:  Attempting to resolve https://doi.org/10.1063/5.0095229 using HTTP Headers application/json.\nINFO: following redirection using this header led to the following URL: https://api.crossref.org/v1/works/10.1063%2F5.0095229/transform.  Using the output from this URL for the next few tests...\nINFO: Link Header and Meta Link parsing complete.  Back in main thread.\nINFO: Found json application/json type of content when resolving https://doi.org/10.1063/5.0095229 using HTTP Accept header {\"Accept\"=>\"application/json\"}.\nINFO: parsing as JSON. \nINFO:  Attempting to resolve https://doi.org/10.1063/5.0095229 using HTTP Headers 'Accept: */*'.\nWARN: Unable to resolve https://doi.org/10.1063/5.0095229 using HTTP Accept header {\"Accept\"=>\"*/*\"}.\nINFO: END OF HARVESTING\nINFO: Now testing 10.1063/5.0095229 for funder information\nINFO: Now testing 10.1063/5.0095229 for registration agency\nINFO:  Finding DOI registration agency.\nINFO:  Attempting to resolve https://doi.org/doiRA/10.1063/5.0095229 using HTTP Headers {\"Accept\"=>\"*/*\"}.\nINFO:  parsing agency from response\nINFO: Agency is Crossref\nINFO: Checking for funding block\nINFO:  Looking for funding information\nINFO:  parsing funding info from response\nINFO:  funding info block found\nPASS: Funding block is found"
+            },
+            "ftr:completion": {
+                "@type": "xsd:int",
+                "@value": "100"
+            },
+            "ftr:outputFromTest": {
+                "@id": "https://tests.ostrails.eu/tests/community_funding_information_registered"
+            },
+            "ftr:assessmentTarget": {
+                "@id": "urn:ostrails:testexecutionactivity:guidentity:6c158b0e-db42-4e92-a446-ebc5d077358b"
+            }
+        }
+    ]
+}

@@ -562,10 +562,11 @@ class Algorithm
     graph = RDF::Graph.new
     graph << RDF::Reader.for(format).new(resultset)
     ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
+    prov = RDF::Vocab::PROV
 
     solutions = RDF::Query.execute(graph) do
-      pattern [:result, RDF.type, ftr.TestResultSet]
-      pattern [:result, ftr.assessmentTarget, :target]
+      pattern [:result, RDF.type, ftr.TestExecutionActivity]
+      pattern [:result, prov.used, :target]
       # pattern [:target, RDF.type, prov.Entity]
       pattern [:target, RDF::Vocab::DC.identifier, :testedguid]
     end
