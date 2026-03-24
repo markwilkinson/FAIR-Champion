@@ -383,9 +383,24 @@ module Champion
       #   # POST /champion/assess/algorithm
       #   # Form data: calculation_uri=https://docs.google.com/spreadsheets/d/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w
       post '/champion/assess/algorithm' do
-        calculation_uri = params['calculation_uri']
-        abort 'no calc uri' unless calculation_uri
-        algoid = calculation_uri.match(%r{/(\w/[^/]+)})[1]
+        if request.content_type == 'application/json'
+          begin
+            body = request.body.read # to see it!
+            body = JSON.parse(body)
+            if body.is_a?(Hash) && body['calculation_uri']
+              algoid = body['calculation_uri']
+            else
+              error 406, 'invalid content'
+            end
+          rescue JSON::ParserError => e
+            render_error(400, "Invalid JSON body before rewrite #{body}: #{e.message}")
+          end
+        elsif params['calculation_uri']
+          algoid = params['calculation_uri']
+        else
+          error 406, 'Invalid content'
+        end
+        algoid = algoid.match(%r{/(\w/[^/]+)})[1] # e.g. /d/asfjkh2w31qo7yhesfdaiufhqliwuhe
         new_env = request.env.merge('PATH_INFO' => "/champion/assess/algorithm/#{algoid}")
         call(new_env)
       end
@@ -395,6 +410,7 @@ module Champion
       # @return [String] The OpenAPI specification in JSON format.
       # @example
       #   # GET /champion/assess/algorithm/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w
+
       get '/champion/assess/algorithm/*', provides: [:json] do
         algorithmid = params[:splat].first
         content_type :json
@@ -428,30 +444,32 @@ module Champion
           render_error(404,
                        'Need valid algorithm id (in the URL, and already registered in the OSTrails Index) is required')
         end
-
+        warn "scoringfunction #{scoringfunction}"
         guid = nil
         resultset = nil
+        request.body.rewind # resets the IO cursor to the beginning because it might be a path rewrite and already read
         if request.content_type == 'application/json'
           begin
-            body = JSON.parse(request.body.read)
+            body = request.body.read # to see it!
+            body = JSON.parse(body)
             if body.is_a?(Hash) && (body['guid'] || body['resultset'])
-              guid = body['guid']
+              guid = body['guid'].strip
               resultset = body['resultset']
             else
               resultset = body
             end
           rescue JSON::ParserError => e
-            render_error(400, "Invalid JSON: #{e.message}")
+            render_error(400, "Invalid JSON algo post #{body}: #{e.message}")
           end
         else
-          guid = params[:guid]
+          guid = params[:guid].strip
           resultset = params[:resultset]
           if params[:file] && !params[:file].empty? && params[:file][:tempfile]
             begin
               resultset ||= params[:file][:tempfile].read
               JSON.parse(resultset)
             rescue JSON::ParserError => e
-              render_error(400, "Invalid JSON in uploaded file: #{e.message}")
+              render_error(400, "Invalid JSON file upload in uploaded file: #{e.message}")
             end
           end
         end

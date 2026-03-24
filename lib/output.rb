@@ -90,7 +90,7 @@ module Champion
     def initialize(subject:, benchmarkid:, description: 'Results of the execution of a Benchmark', title: 'FAIR Champion output', version: '0.0.1', summary: 'Results of the execution of a Benchmark',
                    license: 'https://creativecommons.org/licenses/by/4.0/', score: '')
       @score = score
-      @subject = subject
+      @subject = subject # the thing that was tested
       @benchmarkid = benchmarkid
       @uniqueid = "urn:fairchampionoutput:#{SecureRandom.uuid}"
       @title = title
@@ -129,10 +129,12 @@ module Champion
       # triplify(contactid, schema.url, 'https://wilkinsonlab.info', g)
       # triplify(contactid, RDF.type, schema.ContactPoint, g)
 
-      testedguidnode = 'urn:ostrails:testedidentiernode:' + SecureRandom.uuid
+      testedguidnode = 'urn:ostrails:testedidentifiernode:resultset:' + SecureRandom.uuid
 
       triplify(testedguidnode, RDF.type, prov.Entity, g)
       triplify(testedguidnode, dct.identifier, subject, g, datatype: 'xsd:string')
+
+      triplify(uniqueid, ftr.assessmentTarget, testedguidnode, g)
 
       championexecution = "urn:fairchampionexecution:#{SecureRandom.uuid}"
       triplify(uniqueid, RDF::Vocab::PROV.wasGeneratedBy, championexecution, g)
@@ -151,7 +153,6 @@ module Champion
       # triplify(tid, RDF.type, RDF::Vocab::PROV.Entity, g)
       # triplify(tid, schema.identifier, subject, g)
       # triplify(tid, schema.url, subject, g) if subject =~ /^https?\:\/\//
-      triplify(uniqueid, ftr.assessmentTarget, subject, g)
 
       # g.dump(:jsonld)
       w = RDF::Writer.for(:jsonld)
