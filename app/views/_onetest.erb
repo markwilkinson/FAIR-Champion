@@ -31,9 +31,36 @@
           <td><a href="<%= test.endpoint %>" target="_blank"><%= test.endpoint %></a></td>
         </tr>
         <tr>
-          <th class="bg-gray-200 text-left">In Dimension</th>
-          <td><a href="<%= test.dimension&.to_s %>" target="_blank"><%= test.dimension&.to_s %></a></td>
+          <th class="bg-gray-200 text-left">Applicable to Digital Object Type</th>
+          <td>
+            <% if test.objects&.any? %>
+              <%= test.objects.map { |item|
+                url = item.to_s
+                escaped_url   = url.gsub('&', '&amp;').gsub('"', '&quot;').gsub('<', '&lt;').gsub('>', '&gt;')
+                escaped_label = url.gsub('&', '&amp;').gsub('<', '&lt;').gsub('>', '&gt;')
+                "<a href=\"#{escaped_url}\" target=\"_blank\" rel=\"noopener noreferrer\">#{escaped_label}</a>"
+              }.join(', ') %>
+            <% else %>
+              —
+            <% end %>
+          </td>
         </tr>
+
+        <tr>
+          <th class="bg-gray-200 text-left">Applicable to Scholarly Domain</th>
+          <td>
+            <% if test.domain&.any? %>
+              <%= test.domain.map { |item|
+                url = item.to_s
+                escaped_url   = url.gsub('&', '&amp;').gsub('"', '&quot;').gsub('<', '&lt;').gsub('>', '&gt;')
+                escaped_label = url.gsub('&', '&amp;').gsub('<', '&lt;').gsub('>', '&gt;')
+                "<a href=\"#{escaped_url}\" target=\"_blank\" rel=\"noopener noreferrer\">#{escaped_label}</a>"
+              }.join(', ') %>
+            <% else %>
+              —
+            <% end %>
+          </td>
+        </tr>        
         <tr>
           <th class="bg-gray-200 text-left">Implementation of Metric</th>
           <td><a href="<%= test.benchmark_or_metric&.to_s %>" target="_blank"><%= test.benchmark_or_metric&.to_s %></a></td>

@@ -72,8 +72,22 @@ module Champion
         case content_type
         when %r{text/html}
           halt erb :listtests_output, layout: :listtests_layout
+        when %r{application/json}
+          jsons = @tests.map do |obj|
+            # warn obj.class
+            { identifier: obj.identifier,
+              title: obj.title,
+              description: obj.description,
+              endpoint: obj.endpoint,
+              openapi: obj.openapi,
+              dimension: obj.dimension,
+              objects: obj.objects,
+              domain: obj.domain,
+              benchmark_or_metric: obj.benchmark_or_metric }
+          end.to_json
+          halt jsons
         else
-          halt @tests.to_json
+          error 406
         end
       end
 

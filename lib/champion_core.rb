@@ -232,11 +232,10 @@ module Champion
       testsquery = <<EOQ
       PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
       PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-      PREFIX dqv: <http://www.w3.org/ns/dqv#>
       PREFIX dct: <http://purl.org/dc/terms/>
       PREFIX dcat: <http://www.w3.org/ns/dcat#>
       PREFIX sio: <http://semanticscience.org/resource/>
-      PREFIX dpv: <http://www.w3.org/ns/dpv#>
+      PREFIX dpv: <https://w3id.org/dpv#>
       PREFIX ftr: <https://w3id.org/ftr#>
       SELECT distinct ?identifier ?title ?description ?endpoint ?openapi ?dimension ?objects ?domain ?benchmark_or_metric WHERE {
         ?sub a <https://w3id.org/ftr#Test> ;
@@ -245,7 +244,7 @@ module Champion
             dct:identifier ?identifier .
             OPTIONAL {?sub dcat:endpointDescription ?openapi }
             OPTIONAL {?sub dcat:endpointURL ?endpoint }
-            OPTIONAL {?sub dqv:inDimension ?dimension }
+            # OPTIONAL {?sub dpv:inDimension ?dimension }
             OPTIONAL {?sub dpv:isApplicableFor ?objects }
             OPTIONAL {?sub ftr:applicationArea ?domain  }
             OPTIONAL {?sub sio:SIO_000233 ?benchmark_or_metric  }  # implementation of
@@ -256,22 +255,49 @@ EOQ
 
       results.select! { |res| res[:identifier].to_s =~ /#{testid}/ } if testid
 
-      tests = []
-      results.map do |solution|
-        tests << Champion::Test.new(
-          identifier: solution[:identifier].to_s,
-          title: solution[:title].to_s,
-          description: solution[:description].to_s,
-          endpoint: solution[:endpoint].to_s,
-          openapi: solution[:openapi].to_s,
-          dimension: solution[:dimension].to_s,
-          objects: solution[:objects].to_s,
-          domain: solution[:domain].to_s,
-          benchmark_or_metric: solution[:benchmark_or_metric].to_s
+      tests_by_id = Hash.new do |h, k|
+        h[k] = {
+          title: nil,
+          description: nil,
+          endpoint: nil,
+          openapi: nil,
+          # dimension: nil,
+          objects: [],
+          domain: [],
+          benchmark_or_metric: nil
+        }
+      end
+
+      results.each do |solution|
+        id = solution[:identifier].to_s
+        entry = tests_by_id[id]
+
+        # Single-valued – keep first non-nil value
+        entry[:title]       ||= solution[:title]&.to_s
+        entry[:description] ||= solution[:description]&.to_s
+        entry[:endpoint]    ||= solution[:endpoint]&.to_s
+        entry[:openapi]     ||= solution[:openapi]&.to_s
+        entry[:dimension]   ||= solution[:dimension]&.to_s
+        entry[:benchmark_or_metric] ||= solution[:benchmark_or_metric]&.to_s
+        # Multi-valued – collect unique values
+        entry[:objects] << solution[:objects]&.to_s   if solution[:objects]
+        entry[:domain]  << solution[:domain]&.to_s    if solution[:domain]
+      end
+
+      # build Champion::Test objects
+      tests_by_id.map do |id, data|
+        Champion::Test.new(
+          identifier: id,
+          title: data[:title],
+          description: data[:description],
+          endpoint: data[:endpoint],
+          openapi: data[:openapi],
+          dimension: data[:dimension],
+          objects: data[:objects].to_a, # or .sort, .join(", "), etc.
+          domain: data[:domain].to_a, # same
+          benchmark_or_metric: data[:benchmark_or_metric]
         )
       end
-      tests
-      # warn alltests.to_json
     end
 
     def proxy_test(endpoint:, resource_identifier:)
