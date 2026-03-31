@@ -8,6 +8,7 @@
     <% if guidance %> <!-- guidance might not exist if all tests passed -->
       <td class="list-group-item p-2">
         <% guidance.each do |g| %>
+          <% next unless g and g.is_a? Array %>
           <%= g[1] %>. <a href="<%= g[0] %>">More Information</a><br/><br> 
         <% end %>
       </td>

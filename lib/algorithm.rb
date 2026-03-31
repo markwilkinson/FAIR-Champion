@@ -8,6 +8,8 @@ require 'rest-client'
 require 'sparql/client' # doesn't exist apparently
 require 'linkeddata'
 require 'uri'
+require 'dentaku'
+
 require_relative 'dcat_extractor'
 
 class JSON::Ext::Generator::State
@@ -245,7 +247,7 @@ class Algorithm
     end
 
     # Now get the Tests block
-    test_csv = csv[empty_line_indices[1] + 1...empty_line_indices[2]].join # the first empty line is below the template  version, so we ignore it
+    test_csv = csv[(empty_line_indices[1] + 1)...empty_line_indices[2]].join # the first empty line is below the template  version, so we ignore it
     csv_data = CSV.parse(test_csv, headers: true)
     warn "\n\nTHE TEST DATA IS #{csv_data}\n\n"
 
@@ -492,7 +494,6 @@ class Algorithm
     results
   end
 
-  # Stub for test response parsing (to be implemented in your existing codebase)
   def parse_single_test_response(resultset:, testid:)
     # warn 'GRAPH:', graph.dump(:turtle), "\n\n"
     # <urn:ostrails:testexecutionactivity:42c79dfe-fc9a-40db-84b6-6a3e69b8afab> a <https://w3id.org/ftr#TestExecutionActivity>;
@@ -506,7 +507,7 @@ class Algorithm
     ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
     test_uri = RDF::URI.new(testid)
 
-    solutions = RDF::Query.execute(resultsetgraph) do
+    solutions = RDF::Query.execute(@resultsetgraph) do
       pattern [:execution, RDF.type, ftr.TestExecutionActivity]
       pattern [:execution, prov.wasAssociatedWith, test_uri] # <-- THIS FILTERS TO THE CORRECT TEST
       pattern [:result, prov.wasGeneratedBy, :execution]
@@ -598,6 +599,7 @@ class Algorithm
       # }
 
       formula = condition[:formula]
+      variables = {}
       @tests.each do |test|
         #         {
         #   reference: row['Test Reference'],  # e.g. T1
@@ -609,11 +611,21 @@ class Algorithm
         #   indeterminate_weight: row['Indeterminate Weight'].to_f
         # }
         result = test_results[test[:reference]]
-        formula.gsub!(test[:reference], result[:weight].to_s)
+        variables.merge!(test[:reference] => result[:weight].to_s) # e.g. "T1" => 10
       end
+
       begin
+        calculator = Dentaku::Calculator.new
         # Evaluate the formula (e.g., "A1 + B1 > 1.0")
-        is_met = eval(formula)
+        # test_values is a hash like { "T1" => 7, "T2" => 5, "T3" => true, ... }
+        warn "testing #{formula} with variables #{variables.inspect}"
+        is_met = calculator.evaluate(formula, variables)
+      rescue Dentaku::UnboundVariableError, Dentaku::ParseError, Dentaku::ZeroDivisionError => e
+        # Handle gracefully for user feedback
+        narratives << "Invalid formula #{formula}: #{e.message}"
+      end
+
+      begin
         # I DON'T LIKE THIS... it should be a hash to ensure alignment of narrative with guidance
         # TODO
         narratives << if is_met
@@ -627,32 +639,38 @@ class Algorithm
                        parse_input_string(condition[:guidance]) # add guidance block [URL, string] in case of failure
                      end
       rescue StandardError => e
-        narratives << "Problem solving for #{formula} #{e}; "
+        narratives << "There was a problem solving for #{formula} with variables #{variables.inspect} #{e}; "
       end
     end
     [narratives, guidances]
   end
 
   def parse_input_string(input_string)
+    return [nil, nil] unless input_string
+
     # Remove outer brackets
-    content = input_string.strip[1..-2]
+    begin
+      content = input_string.strip[1..-2]
 
-    # Regex to match [url, "title"] pairs
-    pattern = %r{\[(https?://[^,\]]+),\s*"([^"]*)"\]}
+      # Regex to match [url, "title"] pairs
+      pattern = %r{\[(https?://[^,\]]+),\s*"([^"]*)"\]}
 
-    # Find all matches
-    matches = content.scan(pattern)
+      # Find all matches
+      matches = content.scan(pattern)
 
-    result = []
-    matches.each do |url, title|
-      # Validate URL
-      if valid_url?(url.strip)
-        result << [url.strip, title.strip]
-      else
-        puts "Skipping invalid URL: #{url}"
+      result = []
+      matches.each do |url, title|
+        # Validate URL
+        if valid_url?(url.strip)
+          result << [url.strip, title.strip]
+        else
+          puts "Skipping invalid URL: #{url}"
+          result << ['', 'malformed guidance string, unable to parse']
+        end
       end
+    rescue StandardError
+      result << ['', 'malformed guidance string, unable to parse'] # if there's an error parsing the guidance, we don't want to break the whole algorithm, so we just return a placeholder guidance
     end
-
     result
   end
 

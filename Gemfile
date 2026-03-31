@@ -61,3 +61,5 @@ gem 'dotenv', '~> 3.1'
 gem 'uri', '~> 1.0'
 
 gem 'json_pure', '~> 2.8'
+
+gem "dentaku", "~> 3.5"
