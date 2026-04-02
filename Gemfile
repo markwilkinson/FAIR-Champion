@@ -4,7 +4,6 @@ source 'https://rubygems.org'
 
 # Specify your gem's dependencies in apples-tests.gemspec
 gemspec
-ruby '~> 3.2'
 gem 'cgi', '~> 0.4.1'
 gem 'csv'
 gem 'erb', '~> 4.0'
