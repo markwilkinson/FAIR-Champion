@@ -113,9 +113,9 @@ document.addEventListener('DOMContentLoaded', () => {
               <label for="metadata_file_${testId}">Upload metadata (JSON/JSON-LD)</label>
               <input type="file" name="${uploadField}" id="metadata_file_${testId}" accept=".json,.jsonld" required>
 
-              <small class="form-text text-muted">Typically ro-crate-metadata.json</small>
+              <small class="form-text text-muted">Typically ro-crate-metadata.json or Ontology URL</small>
 
-              <button type="submit" class="btn btn-primary mt-3">Submit Metadata</button>
+              <button type="submit" class="submit-link">Submit Metadata</button>
             </form>
 
             ${isAsync ? '<p class="mt-3 small text-muted">After submission, poll the returned ticket URL for results.</p>' : ''}
@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <input type="text" name="resource_identifier" id="resource_identifier_${testId}"
                      placeholder="e.g. https://example.org/dataset" required>
 
-              <button type="submit" class="btn btn-primary mt-3">Run Test</button>
+              <button type="submit" class="submit-link">Run Test</button>
             </form>
           `;
         }

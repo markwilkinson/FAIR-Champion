@@ -1,9 +1,57 @@
 
 <div class="wide-container">
   <div class="form-card">
-    <h2 class="mb-3">
-      <a href="<%= test.identifier %>" class="submit-link" target="_blank"><%= test.title %></a>
-    </h2>
+
+<details id="exec-details-<%= test.identifier %>"
+         data-openapi-url="<%= test.openapi %>"
+         data-test-id="<%= test.identifier %>"
+         data-endpoint="<%= test.endpoint %>"
+         class="execute-details mb-3">
+      <summary  class="submit-link"><%= test.title %></summary>
+
+
+      <table class="table" style="width: 100%;">
+        <tr>      
+          <td colspan="2">
+            <div class="loading-state mt-3" style="display: none;">
+              <p>Loading API specification...</p>
+              <!-- optional spinner -->
+              <div class="spinner-border text-primary" role="status"></div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <div class="form-container mt-3" style="display: none;">
+              <!-- The appropriate form will be injected here via JS -->
+            </div>
+                      <!-- Default/fallback form (shown if JS disabled or fetch fails) -->
+            <noscript>
+            <p class="text-muted">JavaScript is disabled — using default GUID submission.</p>
+            <form action="/champion/test-execution-proxy" method="post">
+              <input type="hidden" name="endpoint" value="<%= test.endpoint %>">
+              <label for="resource_identifier_<%= test.identifier %>">Resource Identifier</label>
+              <input type="text" name="resource_identifier" id="resource_identifier_<%= test.identifier %>" 
+                    placeholder="e.g., https://example.org/dataset">
+              <input type="submit" value="Test it">
+            </form>
+            </noscript>
+
+          </td>
+        </tr>
+        <tr>
+
+          <th>Error messages will appear here:</th>
+          <td>
+            <div class="error-state mt-3 text-danger" style="display: none;">
+              <!-- Error message injected here -->
+            </div>
+          </td>
+        </tr>
+          
+        </tr>
+      </table>
+    </details>
     <p class="mb-3"><%= test.description %></p>
     <p class="mb-3">
       <a href="<%= test.openapi %>" class="submit-link" target="_blank">API Definition</a>
@@ -68,38 +116,6 @@
       </table>
     </details>
 
-    <details id="exec-details-<%= test.identifier %>" 
-             data-openapi-url="<%= test.openapi %>"
-             data-test-id="<%= test.identifier %>"
-             data-endpoint="<%= test.endpoint %>"
-             class="execute-details">
-      <summary>Execute Test</summary>
 
-      <div class="loading-state mt-3" style="display: none;">
-        <p>Loading API specification...</p>
-        <!-- optional spinner -->
-        <div class="spinner-border text-primary" role="status"></div>
-      </div>
-
-      <div class="form-container mt-3" style="display: none;">
-        <!-- The appropriate form will be injected here via JS -->
-      </div>
-
-      <div class="error-state mt-3 text-danger" style="display: none;">
-        <!-- Error message injected here -->
-      </div>
-
-      <!-- Default/fallback form (shown if JS disabled or fetch fails) -->
-      <noscript>
-        <p class="text-muted">JavaScript is disabled — using default GUID submission.</p>
-        <form action="/champion/test-execution-proxy" method="post">
-          <input type="hidden" name="endpoint" value="<%= test.endpoint %>">
-          <label for="resource_identifier_<%= test.identifier %>">Resource Identifier</label>
-          <input type="text" name="resource_identifier" id="resource_identifier_<%= test.identifier %>" 
-                 placeholder="e.g., https://example.org/dataset">
-          <input type="submit" value="Test it">
-        </form>
-      </noscript>
-    </details>
   </div>
 </div>

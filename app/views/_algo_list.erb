@@ -1,12 +1,8 @@
 <% @list.each do |data| %>
 <div class="form-card">
-  <h2 class="mb-3">
-    <a href="<%= data[:identifier] %>" class="submit-link"><%= data[:title] %></a>
-  </h2>
-  <p class="mb-3"><%= data[:description] %></p>
 
   <details class="mb-3">
-    <summary>Additional Details</summary>
+    <summary class="submit-link"><%= data[:title] %></summary>
     <table class="table" style="width: 100%;">
       <tr>
         <th class="bg-gray-200 text-left">Identifier</th>
@@ -86,5 +82,7 @@
       </tr>
     </table>
   </details>
+  <p class="mb-3"><%= data[:description] %></p>
+
 </div>
 <% end %>
