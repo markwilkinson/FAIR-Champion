@@ -183,6 +183,7 @@ class Algorithm
     testedguid = extract_target_from_resultset
 
     test_results = process_resultset
+    warn "\n\n\nTEST RESULTS ARE #{test_results.inspect}\n\n\n"
     narratives, guidances = evaluate_conditions(test_results)
     {
       metadata: metadata,
@@ -473,9 +474,10 @@ class Algorithm
 
     results = {}
     @tests.each do |test| # the tests defined in the algorithm
-      passfail = parse_single_test_response(resultset: @resultset, testid: test[:name]) # extract result for THAT test from the restul-set
+      passfail, log = parse_single_test_response(resultset: @resultset, testid: test[:name]) # extract result for THAT test from the restul-set
       results[test[:reference]] = if passfail # if there's a value, then the test existed
                                     {
+                                      log: log,
                                       result: passfail,
                                       weight: case passfail
                                               when 'pass' then test[:pass_weight]
@@ -486,6 +488,7 @@ class Algorithm
                                     }
                                   else # the resultset didn't contain that test... so we will give it an "indeterminate"
                                     {
+                                      log: log,
                                       result: 'indeterminate (result data not found)',
                                       weight: test[:indeterminate_weight]
                                     }
@@ -531,7 +534,22 @@ class Algorithm
       warn 'Warning: Multiple scores found. Returning only the first one.'
     end
 
-    passfail.first
+    log = 'no log found'
+    begin
+      # LOG is optional, but if it exists, it can be helpful for debugging, so we add it to the metadata of the test result
+      logsolutions = RDF::Query.execute(@resultsetgraph) do
+        pattern [:execution, RDF.type, ftr.TestExecutionActivity]
+        pattern [:execution, prov.wasAssociatedWith, test_uri] # <-- THIS FILTERS TO THE CORRECT TEST
+        pattern [:result, prov.wasGeneratedBy, :execution]
+        pattern [:result, RDF.type, ftr.TestResult]
+        pattern [:result, ftr.log, :log]
+      end
+      log = logsolutions.first[:log].to_s
+    rescue StandardError
+      warn 'no log found'
+    end
+
+    [passfail.first, log]
   end
 
   # def extract_tests_from_resultset

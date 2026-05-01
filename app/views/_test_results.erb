@@ -5,14 +5,43 @@
       <th class="p-2 border text-left">Test ID</th>
       <th class="p-2 border text-left">Result</th>
       <th class="p-2 border text-left">Weight</th>
+      <th class="p-2 border text-left">Log</th>
     </tr>
   </thead>
   <tbody>
     <% test_results.each do |id, data| %>
+      <% collapse_id = "logCollapse_#{id.to_s.gsub(/[^a-zA-Z0-9]/, '_')}" %>
       <tr>
         <td class="p-2 border"><%= id %></td>
         <td class="p-2 border"><%= data[:result] %></td>
         <td class="p-2 border"><%= data[:weight] %></td>
+        <td class="p-2 border" style="font-family: 'Courier New', monospace; font-size: 50%">
+                <!-- Collapsible Log Section -->
+          <div class="mt-3">
+            <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#<%= collapse_id %>" aria-expanded="false" aria-controls="<%= collapse_id %>">
+              Toggle Log
+            </button>
+            <div class="collapse mt-2" id="<%= collapse_id %>">
+              <div class="card card-body">
+                <div style="font-family: 'Courier New', monospace; font-size: 100%">
+                  <% data[:log].split("\n").each do |line| %>
+                    <% if line.start_with?('WARN') %>
+                      <span style="color: #ffcc00;"><%= line %></span><br/>
+                    <% elsif line.start_with?('CRITICAL') %>
+                      <span style="color: #ff7700;"><%= line %></span><br/>
+                    <% elsif line.start_with?('FAILURE') %>
+                      <span style="color: #ff0000;"><%= line %></span><br/>
+                    <% elsif line.start_with?('SUCCESS') or line.start_with?('PASS') %>
+                      <span style="color: #00cc00;"><%= line %></span><br/>
+                    <% else %>
+                      <%= line %><br/>
+                    <% end %>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </td>
       </tr>
     <% end %>
   </tbody>

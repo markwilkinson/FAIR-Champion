@@ -25,6 +25,11 @@ module Champion
     #   core = Champion::Core.new
     def initialize; end
 
+    # NOTE: THAT BENCHMARK ASSESSMENTS ARE NEVER USED ANYMORE!!
+    # NOTE THAT BENCHMARK ASSESSMENTS ARE NEVER USED ANYMORE!!
+    # NOTE THAT BENCHMARK ASSESSMENTS ARE NEVER USED ANYMORE!!
+    # NOTE THAT BENCHMARK ASSESSMENTS ARE NEVER USED ANYMORE!!
+    # NOTE THAT BENCHMARK ASSESSMENTS ARE NEVER USED ANYMORE!!
     # Executes a benchmark assessment on a digital object by retrieving associated metrics
     # and their test endpoints, then running tests.
     # Note: Future improvements may include using DCAT profiles in Accept headers.
@@ -69,6 +74,11 @@ module Champion
       execute_on_endpoints(subject: subject, endpoints: endpointurls, bmid: bmid)
     end
 
+    # NOTE: THAT BENCHMARK ASSESSMENTS ARE NEVER USED ANYMORE!!
+    # NOTE THAT BENCHMARK ASSESSMENTS ARE NEVER USED ANYMORE!!
+    # NOTE THAT BENCHMARK ASSESSMENTS ARE NEVER USED ANYMORE!!
+    # NOTE THAT BENCHMARK ASSESSMENTS ARE NEVER USED ANYMORE!!
+    # NOTE THAT BENCHMARK ASSESSMENTS ARE NEVER USED ANYMORE!!
     # Retrieves test endpoints associated with a given metric from the FDP index.
     #
     # @param metric [String] The URI of the metric (e.g., a DOI from FAIRsharing).
@@ -105,6 +115,11 @@ module Champion
       endpoints
     end
 
+    # NOTE: THAT BENCHMARK ASSESSMENTS ARE NEVER USED ANYMORE!!
+    # NOTE THAT BENCHMARK ASSESSMENTS ARE NEVER USED ANYMORE!!
+    # NOTE THAT BENCHMARK ASSESSMENTS ARE NEVER USED ANYMORE!!
+    # NOTE THAT BENCHMARK ASSESSMENTS ARE NEVER USED ANYMORE!!
+    # NOTE THAT BENCHMARK ASSESSMENTS ARE NEVER USED ANYMORE!!
     # Retrieves the endpoint URL for a specific test ID from the FDP index.
     # Note: Consider retrieving directly from DCAT instead of the registry in the future.
     #
@@ -134,6 +149,10 @@ module Champion
       solutions.first[:endpoint].value # can be onlhy one
     end
 
+    #  THIS IS CALLED BY ALGORITHM!
+    #  THIS IS CALLED BY ALGORITHM!
+    #  THIS IS CALLED BY ALGORITHM!
+    #  THIS IS CALLED BY ALGORITHM!
     # Executes tests on multiple endpoints and generates a JSON-LD result set.
     #
     # @param subject [String] The GUID of the digital object to assess.
@@ -159,6 +178,11 @@ module Champion
       output.build_output(results: results) # returns jsonld
     end
 
+    #  THIS IS CALLED BY ALGORITHM via CORE!
+    #  THIS IS CALLED BY ALGORITHM!
+    #  THIS IS CALLED BY ALGORITHM!
+    #  THIS IS CALLED BY ALGORITHM!
+    #  THIS IS CALLED BY ALGORITHM!
     # Runs a single test against a test API endpoint.
     # Note: The test API URL is derived from the testapi parameter, which is temporarily munged to extract the test name.
     #
@@ -172,19 +196,6 @@ module Champion
     #   puts result
     def run_test(testapi:, guid:, testid:)
       warn "web api endpoint is at  #{testapi}"
-      # testapi might be an external API!  So... be careful!
-      # if testapi.match(/tests\.ostrails\.eu/)
-      #   # MUNGE IT TEMPORARILY!
-      #   # the asesss/test should really consume the name of the test, not the shortname
-      #   testname = if testapi.match(%r{.*/(\S+)/api})
-      #                testapi.match(%r{.*/(\S+)/api})[1]
-      #              else
-      #                testapi.match(%r{.*/(\S+)/?$})[1]
-      #              end
-      #   testurl = "https://tests.ostrails.eu/assess/test/#{testname}"
-      # else
-      #   testurl = testapi
-      # end
       testurl = testapi
       warn "POINT FINAL:  Test URL is #{testurl}"
       RestClient.log = 'stderr' # Enable logging

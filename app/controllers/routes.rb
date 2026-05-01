@@ -113,6 +113,39 @@ module Champion
         end
       end
 
+      post '/champion/harvest_only' do
+        endpoint = 'https://tests.ostrails.eu/tests/assess/test/fc_harvest_only'
+        if request.content_type == 'application/json'
+          begin
+            body = request.body.read # to see it!
+            body = JSON.parse(body)
+            if body.is_a?(Hash) && body['resource_identifier']
+              resource_identifier = body['resource_identifier'].strip
+            else
+              error 406, 'invalid content'
+            end
+          rescue JSON::ParserError => e
+            render_error(400, "Invalid JSON body before rewrite #{body}: #{e.message}")
+          end
+        else
+          error 406, 'Invalid content - must be JSON {resource_identifier: ...  }'
+        end
+        unless resource_identifier && resource_identifier != ''
+          halt 400,
+               { error: 'Missing resource_identifier' }.to_json
+        end
+
+        core = Champion::Core.new
+        # Reuse the original method — this is the key part you pointed out
+        raw_output = core.proxy_test(
+          endpoint: endpoint,
+          resource_identifier: resource_identifier
+        )
+
+        content_type :json
+        halt raw_output # raw JSON-LD string
+      end
+
       post '/champion/test-execution-proxy' do
         endpoint = params[:endpoint]
         halt 400, { error: 'Missing endpoint' }.to_json unless endpoint && endpoint.strip != ''
@@ -247,35 +280,6 @@ module Champion
           { error: "Result parsing failed: #{e.message}", raw_output: raw_output[0..500] }.to_json
         end
       end
-
-      # post '/champion/test-execution-proxy', provides: [:html, :json, 'application/ld+json'] do
-      #   if params['resource_identifier']
-      #     resource_identifier = params['resource_identifier']
-      #     endpoint = params['endpoint']
-      #   else
-      #     payload = JSON.parse(request.body.read)
-      #     resource_identifier = payload['resource_identifier']
-      #     endpoint = payload['endpoint']
-      #   end
-
-      #   c = Champion::Core.new
-      #   warn "now testing #{resource_identifier} with endpoint #{endpoint}"
-      #   @result = c.proxy_test(endpoint: endpoint, resource_identifier: resource_identifier)
-      #   @testresult = Champion::TestResult.test_output_parser(output: @result) # Champion::TestResult object with all fields populated, including @graph with the RDF graph of the test execution result
-      #   unless @testresult.is_a?(Champion::TestResult)
-      #     halt erb(:error, locals: { message: "Test execution data not found or invalid #{@testresult.inspect}" })
-      #   end
-
-      #   if request.accept?('text/html') || request.accept?('application/xhtml+xml')
-      #     content_type :html
-      #     halt erb :testresult
-      #   else
-      #     # Assume JSON/LD — most permissive path
-      #     content_type 'application/ld+json'
-      #     halt @result
-      #   end
-      #   error 406
-      # end
 
       # ###########################################  ALGORITHMS
       # ###########################################  ALGORITHMS
@@ -482,8 +486,7 @@ module Champion
                        'The data provided were invalid. Check that you are using a registered algorithm')
         end
         @result = algorithm.process
-        # @rdfgraph = algorithm.generate_execution_output_rdf(output: @result, algorithmid: params[:algorithmid])
-
+        warn "RESULT @result is #{@result.inspect} "
         case content_type
         when %r{text/html}
           halt erb :algorithm_execution_output, layout: :algorithm_execution_layout
