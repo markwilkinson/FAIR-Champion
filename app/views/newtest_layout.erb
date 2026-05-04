@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>FAIR Champion: New Test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="/champion/css/styles.css"/>
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+</head>
+
+<body id="default">
+<body>
+
+  <style>
+  .submit-link {
+    font-size: 0.9rem !important;
+    padding: 6px 12px !important;
+    line-height: 1.4 !important;
+  }
+  h2.submit-link {
+    font-size: 1.2rem !important;
+    margin: 0 !important;
+  }
+  </style>
+  <div class="container" style="max-width: 80rem; width: 100%; margin-left: auto; margin-right: auto; padding: 20px;">
+  <div class="header">
+      <a href="/champion"><img src="/champion/champion_whitebgcrop.png" alt="FAIR Champion Logo"/></a>
+    <h2>Register New Test in OSTrails Test Registry</h2>
+  </div>
+</div>
+
+<header class="header">
+    <div class="code-block">
+      <p>Generic CURL command:</p>
+      <pre>
+  curl -v -L -H "content-type: application/json" 
+  -d '{"test_turtle": "https://my.domain.org/path/to/DCAT/testdcat.ttl"}' 
+  https://tools.ostrails.eu/fdp-index-proxy/proxy       </pre>
+    </div>
+</header>
+
+
+  <div class="container">
+    <%= yield %>
+  </div>
+</body>
+</html>

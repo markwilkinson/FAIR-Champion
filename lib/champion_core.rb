@@ -340,5 +340,26 @@ EOQ
       end
       response.body # pass JSON back to caller for further processing
     end
+
+    def register_test(test_turtle:)
+      warn "client url is #{test_turtle}"
+      begin
+        resp = RestClient::Request.execute(
+          method: :post,
+          url: Configuration.fdp_index_proxy,
+          payload: { 'clientUrl' => test_turtle }.to_json, # this needs to respond with DCAT, so I use the proxy at algorithm_guid (set in initialize)
+          headers: { accept: 'application/json', content_type: 'application/json' },
+          max_redirects: 10
+        )
+      rescue RestClient::ExceptionWithResponse => e
+        warn "Test Registration failed with status: #{e.inspect}"
+        warn "Error details: #{e.inspect}"
+        return "Test Registration failed #{e.message}.  Please make sure your turtle is returned from #{test_turtle} and is valid turtle"
+      rescue StandardError => e
+        warn "Test Registration Unexpected error: #{e.inspect}"
+        return "Test Registration failed #{e.message}.  Please make sure your turtle is returned from #{test_turtle} and is valid turtle"
+      end
+      resp
+    end
   end
 end

@@ -45,6 +45,36 @@ module Champion
       # ###########################################  TESTS
       # ###########################################  TESTS
 
+      # do this first, and then the other paths to avoid conflicts with the dynamic testid path
+      get '/champion/tests/new' do
+        redirect '/champion/tests/new/', 307
+      end
+      get '/champion/tests/new/', provides: %i[html] do
+        halt erb :newtest, layout: :newtest_layout
+      end
+      post '/champion/tests/new' do
+        if params[:test_turtle] # for calls from the Web form
+          dcat = params[:test_turtle]
+        else
+          payload = JSON.parse(request.body.read)
+          dcat = payload['test_turtle']
+        end
+        c = Champion::Core.new
+        @result = c.register_test(test_turtle: dcat)
+
+        request.accept.each do |type|
+          case type.to_s
+          when 'text/html'
+            content_type :html
+            halt erb :newtest_output, layout: :newtest_layout
+          when 'text/json', 'application/json', 'application/ld+json'
+            content_type :json
+            halt "{\"response\": \"#{@result}\"}"
+          end
+        end
+        error 406
+      end
+
       # Redirects requests for '/champion/tests' to '/champion/tests/'.
       # @return [void] Redirects to '/champion/tests/' with a 301 status.
       get '/champion/tests' do
@@ -113,6 +143,38 @@ module Champion
         end
       end
 
+      post '/champion/tests' do
+        redirect '/champion/tests/', 307
+      end
+
+      # register a new test in the registry
+      post '/champion/tests/' do
+        if params[:openapi] # for calls from the Web form
+          api = params[:openapi]
+        else
+          payload = JSON.parse(request.body.read)
+          api = payload['openapi']
+        end
+        c = Champion::Core.new
+        testid = c.add_test(api: api)
+        warn 'testid', testid
+        # this line retrieves the single new test from the database into the expected structure
+        _status, _headers, body = call env.merge('PATH_INFO' => "/champion/tests/#{testid}", 'REQUEST_METHOD' => 'GET',
+                                                 'HTTP_ACCEPT' => request.accept.first.to_s)
+        warn 'testid', env.inspect
+        @result = body.join # body is an array of strings, we want a single string for the view
+        request.accept.each do |type|
+          case type.to_s
+          when 'text/html'
+            content_type :html
+            halt :newtest_output, layout: :newtest_layout
+          when 'text/json', 'application/json', 'application/ld+json'
+            content_type :json
+            halt body
+          end
+        end
+        error 406
+      end
       post '/champion/harvest_only' do
         endpoint = 'https://tests.ostrails.eu/tests/assess/test/fc_harvest_only'
         if request.content_type == 'application/json'
