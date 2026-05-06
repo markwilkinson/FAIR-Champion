@@ -24,7 +24,7 @@
             <div class="collapse mt-2" id="<%= collapse_id %>">
               <div class="card card-body">
                 <div style="font-family: 'Courier New', monospace; font-size: 100%">
-                  <% data[:log].split("\n").each do |line| %>
+                  <% data[:log].to_s.split("\n").each do |line| %>
                     <% if line.start_with?('WARN') %>
                       <span style="color: #ffcc00;"><%= line %></span><br/>
                     <% elsif line.start_with?('CRITICAL') %>
