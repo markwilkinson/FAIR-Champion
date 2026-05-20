@@ -1,0 +1,19 @@
+[Service]
+User=fairsharing
+WorkingDirectory=/home/fairsharing/FAIR-Champion
+Environment=HOME=/home/fairsharing
+ExecStart=/bin/bash -lc 'cd /home/fairsharing/FAIR-Champion && /home/fairsharing/.rvm/bin/rvm ruby-3.4.2@fair-champion do bundle exec ruby run.rb'
+StandardOutput=append:/var/log/champion.log
+StandardError=inherit
+
+# environment entries 
+Environment=PATH=/home/fairsharing/.rvm/gems/ruby-3.4.2@fair-champion/bin:/home/fairsharing/.rvm/gems/ruby-3.4.2@global/bin:/home/fairsharing/.rvm/rubies/ruby-3.4.2/bin:/home/fairsharing/.rvm/bin:/usr/local/bin:/usr/bin:/bin
+Environment=GEM_HOME=/home/fairsharing/.rvm/gems/ruby-3.4.2@fair-champion
+Environment=GEM_PATH=/home/fairsharing/.rvm/gems/ruby-3.4.2@fair-champion:/home/fairsharing/.rvm/gems/ruby-3.4.2@global
+
+TimeoutSec=30
+RestartSec=15s
+Restart=always
+ProtectClock=yes
+ProtectHostname=yes
+RemoveIPC=yes
