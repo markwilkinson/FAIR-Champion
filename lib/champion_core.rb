@@ -146,6 +146,7 @@ module Champion
       # Execute the query
       warn "\n\n\n\nQuery against #{fdp_url}  is \n#{query}\n\n\n\n"
       solutions = client.query(query)
+      warn solutions.inspect
       solutions.first[:endpoint].value # can be onlhy one
     end
 

@@ -379,6 +379,8 @@ class Algorithm
     # get '/champion/algorithms/:algorithm'
 
     warn "client url is #{algorithm_guid}"
+    warn Configuration.fdp_index_proxy
+
     RestClient::Request.execute(
       method: :post,
       url: Configuration.fdp_index_proxy,
