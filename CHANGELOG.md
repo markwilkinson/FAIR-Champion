@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.2] - 2026-05-28
 
 ### Fixed
+- Fix `parse_single_test_response` in `algorithm.rb` to query via the mandatory `ftr:outputFromTest` predicate instead of chaining through the optional `prov:wasAssociatedWith` / `prov:wasGeneratedBy` path; this caused test result lookups to silently fail for any test framework that does not emit those optional predicates.
 - Remove stale `Configuration.graphdb_pass` call from VCR `filter_sensitive_data` in `spec_helper.rb`; the method had been commented out, causing all cassette-backed tests to crash in their `before_playback`/`before_record` hooks.
 - Add SPARQL POST stub to the `#gather_metadata` RSpec describe block so the test no longer attempts real network connections that WebMock blocks.
 - Fix `Champion::Core#get_test_endpoint_for_testid` stub in `champion__core_spec.rb` from `:get` to `:post`; `SPARQL::Client` always sends POST requests.
