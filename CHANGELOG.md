@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-05-28
+
+### Fixed
+- Remove stale `Configuration.graphdb_pass` call from VCR `filter_sensitive_data` in `spec_helper.rb`; the method had been commented out, causing all cassette-backed tests to crash in their `before_playback`/`before_record` hooks.
+- Add SPARQL POST stub to the `#gather_metadata` RSpec describe block so the test no longer attempts real network connections that WebMock blocks.
+- Fix `Champion::Core#get_test_endpoint_for_testid` stub in `champion__core_spec.rb` from `:get` to `:post`; `SPARQL::Client` always sends POST requests.
+- Add missing `testid:` keyword argument to `run_test` call in `champion__core_spec.rb`.
+- Replace plain Hash returns in `routes_content_spec.rb` `get_tests` mocks with `Champion::Test` objects; the `_onetest.erb` template calls methods (`test.identifier`, `test.title`, etc.) that do not exist on Hash.
+
 ## [1.1.1] - 2026-05-27
 
 ### Fixed
