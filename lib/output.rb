@@ -8,7 +8,7 @@ module Champion
     extend Forwardable
 
     def_delegators Champion::Output, :triplify
-    OUTPUT_VERSION = '1.1.0'.freeze
+    OUTPUT_VERSION = '1.1.1'.freeze
 
     FTR_CONTEXT = {
       '@context': {
@@ -177,7 +177,8 @@ module Champion
         warn "THIS DATA \n\n#{test.to_json}\n\n"
 
         g = RDF::Graph.new
-        data = StringIO.new(test.to_json)
+        safe_json = test.to_json.encode('UTF-8', invalid: :replace, undef: :replace, replace: "\u{FFFD}")
+        data = StringIO.new(safe_json)
         begin
           RDF::Reader.for(:jsonld).new(data, expandContext: local_context) do |reader|
             reader.each_statement do |statement|

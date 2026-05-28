@@ -161,7 +161,7 @@ class Algorithm
     )
     # Split CSV into lines to identify blocks
     warn "response is #{response.inspect}"
-    @csv = response.body.lines
+    @csv = response.body.encode('UTF-8', invalid: :replace, undef: :replace, replace: "\u{FFFD}").lines
   end
 
   # Processes the algorithm by loading configuration, running tests (if needed), and evaluating results.
@@ -177,7 +177,12 @@ class Algorithm
     run_tests unless resultset # from-scratch or using the input resultset?
     # at this point, @resultset variable definitely exists, so now make it a graph to reduce future parsing time
     format = :jsonld
-    resultsetgraph << RDF::Reader.for(format).new(resultset)
+    safe_resultset = resultset.encode('UTF-8', invalid: :replace, undef: :replace, replace: "\u{FFFD}")
+    begin
+      resultsetgraph << RDF::Reader.for(format).new(StringIO.new(safe_resultset))
+    rescue StandardError => e
+      warn "Warning: error loading resultset into graph: #{e.message}"
+    end
 
     # this is a special case where we need the target GUID as an independent piece of metadata
     testedguid = extract_target_from_resultset
@@ -581,7 +586,8 @@ class Algorithm
     warn 'extract target from resultset'
     format = :jsonld
     graph = RDF::Graph.new
-    graph << RDF::Reader.for(format).new(resultset)
+    safe_resultset = resultset.encode('UTF-8', invalid: :replace, undef: :replace, replace: "\u{FFFD}")
+    graph << RDF::Reader.for(format).new(StringIO.new(safe_resultset))
     ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
     prov = RDF::Vocab::PROV
 

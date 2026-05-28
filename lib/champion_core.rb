@@ -219,7 +219,8 @@ module Champion
         warn "#{testurl} did not respond happily"
         return JSON.parse({ error: "#{testurl} did not respond happily. Are you sure the test is registered? #{e.message}" }.to_json)
       end
-      JSON.parse(result.body)
+      body = result.body.encode('UTF-8', invalid: :replace, undef: :replace, replace: "\u{FFFD}")
+      JSON.parse(body)
     end
 
     # ##############################################################
