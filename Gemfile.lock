@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    fair-champion (1)
+    fair-champion (1.1.2)
 
 GEM
   remote: https://rubygems.org/
@@ -587,7 +587,7 @@ CHECKSUMS
   erb_lint (0.9.0) sha256=dfb5e40ad839e8d1f0d56ca85ec9a7ac4c9cd966ec281138282f35b323ca7c31
   erubi (1.13.1) sha256=a082103b0885dbc5ecf1172fede897f9ebdb745a4b97a5e8dc63953db1ee4ad9
   eventmachine (1.2.7) sha256=994016e42aa041477ba9cff45cbe50de2047f25dd418eba003e84f0d16560972
-  fair-champion (1)
+  fair-champion (1.1.2)
   faraday (1.10.4) sha256=a384c541cde688d68bf85055723aecb4100c3fa41b53beb2011b245960ab2f19
   faraday-cookie_jar (0.0.8) sha256=0140605823f8cc63c7028fccee486aaed8e54835c360cffc1f7c8c07c4299dbb
   faraday-em_http (1.0.0) sha256=7a3d4c7079789121054f57e08cd4ef7e40ad1549b63101f38c7093a9d6c59689
@@ -745,9 +745,6 @@ CHECKSUMS
   webmock (3.26.1) sha256=4f696fb57c90a827c20aadb2d4f9058bbff10f7f043bd0d4c3f58791143b1cd7
   xml-simple (1.1.9) sha256=d21131e519c86f1a5bc2b6d2d57d46e6998e47f18ed249b25cad86433dbd695d
   yaml-ld (0.0.3) sha256=2934e06ef651337bf4c5d78e6a22007e0c46f1215c19dc024816c1fa82b971d1
-
-RUBY VERSION
-  ruby 3.2.4
 
 BUNDLED WITH
   4.0.3

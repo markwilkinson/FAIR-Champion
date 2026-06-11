@@ -66,6 +66,15 @@ RSpec.describe Algorithm do
   describe '#gather_metadata' do
     let(:algo) { described_class.new(calculation_uri: calculation_uri, baseURI: base_uri, guid: guid) }
 
+    before do
+      stub_request(:post, 'https://tools.ostrails.eu/repositories/fdpindex-fdp')
+        .to_return(
+          status: 200,
+          body: File.read('spec/support/fixtures/sample_sparql_response.json'),
+          headers: { 'Content-Type' => 'application/sparql-results+json' }
+        )
+    end
+
     it 'builds RDF metadata graph', :vcr do
       algo.gather_metadata
       expect(algo.metadata).to be_an(RDF::Graph)

@@ -146,6 +146,7 @@ module Champion
       # Execute the query
       warn "\n\n\n\nQuery against #{fdp_url}  is \n#{query}\n\n\n\n"
       solutions = client.query(query)
+      warn solutions.inspect
       solutions.first[:endpoint].value # can be onlhy one
     end
 
@@ -218,7 +219,8 @@ module Champion
         warn "#{testurl} did not respond happily"
         return JSON.parse({ error: "#{testurl} did not respond happily. Are you sure the test is registered? #{e.message}" }.to_json)
       end
-      JSON.parse(result.body)
+      body = result.body.encode('UTF-8', invalid: :replace, undef: :replace, replace: "\u{FFFD}")
+      JSON.parse(body)
     end
 
     # ##############################################################
