@@ -243,7 +243,7 @@ class Algorithm
       predicate = PREDICATES[row['DCAT Property'].strip.to_sym]
       # warn "working with predicate #{predicate}"
       predicate ||= RDF::URI.new("urn:unknown_property:#{row['DCAT Property']}")
-      value = row['Value']
+      value = row['Value']&.strip
       value = if value =~ %r{^https?://}
                 RDF::URI.new(value)
               else
@@ -260,11 +260,12 @@ class Algorithm
     # Test referenes are part of the Algorithm DCAT
     c = Champion::Core.new # needed for registry lookup
     @tests = csv_data.map do |row|
+      testid = row['Test GUID'].to_s.strip
       {
-        reference: row['Test Reference'],
-        name: row['Test GUID'],
-        testid: row['Test GUID'],
-        endpoint: c.get_test_endpoint_for_testid(testid: row['Test GUID']),
+        reference: row['Test Reference'].to_s.strip,
+        name: testid,
+        testid: testid,
+        endpoint: c.get_test_endpoint_for_testid(testid: testid),
         pass_weight: row['Pass Weight'].to_f,
         fail_weight: row['Fail Weight'].to_f,
         indeterminate_weight: row['Indeterminate Weight'].to_f
@@ -313,12 +314,12 @@ class Algorithm
     csv_data = CSV.parse(condition_csv, headers: true)
     @conditions = csv_data.map do |row|
       {
-        condition: row['Condition'],
-        description: row['Description'],
-        formula: row['Formula'],
-        success: row['Success Message'],
-        failure: row['Fail Message'],
-        guidance: row['Guidance'] # strucdture is [[URL, "desc"], [URL, "desc"]]
+        condition: row['Condition']&.strip,
+        description: row['Description']&.strip,
+        formula: row['Formula']&.strip,
+        success: row['Success Message']&.strip,
+        failure: row['Fail Message']&.strip,
+        guidance: row['Guidance']&.strip
       }
     end
 
