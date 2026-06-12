@@ -174,7 +174,6 @@ module Champion
         # need to munge the test because RDF::Reader doesnt like
         # having a context that needs to be resovled
         local_context = FTR_CONTEXT['@context'] # Replace the URL with the hash
-        warn "THIS DATA \n\n#{test.to_json}\n\n"
 
         g = RDF::Graph.new
         safe_json = test.to_json.encode('UTF-8', invalid: :replace, undef: :replace, replace: "\u{FFFD}")
@@ -182,29 +181,36 @@ module Champion
         begin
           RDF::Reader.for(:jsonld).new(data, expandContext: local_context) do |reader|
             reader.each_statement do |statement|
-              # warn statement.inspect
               g << statement # this is only to query for the root id
               graph << statement # this is the entire output graph
             end
           end
         rescue StandardError => e
-          warn "Error processing test output from #{uniqueid} : #{e.message}"
-          warn "INVALID CONTENT: \n\n\n#{test.to_json}\n\n\n"
+          warn "Error processing test output: #{e.message}"
+          add_error_stub(uniqueid: uniqueid, message: "JSON-LD parse failed: #{e.message}", test: test, graph: graph)
           next
         end
 
         q = SPARQL.parse('select distinct ?s where {?s a <https://w3id.org/ftr#TestResult>}')
         res = q.execute(g)
-        #        return nil unless res&.first
         unless res&.first
-          warn "Error processing test output from #{uniqueid}"
-          warn "INVALID CONTENT: \n\n\n#{test.to_json}\n\n\n"
+          warn "No ftr:TestResult node found in test output"
+          add_error_stub(uniqueid: uniqueid, message: 'Test service returned a response with no ftr:TestResult node', test: test, graph: graph)
           next
         end
 
         testid = res.first[:s].to_s
         triplify(uniqueid, RDF::Vocab::PROV.hadMember, testid, graph)
       end
+    end
+
+    def add_error_stub(uniqueid:, message:, test:, graph:)
+      ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
+      stub_id = "urn:fairchampion:error:#{SecureRandom.uuid}"
+      triplify(stub_id, RDF.type, ftr.TestResult, graph)
+      triplify(stub_id, ftr.status, 'indeterminate', graph)
+      triplify(stub_id, ftr.log, "#{message} | content: #{test.to_json[0..300]}", graph)
+      triplify(uniqueid, RDF::Vocab::PROV.hadMember, stub_id, graph)
     end
 
     def self.triplify(s, p, o, repo, datatype: nil, context: nil)

@@ -34,7 +34,7 @@ curl -X POST -H "Accept: application/json" -H "Content-type: application/json"
         <select id="calculation_uri_select" size="6"
                 onchange="document.getElementById('calculation_uri').value = this.value"
                 class="form-control w-100 algorithm-select">
-          <% @list.sort_by { |item| item[:title] }.each do |item| %>
+          <% @list.map { |item| item.slice(:title, :description, :calculation_uri) }.uniq.sort_by { |item| item[:title] }.each do |item| %>
             <optgroup label="<%= item[:title] %>">
               <option value="<%= item[:calculation_uri] %>"><%= item[:description] %></option>
             </optgroup>

@@ -1,5 +1,6 @@
 require 'rest_client'
 require 'json'
+require 'securerandom'
 require 'sparql'
 require 'sparql/client'
 require 'linkeddata'
@@ -167,14 +168,28 @@ module Champion
     #   puts result
     def execute_on_endpoints(subject:, endpoints:, bmid:)
       # endpoints = [{testid: test[:testid], endpoint: test[:endpoint] }...]
+      mutex = Mutex.new
       results = []
-      endpoints.each do |idpair|
-        testid = idpair[:testid]
-        endpoint = idpair[:endpoint]
-        # warn 'benchmark point 2', endpoint.inspect
-        results << run_test(guid: subject, testapi: endpoint, testid: testid) # this is a parsed JSON docuent returned
+
+      threads = endpoints.map do |idpair|
+        Thread.new do
+          begin
+            result = run_test(guid: subject, testapi: idpair[:endpoint], testid: idpair[:testid])
+          rescue StandardError => e
+            warn "Thread for #{idpair[:testid]} failed unexpectedly: #{e.message}"
+            result = {
+              '@type'          => 'ftr:TestResult',
+              '@id'            => "urn:fairchampion:thread-error:#{SecureRandom.uuid}",
+              'status'         => 'indeterminate',
+              'log'            => "Test execution thread failed: #{e.message}",
+              'outputFromTest' => idpair[:testid]
+            }
+          end
+          mutex.synchronize { results << result }
+        end
       end
-      # warn "RESULTS #{results}"
+      threads.each(&:join)
+
       output = Champion::Output.new(benchmarkid: bmid, subject: subject)
       output.build_output(results: results) # returns jsonld
     end
@@ -196,10 +211,7 @@ module Champion
     #   result = core.run_test(testapi: 'https://tests.ostrails.eu/tests/test1/api', guid: 'https://example.org/target/456')
     #   puts result
     def run_test(testapi:, guid:, testid:)
-      warn "web api endpoint is at  #{testapi}"
       testurl = testapi
-      warn "POINT FINAL:  Test URL is #{testurl}"
-      RestClient.log = 'stderr' # Enable logging
       begin
         result = RestClient::Request.execute(
           url: testurl,
