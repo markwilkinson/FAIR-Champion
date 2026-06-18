@@ -35,6 +35,15 @@ module Champion
 
       # Renders the Champion homepage.
       # @return [String] The rendered ERB template for the homepage.
+	    # @example
+	    #   # GET /
+	    # Added due to lack of default route here.
+	    get '/' do
+	      redirect '/champion', 307
+	    end
+
+      # Renders the Champion homepage.
+      # @return [String] The rendered ERB template for the homepage.
       # @example
       #   # GET /champion/
       get %r{/champion/?} do
