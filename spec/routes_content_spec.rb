@@ -18,12 +18,9 @@ RSpec.describe 'Champion Routes' do
   before do
     core_instance = instance_double('Champion::Core')
     allow(Champion::Core).to receive(:new).and_return(core_instance)
-    allow(core_instance).to receive(:get_tests).with(no_args).and_return(
-      [{ identifier: 'test1', title: 'Test 1', description: 'A test' }]
-    )
-    allow(core_instance).to receive(:get_tests).with(hash_including(testid: 'test1')).and_return(
-      [{ identifier: 'test1', title: 'Test 1', description: 'A test' }]
-    )
+    test_obj = Champion::Test.new(identifier: 'test1', title: 'Test 1', description: 'A test')
+    allow(core_instance).to receive(:get_tests).with(no_args).and_return([test_obj])
+    allow(core_instance).to receive(:get_tests).with(hash_including(testid: 'test1')).and_return([test_obj])
   end
 
   # Mock Algorithm class for algorithm-related routes
