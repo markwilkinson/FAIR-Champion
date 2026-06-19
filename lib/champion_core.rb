@@ -349,8 +349,10 @@ EOQ
       rescue RestClient::ExceptionWithResponse => e
         warn "Test Execution failed with status: #{e.response.code}"
         warn "Error details: #{e.response.body}"
+        return e.response.body
       rescue StandardError => e
         warn "Test Execution Unexpected error: #{e.message}"
+        return { error: "Test Execution Unexpected error: #{e.message}" }.to_json
       end
       response.body # pass JSON back to caller for further processing
     end
