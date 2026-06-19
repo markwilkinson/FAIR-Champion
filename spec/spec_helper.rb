@@ -2,6 +2,8 @@
 require 'simplecov'
 SimpleCov.start do
   add_filter '/spec/'
+  track_files '{app,lib}/**/*.rb'
+  minimum_coverage line: 100
 end
 
 ENV['RACK_ENV'] = 'test'
