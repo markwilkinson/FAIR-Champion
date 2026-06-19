@@ -8,7 +8,7 @@ openapi_url = 'https://foops.linkeddata.es/v2/api-docs'
 concrete_endpoint = 'https://foops.linkeddata.es/assess/test/VER1'
 
 # Local converter base URL (adjust if service name or port differs)
-converter_base = 'http://swagger-converter:8080/api'
+CONVERTER_BASE = 'http://swagger-converter:8080/api'.freeze
 
 def fetch_json(url)
   uri = URI(url)
@@ -19,7 +19,7 @@ def fetch_json(url)
 end
 
 def convert_swagger_to_openapi(openapi_url)
-  converter_url = "#{converter_base}/convert?url=#{URI.encode_www_form_component(openapi_url)}"
+  converter_url = "#{CONVERTER_BASE}/convert?url=#{URI.encode_www_form_component(openapi_url)}"
   fetch_json(converter_url)
 end
 
