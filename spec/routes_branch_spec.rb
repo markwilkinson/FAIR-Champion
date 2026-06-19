@@ -118,6 +118,36 @@ RSpec.describe 'Champion route branches' do
       expect(last_response.status).to eq(301)
       expect(last_response.location).to end_with('/champion/tests/')
     end
+
+    it 'returns JSON for missing API resources when JSON is requested' do
+      get '/champion/missing-resource', {}, { 'HTTP_ACCEPT' => 'application/json' }
+
+      expect(last_response.status).to eq(404)
+      expect(last_response.content_type).to include('application/json')
+      expect(JSON.parse(last_response.body)).to include(
+        'error' => 'The requested resource was not found: /champion/missing-resource',
+        'status' => 404
+      )
+    end
+
+    it 'returns JSON for missing API resources when JSON-LD is requested' do
+      get '/champion/missing-resource', {}, { 'HTTP_ACCEPT' => 'application/ld+json' }
+
+      expect(last_response.status).to eq(404)
+      expect(last_response.content_type).to include('application/json')
+      expect(JSON.parse(last_response.body)).to include(
+        'error' => 'The requested resource was not found: /champion/missing-resource',
+        'status' => 404
+      )
+    end
+
+    it 'returns HTML for missing browser resources when HTML is requested' do
+      get '/champion/missing-resource', {}, { 'HTTP_ACCEPT' => 'text/html' }
+
+      expect(last_response.status).to eq(404)
+      expect(last_response.content_type).to include('text/html')
+      expect(last_response.body).to include('The requested resource was not found: /champion/missing-resource')
+    end
   end
 
   describe 'test list and registration branches' do
