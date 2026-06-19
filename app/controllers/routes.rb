@@ -176,7 +176,7 @@ module Champion
           case type.to_s
           when 'text/html'
             content_type :html
-            halt :newtest_output, layout: :newtest_layout
+            halt erb :newtest_output, layout: :newtest_layout
           when 'text/json', 'application/json', 'application/ld+json'
             content_type :json
             halt body
@@ -511,7 +511,7 @@ module Champion
       # @example
       #   # POST /champion/assess/algorithm/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w
       #   # Body: {"guid": "https://example.org/target/456"}
-      post '/champion/assess/algorithm/*', provides: [:html, :json, 'application/ld+json'] do
+      post '/champion/assess/algorithm/*', provides: [:html, :json, 'application/ld+json', 'text/turtle', 'text/plain'] do
         algorithmid = params[:splat].first
 
         scoringfunction = Algorithm.retrieve_by_id(algorithm_id: algorithmid)
