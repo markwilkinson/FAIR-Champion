@@ -10,13 +10,12 @@ ENV['RACK_ENV'] = 'test'
 require 'rspec'
 require 'rack/test'
 require 'webmock/rspec'
+WebMock.disable_net_connect!(allow_localhost: true)
 require_relative '../app/controllers/configuration'
 require_relative '../app/controllers/application_controller'
 require_relative '../lib/algorithm'
 require_relative '../lib/champion_core'
 require_relative '../app/controllers/routes'
-
-puts "ChampionApp routes after spec_helper: #{Champion::ChampionApp.routes['GET']&.map { |r| r[0].to_s }&.inspect || 'No GET routes'}"
 
 require 'vcr'
 
@@ -24,6 +23,7 @@ VCR.configure do |config|
   config.cassette_library_dir = 'spec/support/fixtures/vcr_cassettes'
   config.hook_into :webmock
   config.configure_rspec_metadata!
+  config.allow_http_connections_when_no_cassette = false
 end
 
 RSpec.configure do |config|
@@ -40,11 +40,27 @@ RSpec.configure do |config|
   config.example_status_persistence_file_path = 'spec/examples.txt'
   config.disable_monkey_patching!
   config.warnings = true
-  config.profile_examples = 10
   config.order = :random
   Kernel.srand config.seed
 
   config.define_derived_metadata do |meta|
     meta[:aggregate_failures] = true
+  end
+
+  config.around do |example|
+    if example.metadata[:show_output]
+      example.run
+    else
+      original_stdout = $stdout
+      original_stderr = $stderr
+      begin
+        $stdout = StringIO.new
+        $stderr = StringIO.new
+        example.run
+      ensure
+        $stdout = original_stdout
+        $stderr = original_stderr
+      end
+    end
   end
 end

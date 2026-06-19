@@ -7,7 +7,6 @@ module Champion
     # test listings, algorithm registration, display, and assessment execution.
     # @note This file assumes a Sinatra application context and depends on Algorithm and Champion::Core classes.
     def self.set_routes
-      puts "Calling set_routes at #{Time.now}"
       # Sets the server timeout to 180 seconds.
       set :server_settings, timeout: 180
       # Sets the public folder for static assets.
