@@ -567,6 +567,22 @@ module Champion
         end
         halt 406
       end
+
+      not_found do
+        message = "The requested resource was not found: #{request.path_info}"
+        accepted_type = request.accept.find do |type|
+          ['application/json', 'application/ld+json', 'text/json', 'text/html'].include?(type.to_s)
+        end
+
+        case accepted_type.to_s
+        when 'application/json', 'application/ld+json', 'text/json'
+          content_type :json
+          { error: message, status: 404 }.to_json
+        else
+          content_type :html
+          erb(:error, locals: { message: message })
+        end
+      end
     end
 
     ####    HELPERS   ######
