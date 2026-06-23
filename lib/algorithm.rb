@@ -669,6 +669,7 @@ class Algorithm
     return [nil, nil] unless input_string
 
     # Remove outer brackets
+    result = []
     begin
       content = input_string.strip[1..-2]
 
@@ -678,7 +679,6 @@ class Algorithm
       # Find all matches
       matches = content.scan(pattern)
 
-      result = []
       matches.each do |url, title|
         # Validate URL
         if valid_url?(url.strip)

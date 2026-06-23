@@ -7,7 +7,6 @@ module Champion
     # test listings, algorithm registration, display, and assessment execution.
     # @note This file assumes a Sinatra application context and depends on Algorithm and Champion::Core classes.
     def self.set_routes
-      puts "Calling set_routes at #{Time.now}"
       # Sets the server timeout to 180 seconds.
       set :server_settings, timeout: 180
       # Sets the public folder for static assets.
@@ -176,7 +175,7 @@ module Champion
           case type.to_s
           when 'text/html'
             content_type :html
-            halt :newtest_output, layout: :newtest_layout
+            halt erb :newtest_output, layout: :newtest_layout
           when 'text/json', 'application/json', 'application/ld+json'
             content_type :json
             halt body
@@ -511,7 +510,7 @@ module Champion
       # @example
       #   # POST /champion/assess/algorithm/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w
       #   # Body: {"guid": "https://example.org/target/456"}
-      post '/champion/assess/algorithm/*', provides: [:html, :json, 'application/ld+json'] do
+      post '/champion/assess/algorithm/*', provides: [:html, :json, 'application/ld+json', 'text/turtle', 'text/plain'] do
         algorithmid = params[:splat].first
 
         scoringfunction = Algorithm.retrieve_by_id(algorithm_id: algorithmid)
@@ -567,6 +566,22 @@ module Champion
           halt @result[:resultset]
         end
         halt 406
+      end
+
+      not_found do
+        message = "The requested resource was not found: #{request.path_info}"
+        accepted_type = request.accept.find do |type|
+          ['application/json', 'application/ld+json', 'text/json', 'text/html'].include?(type.to_s)
+        end
+
+        case accepted_type.to_s
+        when 'application/json', 'application/ld+json', 'text/json'
+          content_type :json
+          { error: message, status: 404 }.to_json
+        else
+          content_type :html
+          erb(:error, locals: { message: message })
+        end
       end
     end
 

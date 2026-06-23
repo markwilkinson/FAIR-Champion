@@ -2,8 +2,7 @@
 require_relative 'spec_helper'
 
 # Ensure routes are registered once
-Champion::ChampionApp.set_routes
-puts "Registered GET routes: #{Champion::ChampionApp.routes['GET']&.map { |r| r[0].to_s }&.inspect || 'No GET routes'}"
+Champion::ChampionApp.set_routes if Champion::ChampionApp.routes['GET'].nil? || Champion::ChampionApp.routes['GET'].empty?
 
 # RSpec tests for Sinatra routes in routes.rb, focusing on content type negotiation.
 # Assumes routes.rb is in lib/ and defines routes in Champion::ChampionApp.
