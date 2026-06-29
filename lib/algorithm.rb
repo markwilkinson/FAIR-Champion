@@ -161,7 +161,7 @@ class Algorithm
     )
     # Split CSV into lines to identify blocks
     warn "response is #{response.inspect}"
-    @csv = response.body.lines
+    @csv = response.body.encode('UTF-8', invalid: :replace, undef: :replace, replace: "\u{FFFD}").lines
   end
 
   # Processes the algorithm by loading configuration, running tests (if needed), and evaluating results.
@@ -177,7 +177,12 @@ class Algorithm
     run_tests unless resultset # from-scratch or using the input resultset?
     # at this point, @resultset variable definitely exists, so now make it a graph to reduce future parsing time
     format = :jsonld
-    resultsetgraph << RDF::Reader.for(format).new(resultset)
+    safe_resultset = resultset.encode('UTF-8', invalid: :replace, undef: :replace, replace: "\u{FFFD}")
+    begin
+      resultsetgraph << RDF::Reader.for(format).new(StringIO.new(safe_resultset))
+    rescue StandardError => e
+      warn "Warning: error loading resultset into graph: #{e.message}"
+    end
 
     # this is a special case where we need the target GUID as an independent piece of metadata
     testedguid = extract_target_from_resultset
@@ -238,7 +243,7 @@ class Algorithm
       predicate = PREDICATES[row['DCAT Property'].strip.to_sym]
       # warn "working with predicate #{predicate}"
       predicate ||= RDF::URI.new("urn:unknown_property:#{row['DCAT Property']}")
-      value = row['Value']
+      value = row['Value']&.strip
       value = if value =~ %r{^https?://}
                 RDF::URI.new(value)
               else
@@ -255,11 +260,12 @@ class Algorithm
     # Test referenes are part of the Algorithm DCAT
     c = Champion::Core.new # needed for registry lookup
     @tests = csv_data.map do |row|
+      testid = row['Test GUID'].to_s.strip
       {
-        reference: row['Test Reference'],
-        name: row['Test GUID'],
-        testid: row['Test GUID'],
-        endpoint: c.get_test_endpoint_for_testid(testid: row['Test GUID']),
+        reference: row['Test Reference'].to_s.strip,
+        name: testid,
+        testid: testid,
+        endpoint: c.get_test_endpoint_for_testid(testid: testid),
         pass_weight: row['Pass Weight'].to_f,
         fail_weight: row['Fail Weight'].to_f,
         indeterminate_weight: row['Indeterminate Weight'].to_f
@@ -308,12 +314,12 @@ class Algorithm
     csv_data = CSV.parse(condition_csv, headers: true)
     @conditions = csv_data.map do |row|
       {
-        condition: row['Condition'],
-        description: row['Description'],
-        formula: row['Formula'],
-        success: row['Success Message'],
-        failure: row['Fail Message'],
-        guidance: row['Guidance'] # strucdture is [[URL, "desc"], [URL, "desc"]]
+        condition: row['Condition']&.strip,
+        description: row['Description']&.strip,
+        formula: row['Formula']&.strip,
+        success: row['Success Message']&.strip,
+        failure: row['Fail Message']&.strip,
+        guidance: row['Guidance']&.strip
       }
     end
 
@@ -501,11 +507,8 @@ class Algorithm
 
   def parse_single_test_response(resultset:, testid:)
     # warn 'GRAPH:', graph.dump(:turtle), "\n\n"
-    # <urn:ostrails:testexecutionactivity:42c79dfe-fc9a-40db-84b6-6a3e69b8afab> a <https://w3id.org/ftr#TestExecutionActivity>;
-    #   prov:generated <urn:fairtestoutput:2152d30f-516c-43da-b647-4f4726c33fbb>;
-    #   prov:used <https://w3id.org/duchenne-fdp>;
-    #   prov:wasAssociatedWith <https://tests.ostrails.eu/tests/fc_metadata_includes_license> .
     # <urn:fairtestoutput:2152d30f-516c-43da-b647-4f4726c33fbb> a <https://w3id.org/ftr#TestResult>;
+    #   ftr:outputFromTest <https://tests.ostrails.eu/tests/fc_metadata_includes_license> ;  # mandatory
     #   prov:value "pass"@en;
     warn "looking for id #{testid}"
     prov = RDF::Vocab::PROV
@@ -513,10 +516,8 @@ class Algorithm
     test_uri = RDF::URI.new(testid)
 
     solutions = RDF::Query.execute(@resultsetgraph) do
-      pattern [:execution, RDF.type, ftr.TestExecutionActivity]
-      pattern [:execution, prov.wasAssociatedWith, test_uri] # <-- THIS FILTERS TO THE CORRECT TEST
-      pattern [:result, prov.wasGeneratedBy, :execution]
       pattern [:result, RDF.type, ftr.TestResult]
+      pattern [:result, ftr.outputFromTest, test_uri] # <-- mandatory link, reliable across all test frameworks
       pattern [:result, prov.value, :value]
     end
 
@@ -540,10 +541,8 @@ class Algorithm
     begin
       # LOG is optional, but if it exists, it can be helpful for debugging, so we add it to the metadata of the test result
       logsolutions = RDF::Query.execute(@resultsetgraph) do
-        pattern [:execution, RDF.type, ftr.TestExecutionActivity]
-        pattern [:execution, prov.wasAssociatedWith, test_uri] # <-- THIS FILTERS TO THE CORRECT TEST
-        pattern [:result, prov.wasGeneratedBy, :execution]
         pattern [:result, RDF.type, ftr.TestResult]
+        pattern [:result, ftr.outputFromTest, test_uri]
         pattern [:result, ftr.log, :log]
       end
       log = logsolutions.first[:log].to_s
@@ -581,7 +580,8 @@ class Algorithm
     warn 'extract target from resultset'
     format = :jsonld
     graph = RDF::Graph.new
-    graph << RDF::Reader.for(format).new(resultset)
+    safe_resultset = resultset.encode('UTF-8', invalid: :replace, undef: :replace, replace: "\u{FFFD}")
+    graph << RDF::Reader.for(format).new(StringIO.new(safe_resultset))
     ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
     prov = RDF::Vocab::PROV
 

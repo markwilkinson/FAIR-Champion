@@ -9,11 +9,11 @@ RSpec.describe Champion::Core do
 
   describe '#get_test_endpoint_for_testid' do
     it 'fetches endpoint for a test ID', :vcr do
-      stub_request(:get, 'https://tools.ostrails.eu/repositories/fdpindex-fdp')
+      stub_request(:post, 'https://tools.ostrails.eu/repositories/fdpindex-fdp')
         .to_return(
           status: 200,
           body: File.read('spec/support/fixtures/sample_sparql_response.json'),
-          headers: {content_type: 'application/sparql-results+json'}
+          headers: { 'Content-Type' => 'application/sparql-results+json' }
         )
       endpoint = core.get_test_endpoint_for_testid(testid: 'https://tests.ostrails.eu/tests/fc_metadata_includes_license')
       expect(endpoint).to eq('https://tests.ostrails.eu/assess/test/fc_metadata_includes_license')
@@ -25,7 +25,11 @@ RSpec.describe Champion::Core do
       stub_request(:post, 'https://tests.ostrails.eu/assess/test/fc_metadata_includes_license')
         .with(body: { 'resource_identifier' => subject }.to_json)
         .to_return(status: 200, body: { result: 'pass' }.to_json, headers: { 'Content-Type' => 'application/json' })
-      result = core.run_test(testapi: 'https://tests.ostrails.eu/assess/test/fc_metadata_includes_license', guid: subject)
+      result = core.run_test(
+        testapi: 'https://tests.ostrails.eu/assess/test/fc_metadata_includes_license',
+        guid: subject,
+        testid: 'https://tests.ostrails.eu/tests/fc_metadata_includes_license'
+      )
       expect(result).to eq('result' => 'pass')
     end
   end
