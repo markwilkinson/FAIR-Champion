@@ -25,6 +25,20 @@ module Champion
         json: []
       }
 
+      # CORS preflight
+      options '*' do
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, Accept'
+        halt 200
+      end
+
+      before do
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, Accept'
+      end
+
       # Redirects requests to the Champion API specification.
       # @return [void] Redirects to '/champion/championAPI.yaml' with a 307 status.
       # @example
