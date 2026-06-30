@@ -7,6 +7,12 @@ services:
       - CHAMPHOST=http://localhost:8383/
     ports:
       - "8383:4567"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
 
 
   swagger-converter:
