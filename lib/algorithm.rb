@@ -75,7 +75,7 @@ class Algorithm
   # @!attribute calculation_uri
   #   @return [String] The URI of the Google Spreadsheet defining the algorithm.
   # @!attribute baseURI
-  #   @return [String] The base URI for the application (default: 'https://tools.ostrails.eu/champion').
+  #   @return [String] The base URI for the application (default: 'https://w3id.org/FAIR-Champion').
   # @!attribute csv
   #   @return [Array<String>] Lines of the CSV data fetched from the Google Spreadsheet.
   # @!attribute algorithm_id
@@ -108,7 +108,7 @@ class Algorithm
   # Initializes a new Algorithm instance by fetching configuration from a Google Spreadsheet.
   #
   # @param calculation_uri [String] The URI of the Google Spreadsheet containing algorithm configuration.
-  # @param baseURI [String] The base URI for the application (default: 'https://tools.ostrails.eu/champion').
+  # @param baseURI [String] The base URI for the application (default: 'https://w3id.org/FAIR-Champion').
   # @param guid [String, nil] The GUID of the digital object to assess (optional if resultset is provided).
   # @param resultset [String, nil] The JSON-LD result set from a previous test execution (optional if guid is provided).
   # @return [Algorithm] A new instance of the Algorithm class.
@@ -118,9 +118,9 @@ class Algorithm
   #     calculation_uri: 'https://docs.google.com/spreadsheets/d/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w',
   #     guid: 'https://example.org/target/456'
   #   )
-  def initialize(calculation_uri:, baseURI: 'https://tools.ostrails.eu/champion', guid: nil, resultset: nil)
+  def initialize(calculation_uri:, baseURI: 'https://w3id.org/FAIR-Champion', guid: nil, resultset: nil)
     @calculation_uri = calculation_uri
-    @baseURI = baseURI
+    @baseURI = baseURI.gsub(%r{/+$}, '')
     @guid = guid
     @resultset = resultset
     @resultsetgraph = RDF::Graph.new
@@ -188,7 +188,7 @@ class Algorithm
     testedguid = extract_target_from_resultset
 
     test_results = process_resultset
-    warn "\n\n\nTEST RESULTS ARE #{test_results.inspect}\n\n\n"
+    # warn "\n\n\nTEST RESULTS ARE #{test_results.inspect}\n\n\n"
     narratives, guidances = evaluate_conditions(test_results)
     {
       metadata: metadata,
@@ -196,7 +196,9 @@ class Algorithm
       narratives: narratives,
       resultset: resultset,
       testedguid: testedguid,
-      guidances: guidances
+      guidances: guidances,
+      tests: tests,
+      conditions: @conditions # weird that RuboCop doesn't like this variable name as a attr_accessor
     }
   end
 
@@ -340,8 +342,9 @@ class Algorithm
   def generate_execution_output_rdf(output:, algorithmid:) # output is the object above here... with metadata, test results, narratives, and resultset
     benchmarkscore = RDF::Graph.new
     uniqid = Time.now.to_i
-    subject = RDF::URI.new("https://tools.ostrails.eu/champion/assess/algorithm/#{algorithmid}/result_#{uniqid}")
-    activity = RDF::URI.new("https://tools.ostrails.eu/champion/assess/algorithm/#{algorithmid}/result_#{uniqid}/activity")
+    # baseURI: 'https://w3id.org/FAIR-Champion'
+    subject = RDF::URI.new("#{baseURI}/assess/algorithm/#{algorithmid}/result_#{uniqid}")
+    activity = RDF::URI.new("#{baseURI}/assess/algorithm/#{algorithmid}/result_#{uniqid}/activity")
     benchmarkscore << RDF::Statement.new(subject, RDF.type, FTR.BenchmarkScore)
     benchmarkscore << RDF::Statement.new(subject, PROV.wasGeneratedBy, activity)
     benchmarkscore << RDF::Statement.new(activity, RDF.type, FTR.ScoringAlgorithmActivity)
@@ -749,10 +752,10 @@ EOQ
       },
       servers: [
         {
-          url: 'http://{host}/champion',
+          url: 'https://{host}',
           variables: {
             host: {
-              default: 'tools.ostrails.eu'
+              default: 'w3id.org/FAIR-Champion'
             }
           }
         }

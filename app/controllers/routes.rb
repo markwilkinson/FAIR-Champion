@@ -516,7 +516,8 @@ module Champion
       # @example
       #   # POST /champion/assess/algorithm/16s2klErdtZck2b6i2Zp_PjrgpBBnnrBKaAvTwrnMB4w
       #   # Body: {"guid": "https://example.org/target/456"}
-      post '/champion/assess/algorithm/*', provides: [:html, :json, 'application/ld+json'] do
+
+      post '/champion/assess/algorithm/*', provides: %i[html json] do # no longer provides , 'application/ld+json'
         algorithmid = params[:splat].first
 
         scoringfunction = Algorithm.retrieve_by_id(algorithm_id: algorithmid)
@@ -562,14 +563,25 @@ module Champion
                        'The data provided were invalid. Check that you are using a registered algorithm')
         end
         @result = algorithm.process
-        warn "RESULT @result is #{@result.inspect} "
+        # @result is:    {
+        #   metadata: metadata,
+        #   test_results: test_results,
+        #   narratives: narratives,
+        #   resultset: resultset,
+        #   testedguid: testedguid,
+        #   guidances: guidances,
+        #   tests: tests,
+        #   conditions: conditions
+        # }
+        # warn "RESULT @result is #{@result.inspect} "
         case content_type
         when %r{text/html}
           halt erb :algorithm_execution_output, layout: :algorithm_execution_layout
         when %r{application/json} || %r{application/ld+json}
           halt @result.to_json
-        when %r{text/turtle}
-          halt @result[:resultset]
+          # when %r{text/turtle}
+          #   # need to decide what to do with this...
+          #   halt @result[:resultset]
         end
         halt 406
       end

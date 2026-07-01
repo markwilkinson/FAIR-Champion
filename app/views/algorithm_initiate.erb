@@ -7,19 +7,19 @@
 curl -X POST -H "Accept: application/json" -H "Content-type: application/json" 
       -d '{"calculation_uri":  "https://sheets.google.com....",
            "guid":  "https://my.favorite.digital/object"}' 
-           https://tools.ostrails.eu/champion/assess/algorithm
+           https://w3id.org/FAIR-Champion/assess/algorithm
       </pre>
 or, if you know the ID of the algorithm...  (note that IDs include the /d/ or /u/ path from Google Sheets!)
       <pre>
 curl -X POST -H "Accept: application/json" -H "Content-type: application/json" 
       -d  '{"guid":  "https://my.favorite.digital/object"}'
-           https://tools.ostrails.eu/champion/assess/algorithm/d/AJURG8ewy45hIUDH38rhU
+           https://w3id.org/FAIR-Champion/assess/algorithm/d/AJURG8ewy45hIUDH38rhU
 
            or
 
 curl -X POST -H "Accept: application/json" -H "Content-type: application/json" 
       -d  @resultsetfile.json   # THIS MUST BE JSON-LD!!!!!!
-           https://tools.ostrails.eu/champion/assess/algorithm/d/AJURG8ewy45hIUDH38rhU
+           https://w3id.org/FAIR-Champion/assess/algorithm/d/AJURG8ewy45hIUDH38rhU
       </pre>
     </div>
 </header>
