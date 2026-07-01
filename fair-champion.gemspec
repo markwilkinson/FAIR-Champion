@@ -4,7 +4,7 @@
 
 Gem::Specification.new do |spec|
   spec.name = 'fair-champion'
-  spec.version = '1.1.6'
+  spec.version = '1.1.8'
   spec.authors = ['Mark Wilkinson']
   spec.email = ['markw@illuminae.com']
 
