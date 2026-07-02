@@ -113,6 +113,8 @@ module Champion
       ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
       sio = RDF::Vocabulary.new('http://semanticscience.org/resource/')
 
+      time = Time.now.iso8601
+
       triplify(uniqueid, RDF.type, ftr.TestResultSet, g)
       triplify(uniqueid, RDF.type, RDF::Vocab::PROV.Collection, g)
       triplify(uniqueid, dct.identifier, uniqueid, g)
@@ -130,6 +132,7 @@ module Champion
       # triplify(contactid, RDF.type, schema.ContactPoint, g)
 
       testedguidnode = 'urn:ostrails:testedidentifiernode:resultset:' + SecureRandom.uuid
+      softwarenode = 'urn:ostrails:softwareidentifiernode:' + SecureRandom.uuid
 
       triplify(testedguidnode, RDF.type, prov.Entity, g)
       triplify(testedguidnode, dct.identifier, subject, g, datatype: 'xsd:string')
@@ -138,10 +141,16 @@ module Champion
 
       championexecution = "urn:fairchampionexecution:#{SecureRandom.uuid}"
       triplify(uniqueid, RDF::Vocab::PROV.wasGeneratedBy, championexecution, g)
+      triplify(uniqueid, RDF::Vocab::PROV.generatedAtTime, time, g)
       triplify(championexecution, RDF.type, ftr.TestExecutionActivity, g)
       triplify(championexecution, prov.used, testedguidnode, g)
       triplify(championexecution, schema.softwareVersion, OUTPUT_VERSION, g)
-      # triplify(championexecution, schema.url, 'https://github.com/markwilkinson/FAIR-Champion', g)
+      triplify(championexecution, prov.wasAssociatedWith, softwarenode, g)
+
+      triplify(softwarenode, RDF.type, prov.SoftwareAgent, g)
+      triplify(softwarenode, RDF.type, prov.Agent, g)
+      triplify(softwarenode, dct.identifier, 'https://w3id.org/FAIR-Champion', g, datatype: 'xsd:string')
+      triplify(softwarenode, RDFS.label, 'FAIR Champion', g)
 
       # here is where we add the individual test outputs to the main graph (g),
       # and the "hadMember" property
@@ -194,8 +203,9 @@ module Champion
         q = SPARQL.parse('select distinct ?s where {?s a <https://w3id.org/ftr#TestResult>}')
         res = q.execute(g)
         unless res&.first
-          warn "No ftr:TestResult node found in test output"
-          add_error_stub(uniqueid: uniqueid, message: 'Test service returned a response with no ftr:TestResult node', test: test, graph: graph)
+          warn 'No ftr:TestResult node found in test output'
+          add_error_stub(uniqueid: uniqueid, message: 'Test service returned a response with no ftr:TestResult node',
+                         test: test, graph: graph)
           next
         end
 
