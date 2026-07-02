@@ -2,6 +2,11 @@
 
 All notable changes to FAIR Champion are documented here.
 
+## [1.1.9] - 2026-07-02
+
+### Added
+- Software provenance in algorithm execution output: `generate_execution_output_rdf` now records `prov:generatedAtTime` on the result set and links the `TestExecutionActivity` to a `prov:SoftwareAgent` node (`prov:wasAssociatedWith`) identifying FAIR Champion via its `w3id.org/FAIR-Champion` identifier
+
 ## [1.1.8] - 2026-07-01
 
 ### Added
