@@ -2,6 +2,11 @@
 
 All notable changes to FAIR Champion are documented here.
 
+## [1.1.10] - 2026-07-02
+
+### Changed
+- Dockerfile no longer installs the `development, :test` gem group (`rubocop`, `rspec`, `rspec-openapi`, `pry`, `webmock`, `vcr`, `simplecov`, `rack-test`) in the production image, and no longer installs a pinned `bundler:2.3.12` that was immediately superseded by the `Gemfile.lock`-locked `4.0.3` — both were pure wasted build time since `entrypoint.sh` only runs `run.rb`
+
 ## [1.1.9] - 2026-07-02
 
 ### Added

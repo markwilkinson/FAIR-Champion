@@ -17,16 +17,12 @@ RUN apt-get update -q && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Update RubyGems and install Bundler
-RUN gem update --system && \
-    gem install bundler:2.3.12
-
 # Create and set working directory
 WORKDIR /server
 
 # Copy Gemfile and Gemfile.lock first to cache bundle install
 COPY Gemfile Gemfile.lock fair-champion.gemspec /server/
-RUN bundle install
+RUN bundle install --without development test
 
 # Copy the rest of the application code
 COPY . /server
