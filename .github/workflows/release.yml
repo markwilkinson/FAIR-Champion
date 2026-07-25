@@ -1,0 +1,51 @@
+name: Promote image on release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read VERSION file
+        id: version
+        run: echo "version=$(cat VERSION | tr -d '[:space:]')" >> "$GITHUB_OUTPUT"
+
+      - name: Verify release tag matches VERSION file
+        run: |
+          RELEASE_TAG="${{ github.event.release.tag_name }}"
+          VERSION="${{ steps.version.outputs.version }}"
+          # Strip optional leading 'v' from the release tag for comparison
+          RELEASE_TAG_STRIPPED="${RELEASE_TAG#v}"
+          if [ "$RELEASE_TAG_STRIPPED" != "$VERSION" ]; then
+            echo "::error::Release tag ($RELEASE_TAG) does not match VERSION file ($VERSION). Bump VERSION or fix the tag."
+            exit 1
+          fi
+          echo "Release tag matches VERSION: $VERSION"
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Promote the tested staging image (no rebuild)
+        run: |
+          docker buildx imagetools create \
+            --tag ghcr.io/cessda/fair-champion:${{ github.event.release.tag_name }} \
+            --tag ghcr.io/cessda/fair-champion:latest \
+            ghcr.io/cessda/fair-champion:staging
+
+      - name: Summary
+        run: |
+          echo "Promoted staging image to:" >> "$GITHUB_STEP_SUMMARY"
+          echo "- ghcr.io/cessda/fair-champion:${{ github.event.release.tag_name }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- ghcr.io/cessda/fair-champion:latest" >> "$GITHUB_STEP_SUMMARY"
