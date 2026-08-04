@@ -148,6 +148,12 @@ module Champion
       warn "\n\n\n\nQuery against #{fdp_url}  is \n#{query}\n\n\n\n"
       solutions = client.query(query)
       warn solutions.inspect
+
+      unless solutions.first
+        warn "No endpointURL found in the FDP index for test #{testid} — skipping"
+        return nil
+      end
+
       solutions.first[:endpoint].value # can be onlhy one
     end
 

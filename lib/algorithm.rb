@@ -263,11 +263,13 @@ class Algorithm
     c = Champion::Core.new # needed for registry lookup
     @tests = csv_data.map do |row|
       testid = row['Test GUID'].to_s.strip
+      endpoint = c.get_test_endpoint_for_testid(testid: testid)
+      warn "No endpoint found for test #{testid}; the FDP index has no current record for it — the algorithm will still be registered, but this test's endpoint is unresolved" if endpoint.nil?
       {
         reference: row['Test Reference'].to_s.strip,
         name: testid,
         testid: testid,
-        endpoint: c.get_test_endpoint_for_testid(testid: testid),
+        endpoint: endpoint,
         pass_weight: row['Pass Weight'].to_f,
         fail_weight: row['Fail Weight'].to_f,
         indeterminate_weight: row['Indeterminate Weight'].to_f
