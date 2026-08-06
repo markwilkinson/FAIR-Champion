@@ -33,4 +33,34 @@ RSpec.describe Champion::Core do
       expect(result).to eq('result' => 'pass')
     end
   end
+
+  describe '#execute_on_endpoints' do
+    it 'caps concurrency per host while still running different hosts in parallel' do
+      endpoints = (1..5).map { |i| { testid: "a#{i}", endpoint: "https://host-a.example/#{i}" } } +
+                  [{ testid: 'b1', endpoint: 'https://host-b.example/1' }]
+
+      in_flight = Hash.new(0)
+      max_in_flight = Hash.new(0)
+      mutex = Mutex.new
+
+      allow(core).to receive(:run_test) do |**kwargs|
+        host = URI(kwargs[:testapi]).host
+        mutex.synchronize do
+          in_flight[host] += 1
+          max_in_flight[host] = [max_in_flight[host], in_flight[host]].max
+        end
+        sleep 0.05
+        mutex.synchronize { in_flight[host] -= 1 }
+        { 'status' => 'pass' }
+      end
+
+      stub_const('Champion::Core::PER_HOST_TEST_CONCURRENCY', 3)
+
+      result = core.execute_on_endpoints(subject: subject, endpoints: endpoints, bmid: bmid)
+
+      expect(max_in_flight['host-a.example']).to eq(3) # 5 tests, capped at 3
+      expect(max_in_flight['host-b.example']).to eq(1) # only 1 test on this host
+      expect(result).to be_a(String)
+    end
+  end
 end

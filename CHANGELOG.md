@@ -2,6 +2,23 @@
 
 All notable changes to FAIR Champion are documented here.
 
+## [1.1.13] - 2026-08-06
+
+### Changed
+- `Champion::Core#execute_on_endpoints` now caps concurrency **per destination
+  host** instead of firing every test in an algorithm simultaneously. An
+  algorithm's tests are grouped by the host of their endpoint URL; different
+  hosts still run fully in parallel (unchanged — most tests genuinely live on
+  independent servers, and there's no reason to slow that down), but tests
+  sharing the same host are now run in batches of `PER_HOST_TEST_CONCURRENCY`
+  (default 3, configurable via `CHAMPION_PER_HOST_TEST_CONCURRENCY`) rather
+  than all at once. Several of the most-used tests happen to share the same
+  backend (most OSTrails core tests live on `tests.ostrails.eu`), so an
+  algorithm with 10-20 such tests was firing 10-20 simultaneous requests at
+  that one host per GUID assessed — observed directly contributing to that
+  server saturating under heavy automated use. Hosts with fewer tests than
+  the cap see no change in behavior or timing at all.
+
 ## [1.1.12] - 2026-08-04
 
 ### Fixed
