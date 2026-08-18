@@ -6,6 +6,7 @@ require 'sparql/client'
 require 'linkeddata'
 require 'safe_yaml'
 require 'rdf/nquads'
+require 'uri'
 
 # The Champion module provides core functionality for executing assessments and tests
 # against digital objects using RDF, SPARQL, and external APIs.
@@ -148,14 +149,33 @@ module Champion
       warn "\n\n\n\nQuery against #{fdp_url}  is \n#{query}\n\n\n\n"
       solutions = client.query(query)
       warn solutions.inspect
+
+      unless solutions.first
+        warn "No endpointURL found in the FDP index for test #{testid} — skipping"
+        return nil
+      end
+
       solutions.first[:endpoint].value # can be onlhy one
     end
+
+    # Maximum number of tests run concurrently against any single host.
+    # Champion treats tests as fully independent and normally fires them all
+    # in parallel — efficient, since most tests live on different servers.
+    # But several of the most-used tests happen to share the same backend
+    # (e.g. most OSTrails core tests live on tests.ostrails.eu), and
+    # unbounded parallelism against one host can saturate it. Grouping by
+    # host preserves full cross-host parallelism while capping concurrency
+    # within any single host. Configurable via CHAMPION_PER_HOST_TEST_CONCURRENCY.
+    PER_HOST_TEST_CONCURRENCY = Integer(ENV.fetch('CHAMPION_PER_HOST_TEST_CONCURRENCY', 3))
 
     #  THIS IS CALLED BY ALGORITHM!
     #  THIS IS CALLED BY ALGORITHM!
     #  THIS IS CALLED BY ALGORITHM!
     #  THIS IS CALLED BY ALGORITHM!
     # Executes tests on multiple endpoints and generates a JSON-LD result set.
+    # Tests are grouped by destination host; different hosts run fully in
+    # parallel, but tests sharing the same host are capped at
+    # {PER_HOST_TEST_CONCURRENCY} concurrent requests to avoid saturating it.
     #
     # @param subject [String] The GUID of the digital object to assess.
     # @param endpoints [Array<String>] The list of test endpoint URLs.
@@ -171,28 +191,71 @@ module Champion
       mutex = Mutex.new
       results = []
 
-      threads = endpoints.map do |idpair|
+      # Split the algorithm's tests into one list per destination host —
+      # e.g. all the tests.ostrails.eu tests end up in one group, all the
+      # w3id.org ones in another, etc.
+      grouped = endpoints.group_by { |idpair| endpoint_host(idpair[:endpoint]) }
+
+      # Two levels of threading here, on purpose:
+      #
+      #   OUTER (host_threads) — one thread per distinct host, all started
+      #   together. This is what gives us full cross-host parallelism: a
+      #   host with 1 test and a host with 20 tests both start working at
+      #   the same instant, and neither waits on the other.
+      #
+      #   INNER (batch_threads) — *within* one host's own thread, its tests
+      #   are run in batches of at most PER_HOST_TEST_CONCURRENCY at a time
+      #   (via each_slice), joining each batch before starting the next.
+      #   This is what caps concurrency against any single host: a host
+      #   with 20 tests runs them 3-at-a-time in ~7 sequential rounds,
+      #   however many *other* hosts are also being hit at the same time.
+      host_threads = grouped.map do |_host, host_endpoints|
         Thread.new do
-          begin
-            result = run_test(guid: subject, testapi: idpair[:endpoint], testid: idpair[:testid])
-          rescue StandardError => e
-            warn "Thread for #{idpair[:testid]} failed unexpectedly: #{e.message}"
-            result = {
-              '@type'          => 'ftr:TestResult',
-              '@id'            => "urn:fairchampion:thread-error:#{SecureRandom.uuid}",
-              'status'         => 'indeterminate',
-              'log'            => "Test execution thread failed: #{e.message}",
-              'outputFromTest' => idpair[:testid]
-            }
+          host_endpoints.each_slice(PER_HOST_TEST_CONCURRENCY) do |batch|
+            batch_threads = batch.map { |idpair| test_thread(subject:, idpair:, mutex:, results:) }
+            batch_threads.each(&:join) # wait for this batch before starting the host's next one
           end
-          mutex.synchronize { results << result }
         end
       end
-      threads.each(&:join)
+      host_threads.each(&:join) # wait for every host to finish all its batches
 
       output = Champion::Output.new(benchmarkid: bmid, subject: subject)
       output.build_output(results: results) # returns jsonld
     end
+
+    # @param endpoint [String] a test's endpoint URL
+    # @return [String, nil] its host, or nil if the URL can't be parsed
+    def endpoint_host(endpoint)
+      URI(endpoint).host
+    rescue URI::InvalidURIError, ArgumentError
+      nil
+    end
+    private :endpoint_host
+
+    # Spawns a thread running a single test and appending its result (or a
+    # synthesized indeterminate result on failure) to the shared, mutex-guarded
+    # +results+ array. Extracted from {#execute_on_endpoints} so it can be
+    # reused per-host-batch there.
+    #
+    # @return [Thread]
+    def test_thread(subject:, idpair:, mutex:, results:)
+      Thread.new do
+        begin
+          result = run_test(guid: subject, testapi: idpair[:endpoint], testid: idpair[:testid])
+        rescue StandardError => e
+          warn "Thread for #{idpair[:testid]} failed unexpectedly: #{e.message}"
+          result = {
+            '@type'          => 'ftr:TestResult',
+            '@id'            => "urn:fairchampion:thread-error:#{SecureRandom.uuid}",
+            'status'         => 'indeterminate',
+            'log'            => "Test execution thread failed: #{e.message}",
+            'outputFromTest' => idpair[:testid]
+          }
+        end
+        mutex.synchronize { results << result }
+      end
+    end
+    private :test_thread
 
     #  THIS IS CALLED BY ALGORITHM via CORE!
     #  THIS IS CALLED BY ALGORITHM!
