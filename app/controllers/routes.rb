@@ -387,9 +387,7 @@ module Champion
         algorithm = Algorithm.new(calculation_uri: calculation_uri, guid: 'http://example.org/mock') # mock is replaced when object is finished
         algorithm.register
         sleep 10 # TODO: Replace with retry mechanism to poll FDP index for ingestion
-        algorithmpath = URI(algorithm.algorithm_guid).path
-        warn "AlgoPath is #{algorithmpath}"
-        redirect to("#{algorithmpath}/display"), 302
+        redirect to("/champion/algorithms/#{algorithm.algorithm_id}/display"), 302
       end
 
       # Displays a specific algorithm’s metadata in HTML format.

@@ -2,6 +2,37 @@
 
 All notable changes to FAIR Champion are documented here.
 
+## [1.1.15] - 2026-08-20
+
+### Fixed
+- `Algorithm.list`'s SPARQL query grouped results by seven fields
+  (`?identifier ?title ?description ?endpoint ?openapi ?benchmark
+  ?calculation_uri`) instead of by identifier alone. Re-registering an
+  already-registered algorithm creates a second resource in the FDP Index
+  for the same `dct:identifier` (a duplicate-insert issue in the external
+  FDP Index service itself, outside this repo); if that second copy's
+  `calculation_uri`/title/description differ from the first by so much as
+  trailing whitespace, the old query's multi-field GROUP BY treated them as
+  distinct groups and listed the same algorithm twice. `Algorithm.list` now
+  groups by `?identifier` only, using `SAMPLE()` for the other scalar
+  fields and `GROUP_CONCAT(DISTINCT ...)` for the multi-valued
+  objects/domains, so duplicate underlying records collapse into one row —
+  matching how the FDP Index's own UI already displays results.
+
+## [1.1.14] - 2026-08-20
+
+### Fixed
+- The GUI's "register new algorithm" POST handler built its post-registration
+  redirect by taking the `path` component of `Algorithm#algorithm_guid` —
+  which lives in the `w3id.org/FAIR-Champion` namespace — and resolving it
+  against the current request's host. That sent users to
+  `https://tools.ostrails.eu/FAIR-Champion/algorithms/.../display`, a URL
+  that doesn't exist on the app (which is actually mounted at
+  `/champion/...`), instead of the intended
+  `https://tools.ostrails.eu/champion/algorithms/.../display`. The redirect
+  is now built directly from `algorithm.algorithm_id` against the app's own
+  `/champion/algorithms/` path, matching the route it's supposed to hit.
+
 ## [1.1.13] - 2026-08-06
 
 ### Changed

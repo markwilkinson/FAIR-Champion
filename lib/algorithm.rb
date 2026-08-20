@@ -719,7 +719,10 @@ class Algorithm
       PREFIX sio: <http://semanticscience.org/resource/>
       PREFIX dpv: <http://www.w3.org/ns/dpv#>
       PREFIX ftr: <https://w3id.org/ftr#>
-      SELECT ?identifier ?title ?description ?endpoint ?calculation_uri ?openapi (GROUP_CONCAT(?objects; separator=", ") AS ?objects) (GROUP_CONCAT(?domain; separator=", ") AS ?domains) ?benchmark
+      SELECT ?identifier (SAMPLE(?title) AS ?title) (SAMPLE(?description) AS ?description)
+             (SAMPLE(?endpoint) AS ?endpoint) (SAMPLE(?calculation_uri) AS ?calculation_uri)
+             (SAMPLE(?openapi) AS ?openapi) (GROUP_CONCAT(DISTINCT ?objects; separator=", ") AS ?objects)
+             (GROUP_CONCAT(DISTINCT ?domain; separator=", ") AS ?domains) (SAMPLE(?benchmark) AS ?benchmark)
       WHERE {
         ?subject a <https://w3id.org/ftr#ScoringAlgorithm> ;
             dct:title ?title ;
@@ -732,7 +735,7 @@ class Algorithm
         OPTIONAL { ?subject sio:SIO_000233 ?benchmark }
         OPTIONAL { ?subject ftr:scoringFunction ?calculation_uri}
       }
-      GROUP BY ?identifier ?title ?description ?endpoint ?openapi ?benchmark ?calculation_uri
+      GROUP BY ?identifier
 EOQ
 
     results = client.query(algossquery)

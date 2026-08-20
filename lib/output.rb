@@ -8,7 +8,7 @@ module Champion
     extend Forwardable
 
     def_delegators Champion::Output, :triplify
-    OUTPUT_VERSION = '1.1.13'.freeze
+    OUTPUT_VERSION = '1.1.15'.freeze
 
     FTR_CONTEXT = {
       '@context': {
