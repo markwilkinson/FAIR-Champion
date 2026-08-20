@@ -1,7 +1,7 @@
 services:
 
   champion: 
-    image: markw/fair-champion:1.1.15
+    image: markw/fair-champion:1.1.16
     environment:
       - TESTHOST=https://tests.ostrails.eu/tests/
       - CHAMPHOST=http://localhost:8383/

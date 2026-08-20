@@ -409,7 +409,16 @@ module Champion
       #   # GET /champion/algorithms/
       #   # Returns HTML list or JSON/JSON-LD data
       get %r{/champion/algorithms/?}, provides: [:html, :json, 'application/ld+json'] do
+        keyword = params['keyword'] || nil
+
         @list = Algorithm.list
+        if keyword
+          keyword = keyword.downcase
+          @list = @list.select do |data|
+            data[:title]&.downcase&.include?(keyword) ||
+              data[:description]&.downcase&.include?(keyword)
+          end
+        end
         case content_type
         when %r{application/json} || %r{application/ld+json}
           content_type :json

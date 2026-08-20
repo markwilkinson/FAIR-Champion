@@ -2,6 +2,14 @@
 
 All notable changes to FAIR Champion are documented here.
 
+## [1.1.16] - 2026-08-20
+
+### Added
+- The algorithm list page (`/champion/algorithms/`) now has the same
+  keyword-filter search box as the test list page: a GET form filtering
+  results (case-insensitive) by title/description, matching the pattern
+  already used for `/champion/tests/`.
+
 ## [1.1.15] - 2026-08-20
 
 ### Fixed
