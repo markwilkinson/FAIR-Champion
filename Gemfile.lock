@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    fair-champion (1.1.16)
+    fair-champion (1.1.17)
 
 GEM
   remote: https://rubygems.org/
@@ -54,7 +54,7 @@ GEM
     coderay (1.1.3)
     commonmarker (0.23.12)
     concurrent-ruby (1.3.6)
-    connection_pool (3.0.2)
+    connection_pool (2.5.5)
     crack (1.0.1)
       bigdecimal
       rexml
@@ -130,6 +130,25 @@ GEM
     ffi (1.17.3-x86_64-linux-gnu)
     ffi (1.17.3-x86_64-linux-musl)
     fileutils (1.5.0)
+    ftr_ruby (0.1.15)
+      base64 (~> 0.3)
+      connection_pool (~> 2.4, < 3.0)
+      http (~> 6.0)
+      json (~> 2.7)
+      json-canonicalization (~> 1.0)
+      jsonpath (~> 1.1)
+      linkeddata (~> 3.1)
+      multi_json (~> 1.5)
+      nokogiri (= 1.18.10)
+      parseconfig (~> 1.1)
+      rdf-raptor (~> 3.2)
+      rdf-vocab
+      require_all (~> 3.0)
+      rest-client (~> 2.1)
+      safe_yaml
+      triple_easy (~> 0.1.0)
+      uri (~> 1.1)
+      xml-simple (~> 1.1)
     haml (6.4.0)
       temple (>= 0.8.2)
       thor
@@ -138,13 +157,16 @@ GEM
       concurrent-ruby (~> 1.0)
     hashdiff (1.2.1)
     htmlentities (4.4.2)
+    http (6.0.4)
+      http-cookie (~> 1.0)
+      llhttp (~> 0.6.1)
     http-accept (1.7.0)
     http-cookie (1.1.0)
       domain_name (~> 0.5)
     i18n (1.14.8)
       concurrent-ruby (~> 1.0)
     io-console (0.8.2)
-    json (2.6.3)
+    json (2.21.2)
     json-canonicalization (1.0.0)
     json-ld (3.3.2)
       htmlentities (~> 4.3)
@@ -158,6 +180,8 @@ GEM
       json-ld (~> 3.3)
       rdf (~> 3.3)
     json_pure (2.8.1)
+    jsonpath (1.1.5)
+      multi_json
     language_server-protocol (3.17.0.5)
     ld-patch (3.3.1)
       ebnf (~> 2.6)
@@ -203,6 +227,7 @@ GEM
       rest-client (~> 2.1)
       securerandom
     lint_roller (1.1.0)
+    llhttp (0.6.2)
     logger (1.7.0)
     loofah (2.25.0)
       crass (~> 1.0.2)
@@ -233,21 +258,21 @@ GEM
     net-http-persistent (4.0.8)
       connection_pool (>= 2.2.4, < 4)
     netrc (0.11.0)
-    nokogiri (1.19.0-aarch64-linux-gnu)
+    nokogiri (1.18.10-aarch64-linux-gnu)
       racc (~> 1.4)
-    nokogiri (1.19.0-aarch64-linux-musl)
+    nokogiri (1.18.10-aarch64-linux-musl)
       racc (~> 1.4)
-    nokogiri (1.19.0-arm-linux-gnu)
+    nokogiri (1.18.10-arm-linux-gnu)
       racc (~> 1.4)
-    nokogiri (1.19.0-arm-linux-musl)
+    nokogiri (1.18.10-arm-linux-musl)
       racc (~> 1.4)
-    nokogiri (1.19.0-arm64-darwin)
+    nokogiri (1.18.10-arm64-darwin)
       racc (~> 1.4)
-    nokogiri (1.19.0-x86_64-darwin)
+    nokogiri (1.18.10-x86_64-darwin)
       racc (~> 1.4)
-    nokogiri (1.19.0-x86_64-linux-gnu)
+    nokogiri (1.18.10-x86_64-linux-gnu)
       racc (~> 1.4)
-    nokogiri (1.19.0-x86_64-linux-musl)
+    nokogiri (1.18.10-x86_64-linux-musl)
       racc (~> 1.4)
     openapi3_parser (0.9.2)
       commonmarker (~> 0.17)
@@ -316,9 +341,9 @@ GEM
       rdf (~> 3.3)
     rdf-ordered-repo (3.3.0)
       rdf (~> 3.3)
-    rdf-raptor (3.1.0)
-      ffi (~> 1.11)
-      rdf (~> 3.1)
+    rdf-raptor (3.2.0)
+      ffi (~> 1.15)
+      rdf (~> 3.2)
     rdf-rdfa (3.3.0)
       haml (~> 6.1)
       htmlentities (~> 4.3)
@@ -470,6 +495,7 @@ GEM
       rack (>= 1, < 4)
     thor (1.5.0)
     tilt (2.7.0)
+    triple_easy (0.1.0)
     tux (0.3.0)
       ripl (>= 0.3.5)
       ripl-multi_line (>= 0.2.4)
@@ -515,7 +541,8 @@ DEPENDENCIES
   erb_lint (~> 0.9.0)
   fair-champion!
   fileutils (~> 1.5.0)
-  json (~> 2.6.3)
+  ftr_ruby (~> 0.1.15)
+  json (~> 2.7)
   json-canonicalization (~> 1.0.0)
   json-ld (~> 3.3)
   json_pure (~> 2.8)
@@ -530,7 +557,7 @@ DEPENDENCIES
   rack-test (~> 2.1)
   rake (~> 13.0)
   rbs (~> 3.8.1)
-  rdf-raptor (~> 3.1.0)
+  rdf-raptor (~> 3.2.0)
   rdf-vocab (~> 3.3)
   require_all (~> 3.0.0)
   rest-client (~> 2.1.0)
@@ -570,7 +597,7 @@ CHECKSUMS
   coderay (1.1.3) sha256=dc530018a4684512f8f38143cd2a096c9f02a1fc2459edcfe534787a7fc77d4b
   commonmarker (0.23.12) sha256=da2d2f89c7c7b51c42c6e69ace3ab5df39497683f86e83aca7087c671d523ccd
   concurrent-ruby (1.3.6) sha256=6b56837e1e7e5292f9864f34b69c5a2cbc75c0cf5338f1ce9903d10fa762d5ab
-  connection_pool (3.0.2) sha256=33fff5ba71a12d2aa26cb72b1db8bba2a1a01823559fb01d29eb74c286e62e0a
+  connection_pool (2.5.5) sha256=e54ff92855753df1fd7c59fa04a398833355f27dd14c074f8c83a05f72a716ad
   crack (1.0.1) sha256=ff4a10390cd31d66440b7524eb1841874db86201d5b70032028553130b6d4c7e
   crass (1.0.6) sha256=dc516022a56e7b3b156099abc81b6d2b08ea1ed12676ac7a5657617f012bd45d
   csv (3.3.5) sha256=6e5134ac3383ef728b7f02725d9872934f523cb40b961479f69cf3afa6c8e73f
@@ -587,7 +614,7 @@ CHECKSUMS
   erb_lint (0.9.0) sha256=dfb5e40ad839e8d1f0d56ca85ec9a7ac4c9cd966ec281138282f35b323ca7c31
   erubi (1.13.1) sha256=a082103b0885dbc5ecf1172fede897f9ebdb745a4b97a5e8dc63953db1ee4ad9
   eventmachine (1.2.7) sha256=994016e42aa041477ba9cff45cbe50de2047f25dd418eba003e84f0d16560972
-  fair-champion (1.1.16)
+  fair-champion (1.1.17)
   faraday (1.10.4) sha256=a384c541cde688d68bf85055723aecb4100c3fa41b53beb2011b245960ab2f19
   faraday-cookie_jar (0.0.8) sha256=0140605823f8cc63c7028fccee486aaed8e54835c360cffc1f7c8c07c4299dbb
   faraday-em_http (1.0.0) sha256=7a3d4c7079789121054f57e08cd4ef7e40ad1549b63101f38c7093a9d6c59689
@@ -613,25 +640,29 @@ CHECKSUMS
   ffi (1.17.3-x86_64-linux-gnu) sha256=3746b01f677aae7b16dc1acb7cb3cc17b3e35bdae7676a3f568153fb0e2c887f
   ffi (1.17.3-x86_64-linux-musl) sha256=086b221c3a68320b7564066f46fed23449a44f7a1935f1fe5a245bd89d9aea56
   fileutils (1.5.0) sha256=95b2900bd4709cc8dbc8c4f1dc6106dfc2cbaa3b1e36a5cfe79a2985e93e0aa1
+  ftr_ruby (0.1.15) sha256=834a9faf6908937d743d9fd477ecda052e1bea17be7c4c350325444709c22b89
   haml (6.4.0) sha256=b2e20652be52ac9a3be328e8ff411ad007e82fc4e78e1a5cdefad537a697cf6a
   hamster (3.0.0) sha256=5951e3a3ffd15ba854a976ac36ebae9469966f726034ffed0dccdb6d12d434d8
   hashdiff (1.2.1) sha256=9c079dbc513dfc8833ab59c0c2d8f230fa28499cc5efb4b8dd276cf931457cd1
   htmlentities (4.4.2) sha256=bbafbdf69f2eca9262be4efef7e43e6a1de54c95eb600f26984f71d2fe96c5c3
+  http (6.0.4) sha256=3768f902489ea8309424f1881c668af8d3ca73675648a755dfe2cb0030d42d26
   http-accept (1.7.0) sha256=c626860682bfbb3b46462f8c39cd470fd7b0584f61b3cc9df5b2e9eb9972a126
   http-cookie (1.1.0) sha256=38a5e60d1527eebc396831b8c4b9455440509881219273a6c99943d29eadbb19
   i18n (1.14.8) sha256=285778639134865c5e0f6269e0b818256017e8cde89993fdfcbfb64d088824a5
   io-console (0.8.2) sha256=d6e3ae7a7cc7574f4b8893b4fca2162e57a825b223a177b7afa236c5ef9814cc
-  json (2.6.3) sha256=86aaea16adf346a2b22743d88f8dcceeb1038843989ab93cda44b5176c845459
+  json (2.21.2) sha256=1f1d3b7cf2b3ba1a69beca0bb6db13d5438b80bff3cd54cdaaa620b9b07c1c6a
   json-canonicalization (1.0.0) sha256=d4848a8cca7534455c6721f2d9fc9e5e9adca49486864a898810024f67d59446
   json-ld (3.3.2) sha256=b9531893bf5bdc01db428e96953845a23adb1097125ce918ae0f97c4a6e1ab27
   json-ld-preloaded (3.3.2) sha256=46294327eaf3bf95d48877222a70dd79740917adff94d5f0d380a4c492131ee1
   json_pure (2.8.1) sha256=6a877929ba9d4fa0808ccc38656d1b15d138b2aa0aa32037ee05abea13427ace
+  jsonpath (1.1.5) sha256=29f70467193a2dc93ab864ec3d3326d54267961acc623f487340eb9c34931dbe
   language_server-protocol (3.17.0.5) sha256=fd1e39a51a28bf3eec959379985a72e296e9f9acfce46f6a79d31ca8760803cc
   ld-patch (3.3.1) sha256=e663fca96ef2b7cbe25d2b5fe257d17984d28b64cb475d50943eebbb5c05dc51
   link_header (0.0.8) sha256=15c65ce43b29f739b30d05e5f25c22c23797e89cf6f905dbb595fb4c70cb55f9
   linkeddata (3.2.2) sha256=c5e02d6fd08c59dbe035705087a7cba757841df0e093b036d797a49202401bd1
   linkheaders-processor (0.1.21) sha256=bc68708f5a4458ff4763164468d3394085f0f7c1f2ab7ffe8940e605afaf3c01
   lint_roller (1.1.0) sha256=2c0c845b632a7d172cb849cc90c1bce937a28c5c8ccccb50dfd46a485003cc87
+  llhttp (0.6.2) sha256=3c3c59aafb1e1594ab2f45293478f697458f5a91eb0f0db4b27f61a064024982
   logger (1.7.0) sha256=196edec7cc44b66cfb40f9755ce11b392f21f7967696af15d274dde7edff0203
   loofah (2.25.0) sha256=df5ed7ac3bac6a4ec802df3877ee5cc86d027299f8952e6243b3dac446b060e6
   matrix (0.4.3) sha256=a0d5ab7ddcc1973ff690ab361b67f359acbb16958d1dc072b8b956a286564c5b
@@ -646,14 +677,14 @@ CHECKSUMS
   nesty (1.0.2) sha256=1c6ee90b96d46d6dfad9ca1b91104e57c0f46dd24f2a186406026eb75833498b
   net-http-persistent (4.0.8) sha256=ef3de8319d691537b329053fae3a33195f8b070bbbfae8bf1a58c796081960e6
   netrc (0.11.0) sha256=de1ce33da8c99ab1d97871726cba75151113f117146becbe45aa85cb3dabee3f
-  nokogiri (1.19.0-aarch64-linux-gnu) sha256=11a97ecc3c0e7e5edcf395720b10860ef493b768f6aa80c539573530bc933767
-  nokogiri (1.19.0-aarch64-linux-musl) sha256=eb70507f5e01bc23dad9b8dbec2b36ad0e61d227b42d292835020ff754fb7ba9
-  nokogiri (1.19.0-arm-linux-gnu) sha256=572a259026b2c8b7c161fdb6469fa2d0edd2b61cd599db4bbda93289abefbfe5
-  nokogiri (1.19.0-arm-linux-musl) sha256=23ed90922f1a38aed555d3de4d058e90850c731c5b756d191b3dc8055948e73c
-  nokogiri (1.19.0-arm64-darwin) sha256=0811dfd936d5f6dd3f6d32ef790568bf29b2b7bead9ba68866847b33c9cf5810
-  nokogiri (1.19.0-x86_64-darwin) sha256=1dad56220b603a8edb9750cd95798bffa2b8dd9dd9aa47f664009ee5b43e3067
-  nokogiri (1.19.0-x86_64-linux-gnu) sha256=f482b95c713d60031d48c44ce14562f8d2ce31e3a9e8dd0ccb131e9e5a68b58c
-  nokogiri (1.19.0-x86_64-linux-musl) sha256=1c4ca6b381622420073ce6043443af1d321e8ed93cc18b08e2666e5bd02ffae4
+  nokogiri (1.18.10-aarch64-linux-gnu) sha256=7fb87235d729c74a2be635376d82b1d459230cc17c50300f8e4fcaabc6195344
+  nokogiri (1.18.10-aarch64-linux-musl) sha256=7e74e58314297cc8a8f1b533f7212d1999dbe2639a9ee6d97b483ea2acc18944
+  nokogiri (1.18.10-arm-linux-gnu) sha256=51f4f25ab5d5ba1012d6b16aad96b840a10b067b93f35af6a55a2c104a7ee322
+  nokogiri (1.18.10-arm-linux-musl) sha256=1c6ea754e51cecc85c30ee8ab1e6aa4ce6b6e134d01717e9290e79374a9e00aa
+  nokogiri (1.18.10-arm64-darwin) sha256=c2b0de30770f50b92c9323fa34a4e1cf5a0af322afcacd239cd66ee1c1b22c85
+  nokogiri (1.18.10-x86_64-darwin) sha256=536e74bed6db2b5076769cab5e5f5af0cd1dccbbd75f1b3e1fa69d1f5c2d79e2
+  nokogiri (1.18.10-x86_64-linux-gnu) sha256=ff5ba26ba2dbce5c04b9ea200777fd225061d7a3930548806f31db907e500f72
+  nokogiri (1.18.10-x86_64-linux-musl) sha256=0651fccf8c2ebbc2475c8b1dfd7ccac3a0a6d09f8a41b72db8c21808cb483385
   openapi3_parser (0.9.2) sha256=1b0ea6409ebe7d4834705d1ad09a2370e3a364b6485b5acc3a7965f0dc4bdb69
   openapi_parser (2.3.1) sha256=c5415a8123c148692617a607a086f71e26d843339aa0bfa10c24e18d446d5e8b
   ostruct (0.6.3) sha256=95a2ed4a4bd1d190784e666b47b2d3f078e4a9efda2fccf18f84ddc6538ed912
@@ -683,7 +714,7 @@ CHECKSUMS
   rdf-n3 (3.3.1) sha256=3030d185823422ee3249a826aa5b8c96281b4728a36f2061fb8b4f070c738f73
   rdf-normalize (0.7.0) sha256=92374497dddb61c2910b50bfc12bb0ace33dcf23c8edbd0e0f78fd4acf839ebe
   rdf-ordered-repo (3.3.0) sha256=551b7f22f258e807f329f0071625ed1c22fc3b29080078a1f678be6c2749f93a
-  rdf-raptor (3.1.0) sha256=938fa97b5d44b8c7189d1a035b7cbe77399f381481ee9bff88288737dd6f956e
+  rdf-raptor (3.2.0) sha256=43033ca3992b7dbefd5c2464997bd85bdd06961432db94645d4436ffd43bf405
   rdf-rdfa (3.3.0) sha256=5770deb6da628b04b22a097269919897a0092c44250bbf5f22be4fabdc5ef71b
   rdf-rdfxml (3.3.0) sha256=11647f6111b97b6a9b82413bd9810d4bb5524aa7dd06b3c1330bf58ec3aa6a9a
   rdf-reasoner (0.9.0) sha256=227cca0008ed2e99b0a27e05f919af14b2516dfcac5544f159e10cacc69c1a2b
@@ -734,6 +765,7 @@ CHECKSUMS
   thin (2.0.1) sha256=5bbde5648377f5c3864b5da7cd89a23b5c2d8d8bb9435719f6db49644bcdade9
   thor (1.5.0) sha256=e3a9e55fe857e44859ce104a84675ab6e8cd59c650a49106a05f55f136425e73
   tilt (2.7.0) sha256=0d5b9ba69f6a36490c64b0eee9f6e9aad517e20dcc848800a06eb116f08c6ab3
+  triple_easy (0.1.0) sha256=3a196210fd505fa98ff5aa58348e62775f454a5f419eff4ec46f3b09666512ff
   tux (0.3.0) sha256=38edadc93fa519381a09cfca5b2b25a668c02cfca1d2fd3cdf4cd696fb750d55
   tzinfo (2.0.6) sha256=8daf828cc77bcf7d63b0e3bdb6caa47e2272dcfaf4fbfe46f8c3a9df087a829b
   unicode-display_width (3.2.0) sha256=0cdd96b5681a5949cdbc2c55e7b420facae74c4aaf9a9815eee1087cb1853c42
