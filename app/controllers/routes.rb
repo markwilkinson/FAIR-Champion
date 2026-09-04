@@ -448,9 +448,9 @@ module Champion
         when %r{application/json} || %r{application/ld+json}
           halt @dcat.dump(:jsonld)
         when %r{text/turtle}
-          halt @dcat.dump(:turtle)
+          halt @dcat.dump(:turtle, writer: RDF::Turtle::Writer)
         end
-        halt @dcat.dump(:turtle)
+        halt @dcat.dump(:turtle, writer: RDF::Turtle::Writer)
       end
 
       # Renders a form for initiating an algorithm assessment.

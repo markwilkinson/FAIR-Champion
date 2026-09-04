@@ -2,6 +2,22 @@
 
 All notable changes to FAIR Champion are documented here.
 
+## [1.1.21] - 2026-09-04
+
+### Fixed
+- CI was failing intermittently on `GET /champion/algorithms/:algorithmid`'s
+  Turtle response: `@dcat.dump(:turtle)` in `app/controllers/routes.rb` let
+  `RDF::Writer.for(:turtle)` resolve to `rdf-raptor`'s FFI-based writer,
+  which needs the system library `libraptor2` — present on this
+  developer's machine but not guaranteed on GitHub Actions' `ubuntu-latest`
+  runner, and not installed by the CI workflow. Both `.dump(:turtle)` call
+  sites now pass `writer: RDF::Turtle::Writer` explicitly, pinning
+  Turtle serialization to the pure-Ruby `rdf-turtle` gem so it no longer
+  depends on `libraptor2` being present at all. Also added a
+  `libraptor2-0` apt-get step to `.github/workflows/ci.yml` as a
+  belt-and-suspenders fix, since `rdf-raptor` is still a direct
+  dependency used elsewhere.
+
 ## [1.1.20] - 2026-09-03
 
 ### Changed
