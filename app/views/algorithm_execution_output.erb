@@ -7,11 +7,11 @@
         </div>
         <br/><br/>
         <div>
-          <%= erb :_test_results, locals: { test_results: @result[:test_results] } %>
+          <%= erb :_test_results, locals: { test_results: @result[:test_results], tests: @result[:tests] } %>
         </div>
         <br/><br/>
         <div>
-          <%= erb :_narratives, locals: { narratives: @result[:narratives], guidances: @result[:guidances] } %>
+          <%= erb :_narratives, locals: { narratives: @result[:narratives], guidances: @result[:guidances], conditions: @result[:conditions] } %>
         </div>
         <br/><br/>
         <div>

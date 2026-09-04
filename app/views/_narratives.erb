@@ -3,7 +3,17 @@
   <% warn "GUIDANCES: " + guidances.inspect %>
   <% narratives.each_with_index do |narrative, index| %>
     <% guidance = guidances[index] %>
-    <tr><td class="p-2"><%= index + 1 %></td>
+    <% condition = conditions && conditions[index] %>
+    <tr><td class="p-2">
+      <% if condition&.dig(:description) %>
+        <strong><%= condition[:description] %></strong>
+      <% else %>
+        Condition <%= index + 1 %>
+      <% end %>
+      <% if condition&.dig(:formula) %>
+        <br/><span style="font-size: 80%; color: #666;"><%= condition[:formula] %></span>
+      <% end %>
+    </td>
     <td class="p-2"><%= narrative %></td>
     <% if guidance %> <!-- guidance might not exist if all tests passed -->
       <td class="p-2">

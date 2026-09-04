@@ -122,8 +122,16 @@ RSpec.describe Algorithm do
     before do
       stub_request(:get, %r{https://docs\.google\.com/spreadsheets/d/.*})
         .to_return(status: 200, body: dirty_csv, headers: { 'Content-Type' => 'text/csv' })
-      allow_any_instance_of(Champion::Core).to receive(:get_test_endpoint_for_testid)
-        .and_return('https://tests.ostrails.eu/assess/test/some_test/api')
+      allow_any_instance_of(Champion::Core).to receive(:get_tests).and_return(
+        [
+          Champion::Test.new(
+            identifier: 'some_test',
+            title: 'Some Test',
+            description: 'A test',
+            endpoint: 'https://tests.ostrails.eu/assess/test/some_test/api'
+          )
+        ]
+      )
     end
 
     it 'strips trailing spaces from Test GUID so the test appears in the ResultSet' do

@@ -1,15 +1,53 @@
 {
   "head": {
     "vars": [
-      "endpoint"
+      "identifier",
+      "title",
+      "description",
+      "endpoint",
+      "openapi",
+      "dimension",
+      "objects",
+      "domain",
+      "benchmark_or_metric"
     ]
   },
   "results": {
     "bindings": [
       {
+        "identifier": {
+          "type": "uri",
+          "value": "https://tests.ostrails.eu/tests/fc_metadata_includes_license"
+        },
+        "title": {
+          "type": "literal",
+          "value": "Metadata includes a license"
+        },
+        "description": {
+          "type": "literal",
+          "value": "Checks that the metadata declares a license."
+        },
         "endpoint": {
           "type": "uri",
           "value": "https://tests.ostrails.eu/assess/test/fc_metadata_includes_license"
+        }
+      },
+      {
+        "identifier": {
+          "type": "uri",
+          "value": "https://tests.ostrails.eu/tests/fc_metadata_authorization"
+        },
+        "title": {
+          "type": "literal",
+          "value": "Metadata is available via an authorization-aware protocol"
+        },
+        "description": {
+          "type": "literal",
+          "value": "Checks that metadata is retrievable using a protocol that supports authorization."
+        },
+        "endpoint": {
+          "type": "uri",
+          "value": "https://tests.ostrails.eu/assess/test/fc_metadata_authorization"
         }
       }
     ]

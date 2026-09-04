@@ -250,7 +250,7 @@ module Champion
           warn "Thread for #{idpair[:testid]} failed unexpectedly: #{e.message}"
           result = error_result(subject: subject, idpair: idpair, message: "Test execution thread failed: #{e.message}")
         end
-        if result.is_a?(Hash) && !result.key?('@type')
+        if result.is_a?(Hash) && !result.key?('@type') && !result.key?('@graph')
           warn "Test #{idpair[:testid]} returned unexpected result: #{result.inspect}"
           result = error_result(subject: subject, idpair: idpair, message: "Test returned unexpected result: #{result.inspect}")
         end

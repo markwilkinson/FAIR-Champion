@@ -1,8 +1,9 @@
 <h2 class="mb-3">Test Results</h2>
+<% tests_by_reference = (tests || []).each_with_object({}) { |t, h| h[t[:reference]] = t } %>
 <table class="table w-full border-collapse">
   <thead>
     <tr class="bg-gray-200">
-      <th class="p-2 border text-left">Test ID</th>
+      <th class="p-2 border text-left">Test</th>
       <th class="p-2 border text-left">Result</th>
       <th class="p-2 border text-left">Weight</th>
       <th class="p-2 border text-left">Log</th>
@@ -11,8 +12,20 @@
   <tbody>
     <% test_results.each do |id, data| %>
       <% collapse_id = "logCollapse_#{id.to_s.gsub(/[^a-zA-Z0-9]/, '_')}" %>
+      <% test_meta = tests_by_reference[id] %>
       <tr>
-        <td class="p-2 border"><%= id %></td>
+        <td class="p-2 border">
+          <% if test_meta&.dig(:title) %>
+            <% if test_meta[:metric_url] %>
+              <strong><a href="<%= CGI.escapeHTML(test_meta[:metric_url]) %>" target="_blank" rel="noopener"><%= test_meta[:title] %></a></strong><br/>
+            <% else %>
+              <strong><%= test_meta[:title] %></strong><br/>
+            <% end %>
+            <span style="font-size: 80%; color: #666;"><%= test_meta[:testid] %></span>
+          <% else %>
+            <%= test_meta&.dig(:testid) || id %>
+          <% end %>
+        </td>
         <td class="p-2 border"><%= data[:result] %></td>
         <td class="p-2 border"><%= data[:weight] %></td>
         <td class="p-2 border" style="font-family: 'Courier New', monospace; font-size: 50%">

@@ -2,6 +2,52 @@
 
 All notable changes to FAIR Champion are documented here.
 
+## [1.1.20] - 2026-09-03
+
+### Changed
+- Each test's name in the algorithm execution report's test results table
+  is now a hyperlink to its associated FAIR Metric (the `sio:SIO_000233`
+  / "implementation of" value already fetched by `get_tests`, now stored
+  as `metric_url` on each `@tests` entry in `lib/algorithm.rb` and
+  rendered in `app/views/_test_results.erb`). Falls back to plain text
+  when the registry has no metric URL recorded for a test.
+
+## [1.1.19] - 2026-09-03
+
+### Fixed
+- **Critical**: every Champion Algorithm execution was failing all of its
+  tests. `Champion::Core#test_thread` (`lib/champion_core.rb:253`) rejected
+  any result Hash lacking a top-level `@type` key, treating it as
+  "unexpected" and replacing it with a synthesized error — but real test
+  output (and our own `error_result` helper, both built via
+  `FtrRuby::Output#createEvaluationResponse`) always serializes as a
+  multi-subject JSON-LD graph, which puts the subjects under a top-level
+  `@graph` array instead of a flat `@type`. That shape has therefore never
+  matched the check since `error_result` started using the same builder
+  (1.1.17), meaning every real, passing test result was being silently
+  discarded and reported as an error. Verified against a live test
+  endpoint (`tests.ostrails.eu/tests/assess/test/fc_metadata_identifier_persistence`)
+  before and after the fix. The check now also accepts a result carrying
+  `@graph`; only a response with neither `@type` nor `@graph` (the genuine
+  network-error fallback shape) is still treated as unexpected. Added
+  regression tests in `spec/champion__core_spec.rb` covering both a
+  real graph-wrapped success result and a genuinely malformed response.
+
+## [1.1.18] - 2026-09-03
+
+### Changed
+- The algorithm execution report is more informative: the test results
+  table now shows each test's registered title (looked up from the FDP
+  index via `Champion::Core#get_tests`) alongside its testid, instead of
+  just the opaque short CSV reference code (e.g. `T1`). The conclusions
+  table now labels each row with the condition's actual description and
+  formula (already computed in `Algorithm#load_configuration` but never
+  passed to the view) instead of a bare "Condition 1", "Condition 2" index.
+- `Algorithm#gather_metadata` now calls `Champion::Core#get_tests` (which
+  returns title, description, and endpoint in one SPARQL round trip)
+  instead of the narrower `get_test_endpoint_for_testid`, storing the
+  title on each test entry for the report to use.
+
 ## [1.1.17] - 2026-08-24
 
 ### Changed
