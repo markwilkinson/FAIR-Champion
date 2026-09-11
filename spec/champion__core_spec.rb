@@ -27,8 +27,7 @@ RSpec.describe Champion::Core do
         .to_return(status: 200, body: { result: 'pass' }.to_json, headers: { 'Content-Type' => 'application/json' })
       result = core.run_test(
         testapi: 'https://tests.ostrails.eu/assess/test/fc_metadata_includes_license',
-        guid: subject,
-        testid: 'https://tests.ostrails.eu/tests/fc_metadata_includes_license'
+        guid: subject
       )
       expect(result).to eq('result' => 'pass')
     end

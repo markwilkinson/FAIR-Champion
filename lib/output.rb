@@ -8,7 +8,7 @@ module Champion
     extend Forwardable
 
     def_delegators Champion::Output, :triplify
-    OUTPUT_VERSION = '1.1.21'.freeze
+    OUTPUT_VERSION = '1.1.22'.freeze
 
     FTR_CONTEXT = {
       '@context': {
@@ -104,11 +104,11 @@ module Champion
     def build_output(results:)
       g = RDF::Graph.new
       schema = RDF::Vocab::SCHEMA
-      xsd = RDF::Vocab::XSD
+      _xsd = RDF::Vocab::XSD
       dct = RDF::Vocab::DC
       prov = RDF::Vocab::PROV
-      dcat = RDF::Vocab::DCAT
-      dqv = RDF::Vocabulary.new('http://www.w3.org/ns/dqv#')
+      _dcat = RDF::Vocab::DCAT
+      _dqv = RDF::Vocabulary.new('http://www.w3.org/ns/dqv#')
 
       ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
       sio = RDF::Vocabulary.new('http://semanticscience.org/resource/')

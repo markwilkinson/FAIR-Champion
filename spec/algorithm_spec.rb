@@ -52,9 +52,9 @@ RSpec.describe Algorithm do
       # Your existing assertions
       expect(algo.tests).to include(
         hash_including(reference: 'T1', testid: 'https://tests.ostrails.eu/tests/fc_metadata_authorization',
-                       pass_weight: 5),
+                       pass_weight: 5, error_weight: 0.0),
         hash_including(reference: 'T2', testid: 'https://tests.ostrails.eu/tests/fc_metadata_includes_license',
-                       fail_weight: -1)
+                       fail_weight: -1, error_weight: 0.0)
       )
       expect(algo.conditions).to include(
         hash_including(condition: 'C1', formula: 'T1 > 0'),
@@ -88,15 +88,101 @@ RSpec.describe Algorithm do
     let(:algo) { described_class.new(calculation_uri: calculation_uri, baseURI: base_uri, resultset: resultset) }
 
     before do
+      allow_any_instance_of(Champion::Core).to receive(:get_tests).and_return(
+        [
+          Champion::Test.new(
+            identifier: 'some_test',
+            title: 'Some Test',
+            description: 'A test',
+            endpoint: 'https://tests.ostrails.eu/assess/test/some_test/api'
+          )
+        ]
+      )
       algo.load_configuration
-      allow(algo).to receive(:parse_single_test_response).with(resultset: resultset, testid: 'https://tests.ostrails.eu/tests/fc_metadata_includes_license').and_return('pass')
-      allow(algo).to receive(:parse_single_test_response).with(resultset: resultset, testid: 'https://tests.ostrails.eu/tests/fc_metadata_authorization').and_return(nil) # removed and replaxced with mock output to fail this lookup
+      allow(algo).to receive(:parse_single_test_response).with(testid: 'https://tests.ostrails.eu/tests/fc_metadata_includes_license').and_return('pass')
+      allow(algo).to receive(:parse_single_test_response).with(testid: 'https://tests.ostrails.eu/tests/fc_metadata_authorization').and_return(nil) # removed and replaxced with mock output to fail this lookup
     end
 
-    it 'processes test results with weights', :vcr do
+    it 'processes test results with weights' do
       results = algo.process_resultset
       expect(results['T2']).to include(result: 'pass', weight: 5.0)
       expect(results['T1']).to include(result: 'indeterminate (result data not found)', weight: 0.0)
+    end
+
+    it 'applies error_weight (default 0.0 for legacy sheets) when a test result is "error"' do
+      allow(algo).to receive(:parse_single_test_response)
+        .with(testid: 'https://tests.ostrails.eu/tests/fc_metadata_includes_license')
+        .and_return('error')
+
+      results = algo.process_resultset
+      expect(results['T2']).to include(result: 'error', weight: 0.0)
+    end
+  end
+
+  describe '#process_resultset with an Error Weight column' do
+    let(:csv_response) { File.read('spec/support/fixtures/sample_csv_with_error_weight.csv') }
+    let(:algo) { described_class.new(calculation_uri: calculation_uri, baseURI: base_uri, resultset: resultset) }
+
+    before do
+      allow_any_instance_of(Champion::Core).to receive(:get_tests).and_return(
+        [
+          Champion::Test.new(
+            identifier: 'some_test',
+            title: 'Some Test',
+            description: 'A test',
+            endpoint: 'https://tests.ostrails.eu/assess/test/some_test/api'
+          )
+        ]
+      )
+      algo.load_configuration
+      allow(algo).to receive(:parse_single_test_response)
+        .with(testid: 'https://tests.ostrails.eu/tests/fc_metadata_includes_license')
+        .and_return('error')
+      allow(algo).to receive(:parse_single_test_response)
+        .with(testid: 'https://tests.ostrails.eu/tests/fc_metadata_authorization')
+        .and_return(nil)
+    end
+
+    it 'reads the Error Weight column and uses it for "error" results' do
+      expect(algo.tests).to include(hash_including(reference: 'T2', error_weight: -50.0))
+
+      results = algo.process_resultset
+      expect(results['T2']).to include(result: 'error', weight: -50.0)
+    end
+  end
+
+  describe '#process' do
+    let(:algo) { described_class.new(calculation_uri: calculation_uri, baseURI: base_uri, resultset: resultset) }
+
+    before do
+      allow_any_instance_of(Champion::Core).to receive(:get_tests).and_return(
+        [
+          Champion::Test.new(
+            identifier: 'some_test',
+            title: 'Some Test',
+            description: 'A test',
+            endpoint: 'https://tests.ostrails.eu/assess/test/some_test/api'
+          )
+        ]
+      )
+      allow(algo).to receive(:evaluate_conditions).and_return([[], []])
+      allow(algo).to receive(:extract_target_from_resultset).and_return('https://example.org/target/456')
+    end
+
+    it 'sets has_errors to true when a test result is "error"' do
+      allow(algo).to receive(:process_resultset).and_return(
+        'T1' => { log: 'ok', result: 'pass', weight: 5.0 },
+        'T2' => { log: 'boom', result: 'error', weight: -50.0 }
+      )
+      expect(algo.process[:has_errors]).to be true
+    end
+
+    it 'sets has_errors to false when no test result is "error"' do
+      allow(algo).to receive(:process_resultset).and_return(
+        'T1' => { log: 'ok', result: 'pass', weight: 5.0 },
+        'T2' => { log: 'ok', result: 'fail', weight: -1.0 }
+      )
+      expect(algo.process[:has_errors]).to be false
     end
   end
 

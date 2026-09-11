@@ -49,7 +49,7 @@ module Champion
     def self.test_output_parser(output:)
       ftr = RDF::Vocabulary.new('https://w3id.org/ftr#')
       prov = RDF::Vocab::PROV
-      sio = RDF::Vocabulary.new('http://semanticscience.org/resource/')
+      _sio = RDF::Vocabulary.new('http://semanticscience.org/resource/')
       dcterms = RDF::Vocab::DC
 
       parsedgraph = RDF::Graph.new

@@ -245,7 +245,7 @@ module Champion
     def test_thread(subject:, idpair:, mutex:, results:)
       Thread.new do
         begin
-          result = run_test(guid: subject, testapi: idpair[:endpoint], testid: idpair[:testid])
+          result = run_test(guid: subject, testapi: idpair[:endpoint])
         rescue StandardError => e
           warn "Thread for #{idpair[:testid]} failed unexpectedly: #{e.message}"
           result = error_result(subject: subject, idpair: idpair, message: "Test execution thread failed: #{e.message}")
@@ -301,7 +301,6 @@ module Champion
     #  THIS IS CALLED BY ALGORITHM!
     #  THIS IS CALLED BY ALGORITHM!
     # Runs a single test against a test API endpoint.
-    # Note: The test API URL is derived from the testapi parameter, which is temporarily munged to extract the test name.
     #
     # @param testapi [String] The API endpoint for the test.
     # @param guid [String] The GUID of the digital object to assess.
@@ -311,11 +310,10 @@ module Champion
     #   core = Champion::Core.new
     #   result = core.run_test(testapi: 'https://tests.ostrails.eu/tests/test1/api', guid: 'https://example.org/target/456')
     #   puts result
-    def run_test(testapi:, guid:, testid:)
-      testurl = testapi
+    def run_test(testapi:, guid:)
       begin
         result = RestClient::Request.execute(
-          url: testurl,
+          url: testapi,
           method: :post,
           payload: { 'resource_identifier' => guid }.to_json,
           headers: {
@@ -326,11 +324,11 @@ module Champion
       rescue RestClient::ExceptionWithResponse => e
         warn "Test Execution failed with status: #{e.response.code}"
         warn "Error details: #{e.response.body}"
-        return JSON.parse({ error: "#{testurl} did not respond happily.  Are you sure the test is registered? #{e.message}" }.to_json)
+        return JSON.parse({ error: "#{testapi} did not respond happily.  Are you sure the test is registered? #{e.message}" }.to_json)
       rescue StandardError => e
         warn "Test Execution Unexpected error: #{e.message}"
-        warn "#{testurl} did not respond happily"
-        return JSON.parse({ error: "#{testurl} did not respond happily. Are you sure the test is registered? #{e.message}" }.to_json)
+        warn "#{testapi} did not respond happily"
+        return JSON.parse({ error: "#{testapi} did not respond happily. Are you sure the test is registered? #{e.message}" }.to_json)
       end
       body = result.body.encode('UTF-8', invalid: :replace, undef: :replace, replace: "\u{FFFD}")
       JSON.parse(body)

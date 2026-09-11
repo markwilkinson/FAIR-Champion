@@ -192,6 +192,21 @@ RSpec.describe 'Champion Routes' do
       expect { JSON.parse(last_response.body) }.not_to raise_error
     end
 
+    it 'returns 207 Multi-Status (JSON) when the TestResultSet contains an error result' do
+      allow(algorithm_mock).to receive(:process).and_return({ resultset: '{}', has_errors: true })
+      post '/champion/assess/algorithm/algo1', payload, { 'HTTP_ACCEPT' => 'application/json', 'CONTENT_TYPE' => 'application/json' }
+      expect(last_response.status).to eq(207)
+    end
+
+    it 'returns 207 Multi-Status (HTML) when the TestResultSet contains an error result' do
+      allow(algorithm_mock).to receive(:process).and_return(
+        { resultset: '{}', has_errors: true, metadata: RDF::Graph.new, test_results: {}, narratives: [],
+          testedguid: 'https://example.org/target/456', guidances: [], tests: [], conditions: [] }
+      )
+      post '/champion/assess/algorithm/algo1', payload, { 'HTTP_ACCEPT' => 'text/html', 'CONTENT_TYPE' => 'application/json' }
+      expect(last_response.status).to eq(207)
+    end
+
     # it 'returns JSON-LD string for text/turtle' do
     #   post '/champion/assess/algorithm/algo1', payload, { 'HTTP_ACCEPT' => 'text/turtle', 'CONTENT_TYPE' => 'application/json' }
     #   expect(last_response.status).to eq(200)

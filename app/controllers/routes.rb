@@ -348,7 +348,7 @@ module Champion
 
           # No acceptable type
           error 406
-        rescue JSON::ParserError, StandardError => e
+        rescue JSON::ParserError, StandardError => e # rubocop:disable Lint/ShadowedException
           # This is where your "undefined method `value' for nil" was probably coming from
           # → safer handling now
           status 500
@@ -581,6 +581,9 @@ module Champion
         #   conditions: conditions
         # }
         # warn "RESULT @result is #{@result.inspect} "
+        # A TestResultSet containing one or more error TestResults is incomplete;
+        # 207 lets clients detect that without inspecting the body.
+        status 207 if @result[:has_errors]
         case content_type
         when %r{text/html}
           halt erb :algorithm_execution_output, layout: :algorithm_execution_layout

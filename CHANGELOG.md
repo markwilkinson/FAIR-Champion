@@ -2,6 +2,25 @@
 
 All notable changes to FAIR Champion are documented here.
 
+## [1.1.22] - 2026-09-11
+
+### Added
+- Algorithm test-weight spreadsheets can now define an `Error Weight` column
+  alongside `Pass Weight`, `Fail Weight`, and `Indeterminate Weight`, applied
+  when a test result's status is `error`. Legacy spreadsheets without the
+  column default to a weight of `0.0`.
+- `POST /champion/assess/algorithm/*` now returns HTTP `207 Multi-Status`
+  (instead of `200 OK`, for both HTML and JSON responses) whenever the
+  returned `TestResultSet` contains one or more `error` `TestResult`s, so
+  clients can detect an incomplete report without inspecting the body.
+
+### Fixed
+- `Algorithm#parse_single_test_response` no longer takes an unused
+  `resultset:` parameter — it only ever queried the `@resultsetgraph`
+  instance variable, not the argument.
+- `Champion::Core#run_test` no longer takes an unused `testid:` parameter,
+  and dropped a pointless `testurl = testapi` local-variable alias.
+
 ## [1.1.21] - 2026-09-04
 
 ### Fixed
